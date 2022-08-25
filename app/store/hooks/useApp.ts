@@ -1,10 +1,11 @@
-import { useNavigationContainerRef } from '@react-navigation/native'
 import create, { StateCreator } from 'zustand'
 
 import { App } from '../types'
 
 const createStore: StateCreator<App> = (set, get) => ({
-  navigationContainer: useNavigationContainerRef(),
+  safeAreaInsets: null,
+  navigationContainer: null,
+  setSafeAreaInsets: () => {},
   setNavigationContainer: (ref) => set({ navigationContainer: ref })
 })
 

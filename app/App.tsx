@@ -5,6 +5,7 @@ import {
   NavigationContainer,
   useNavigationContainerRef
 } from '@react-navigation/native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useDeviceContext } from 'twrnc'
@@ -34,11 +35,13 @@ const App: FC = () => {
   )
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer ref={navigationContainerRef}>
-        <Navigation />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer ref={navigationContainerRef}>
+          <Navigation />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   )
 }
 

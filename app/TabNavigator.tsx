@@ -10,7 +10,12 @@ const Tab = createBottomTabNavigator()
 const TabNavigator: FC = (props) => {
   return (
     <Tab.Navigator
-      screenOptions={{ header: () => null }}
+      screenOptions={{
+        header: () => null,
+        tabBarStyle: {
+          position: "absolute"
+        }
+      }}
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen
