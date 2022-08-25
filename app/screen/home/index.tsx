@@ -15,10 +15,8 @@ const Home: FC<Props> = (props) => {
     shallow
   )
 
-  console.log(navigationContainer)
-
   return (
-    <Text>测试home2</Text>
+    <Text>测试home1</Text>
   )
 }
 
