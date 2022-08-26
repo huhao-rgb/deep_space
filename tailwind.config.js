@@ -1,3 +1,5 @@
+const { plugin } = require('twrnc')
+
 module.exports = {
   content: [],
   darkMode: false, // or 'media' or 'class'
@@ -7,5 +9,13 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: []
+  plugins: [
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        'resize-repeat': {
+          resizeMode: 'repeat'
+        }
+      })
+    })
+  ]
 }
