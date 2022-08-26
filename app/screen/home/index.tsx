@@ -4,8 +4,9 @@ import { Text } from 'react-native'
 import shallow from 'zustand/shallow'
 
 import tw from '../../tailwind'
-
 import { useApp } from '../../store'
+
+import SafeAreaView from '../../components/safe-area-view'
 
 type Props = {}
 
@@ -16,7 +17,9 @@ const Home: FC<Props> = (props) => {
   )
 
   return (
-    <Text>测试home1</Text>
+    <SafeAreaView>
+      <Text>测试home1</Text>
+    </SafeAreaView>
   )
 }
 
