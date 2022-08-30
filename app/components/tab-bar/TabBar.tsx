@@ -7,7 +7,7 @@ import {
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import Animated from 'react-native-reanimated'
-import { TouchableHighlight } from 'react-native-gesture-handler'
+import { Shadow } from 'react-native-shadow-2'
 
 import tw from '../../tailwind'
 
@@ -28,50 +28,55 @@ const TabBar: FC<Props> = (props) => {
     <View
       style={tw.style(
         'px-4',
-        'h-20',
         { paddingBottom: insets?.bottom }
       )}
     >
-      <Animated.View style={[tw.style('flex', 'flex-row', 'flex-1')]}>
-        {state.routes.map((route, i) => {
-          const { options } = descriptors[route.key]
-          const labelText =
-            options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name
+      <Shadow
+        startColor={tw.color('gray-100')}
+        distance={15}
+        style={tw.style('h-16', 'w-full')}
+      >
+        <Animated.View style={[tw.style('flex', 'flex-row', 'flex-1', 'rounded-xl', 'bg-white')]}>
+          {state.routes.map((route, i) => {
+            const { options } = descriptors[route.key]
+            const labelText =
+              options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name
 
-          const isFocused = state.index === i
+            const isFocused = state.index === i
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true
-            })
-  
-            if (!isFocused && !event.defaultPrevented) {
-              // The `merge: true` option makes sure that the params inside the tab screen are preserved
-              navigation.navigate(route.name)
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true
+              })
+    
+              if (!isFocused && !event.defaultPrevented) {
+                // The `merge: true` option makes sure that the params inside the tab screen are preserved
+                navigation.navigate(route.name)
+              }
             }
-          }
 
-          return (
-            <PlatformPressable
-              key={`routez_${route.name}_i`}
-              style={tw.style('flex-1')}
-              testID={options.tabBarTestID}
-              onPress={onPress}
-            >
-              <Route
-                label={labelText as string}
-                focus={isFocused}
-              />
-            </PlatformPressable>
-          )
-        })}
-      </Animated.View>
+            return (
+              <PlatformPressable
+                key={`routez_${route.name}_i`}
+                style={tw.style('flex-1')}
+                testID={options.tabBarTestID}
+                onPress={onPress}
+              >
+                <Route
+                  label={labelText as string}
+                  focus={isFocused}
+                />
+              </PlatformPressable>
+            )
+          })}
+        </Animated.View>
+      </Shadow>
     </View>
   )
 }

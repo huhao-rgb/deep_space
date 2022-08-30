@@ -15,8 +15,8 @@ type Props = {
   style?: StyleProp<ViewProps>
 }
 
-const FOCUS_COLOR = '#ED7651'
-const BLUR_COLOR = '#000'
+const FOCUS_COLOR = tw.color('red-500') as string
+const BLUR_COLOR = tw.color('black') as string
 
 const Route: FC<Props> = (props) => {
   const { label, focus, style } = props
@@ -29,13 +29,11 @@ const Route: FC<Props> = (props) => {
   useEffect(
     () => {
       cancelAnimation(labelColor)
+      console.log(FOCUS_COLOR, BLUR_COLOR)
       labelColor.value = withSpring(focus ? FOCUS_COLOR : BLUR_COLOR)
     },
     [focus]
   )
-
-  console.log(label)
-
   return (
     <Animated.View
       style={[
