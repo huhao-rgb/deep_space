@@ -15,19 +15,19 @@ const TabNavigator: FC = (props) => {
       screenOptions={{
         header: () => null,
         tabBarStyle: {
-          position: "absolute"
+          position: 'absolute'
         }
       }}
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen
-        name="Home"
-        options={{ title: "首页" }}
+        name='Home'
+        options={{ title: '首页' }}
         component={Home}
       />
       <Tab.Screen
-        name="My"
-        options={{ title: "我的" }}
+        name='My'
+        options={{ title: '我的' }}
         component={My}
       />
     </Tab.Navigator>

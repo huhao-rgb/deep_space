@@ -7,7 +7,9 @@ import Animated, {
   withSpring,
   cancelAnimation
 } from 'react-native-reanimated'
+
 import tw from '../../tailwind'
+import { Icon } from '../svg-icon'
 
 type Props = {
   label: string
@@ -21,7 +23,9 @@ const BLUR_COLOR = tw.color('black') as string
 const Route: FC<Props> = (props) => {
   const { label, focus, style } = props
 
-  const labelColor = useSharedValue(focus ? FOCUS_COLOR : BLUR_COLOR)
+  const color = focus ? FOCUS_COLOR : BLUR_COLOR
+
+  const labelColor = useSharedValue(color)
   const animatedLableColorStyle = useAnimatedStyle(() => ({
     color: labelColor.value
   }))
@@ -29,8 +33,7 @@ const Route: FC<Props> = (props) => {
   useEffect(
     () => {
       cancelAnimation(labelColor)
-      console.log(FOCUS_COLOR, BLUR_COLOR)
-      labelColor.value = withSpring(focus ? FOCUS_COLOR : BLUR_COLOR)
+      labelColor.value = withSpring(color)
     },
     [focus]
   )
@@ -41,7 +44,19 @@ const Route: FC<Props> = (props) => {
         style
       ]}
     >
-      <Animated.Text style={[animatedLableColorStyle]}>{label}</Animated.Text>
+      <Icon
+        name='Home'
+        width='20'
+        height='20'
+        fill={color}
+        viewBox='0 0 1024 1024'
+      />
+      <Animated.Text
+        style={[
+          animatedLableColorStyle,
+          tw.style('m-1')
+        ]}
+      >{label}</Animated.Text>
     </Animated.View>
   )
 }
