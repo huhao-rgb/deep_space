@@ -7,11 +7,12 @@ import {
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import Animated from 'react-native-reanimated'
+import { TouchableHighlight } from 'react-native-gesture-handler'
 
 import tw from '../../tailwind'
 
 import Route from './Route'
-import { TouchableHighlight } from 'react-native-gesture-handler'
+import PlatformPressable from '../platform-pressable'
 
 type Props = {} & BottomTabBarProps
 
@@ -57,17 +58,17 @@ const TabBar: FC<Props> = (props) => {
           }
 
           return (
-            <TouchableHighlight
+            <PlatformPressable
               key={`routez_${route.name}_i`}
-              testID={options.tabBarTestID}
               style={tw.style('flex-1')}
+              testID={options.tabBarTestID}
               onPress={onPress}
             >
               <Route
                 label={labelText as string}
                 focus={isFocused}
               />
-            </TouchableHighlight>
+            </PlatformPressable>
           )
         })}
       </Animated.View>
