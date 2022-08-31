@@ -25,8 +25,6 @@ const Navigation: FC = () => {
     },
     [insets]
   )
-
-  console.log(insets)
   
   return (
     <Stack.Navigator screenOptions={{ header: () => null }}>

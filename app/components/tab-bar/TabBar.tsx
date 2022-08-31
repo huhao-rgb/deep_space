@@ -34,9 +34,9 @@ const TabBar: FC<Props> = (props) => {
       <Shadow
         startColor={tw.color('gray-100')}
         distance={15}
-        style={tw.style('h-16', 'w-full')}
+        style={tw.style('w-full')}
       >
-        <Animated.View style={[tw.style('flex', 'flex-row', 'flex-1', 'rounded-xl', 'bg-white')]}>
+        <Animated.View style={[tw.style('flex', 'flex-row', 'h-18', 'rounded-xl', 'bg-white')]}>
           {state.routes.map((route, i) => {
             const { options } = descriptors[route.key]
             const labelText =
@@ -69,6 +69,7 @@ const TabBar: FC<Props> = (props) => {
                 onPress={onPress}
               >
                 <Route
+                  name={route.name}
                   label={labelText as string}
                   focus={isFocused}
                 />
