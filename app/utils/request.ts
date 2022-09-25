@@ -40,12 +40,8 @@ export class Http {
 
     const { request, response } = this.instance.interceptors
 
-    interceptorsRequest
-      ? interceptorsRequest(request)
-      : this._interceptorsRequest(request)
-    interceptorsResponse
-      ? interceptorsResponse(response)
-      : this._interceptorsResponse(response)
+    interceptorsRequest?.(request) || this._interceptorsRequest(request)
+    interceptorsResponse?.(response) || this._interceptorsResponse(response)
   }
 
   private _interceptorsRequest (manager: HttpAxiosInterceptorRequestManager) {
