@@ -7,14 +7,14 @@ import shallow from 'zustand/shallow'
 
 import TabNavigator from './TabNavigator'
 
-import { useApp } from './store'
+import { useAppStore } from './store'
 
 const Stack = createNativeStackNavigator()
 
 const Navigation: FC = () => {
   const insets = useSafeAreaInsets()
 
-  const [setSafeAreaInsets] = useApp(
+  const [setSafeAreaInsets] = useAppStore(
     (s) => [s.setSafeAreaInsets],
     shallow
   )

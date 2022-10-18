@@ -28,6 +28,8 @@ const TabBar: FC<Props> = (props) => {
     <View
       style={tw.style(
         'px-4',
+        'bg-white',
+        'dark:bg-black',
         { paddingBottom: insets?.bottom }
       )}
     >

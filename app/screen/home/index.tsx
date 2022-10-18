@@ -1,24 +1,28 @@
 import type { FC } from 'react'
-import { Text } from 'react-native'
 
 import shallow from 'zustand/shallow'
 
 import tw from '../../tailwind'
-import { useApp } from '../../store'
+import { useAppStore } from '../../store'
 
 import SafeAreaView from '../../components/safe-area-view'
+
+import Header from './Header'
 
 type Props = {}
 
 const Home: FC<Props> = (props) => {
-  const [navigationContainer] = useApp(
+  const [navigationContainer] = useAppStore(
     (s) => [s.navigationContainer],
     shallow
   )
 
   return (
-    <SafeAreaView>
-      <Text>测试home1</Text>
+    <SafeAreaView
+      enablePageMargin
+      edges={['top']}
+    >
+      <Header />
     </SafeAreaView>
   )
 }

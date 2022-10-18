@@ -20,7 +20,16 @@ const SafeAreaView: FC<Props> = (props) => {
 
   return (
     <RNSafeAreaView
-      style={[tw.style('flex-1', enablePageMargin && 'px-4'), style]}
+      style={[
+        tw.style(
+          'flex-1',
+          'pb-2',
+          'bg-white',
+          'dark:bg-black',
+          enablePageMargin && 'px-5'
+        ),
+        style
+      ]}
       edges={edges}
       {...safeAreaViewProps}
     >

@@ -11,6 +11,6 @@ const createStore: StateCreator<App> = (set, get) => ({
   setNavigationContainer: (ref) => set({ navigationContainer: ref })
 })
 
-const useApp = create(createStore)
+const useAppStore = create(createStore)
 
-export default useApp
+export default useAppStore

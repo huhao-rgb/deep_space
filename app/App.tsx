@@ -15,14 +15,14 @@ import tw from './tailwind'
 import Navigation from './Navigation'
 
 import shallow from 'zustand/shallow'
-import { useApp } from './store'
+import { useAppStore } from './store'
 
 const App: FC = () => {
   useDeviceContext(tw, { withDeviceColorScheme: false })
 
   const navigationContainerRef = useNavigationContainerRef()
 
-  const [setNavigationContainer] = useApp(
+  const [setNavigationContainer] = useAppStore(
     (s) => [s.setNavigationContainer],
     shallow
   )
