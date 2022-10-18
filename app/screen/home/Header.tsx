@@ -7,7 +7,7 @@ import {
 import tw from '../../tailwind'
 
 import PlatformPressable from '../../components/platform-pressable'
-import { Icon } from '../../components/svg-icon'
+import { Icon } from '@/components/svg-icon'
 
 type Props = {}
 
