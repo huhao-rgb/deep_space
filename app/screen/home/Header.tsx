@@ -4,9 +4,9 @@ import {
   Text
 } from 'react-native'
 
-import tw from '../../tailwind'
+import tw from '@/tailwind'
 
-import PlatformPressable from '../../components/platform-pressable'
+import PlatformPressable from '@/components/platform-pressable'
 import { Icon } from '@/components/svg-icon'
 
 type Props = {}
@@ -17,7 +17,7 @@ const Header: FC<Props> = (props) => {
   }
 
   return (
-    <View style={tw.style('flex', 'flex-row', 'justify-between', 'items-center')}>
+    <View style={tw.style('pb-2', 'px-5', 'flex', 'flex-row', 'justify-between', 'items-center')}>
       <View style={tw.style('flex', 'flex-row', 'items-center')}>
         <PlatformPressable style={tw.style('mr-2')}>
           <View style={tw.style('w-11', 'h-11', 'bg-gray-100', 'rounded-full')}>

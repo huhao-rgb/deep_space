@@ -1,18 +1,18 @@
 // https://reactnavigation.org/docs/bottom-tab-navigator
 import type { FC } from 'react'
-import {
-  View,
-  Text
-} from 'react-native'
+import { View, type LayoutChangeEvent } from 'react-native'
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import Animated from 'react-native-reanimated'
 import { Shadow } from 'react-native-shadow-2'
 
-import tw from '../../tailwind'
+import tw from '@/tailwind'
 
 import Route from './Route'
 import PlatformPressable from '../platform-pressable'
+
+import shallow from 'zustand/shallow'
+import { useAppStore } from '@/store'
 
 type Props = {} & BottomTabBarProps
 
@@ -24,14 +24,27 @@ const TabBar: FC<Props> = (props) => {
     navigation
   } = props
 
+  const [setTabBarHeight] = useAppStore(
+    (s) => [s.setTabBarHeight],
+    shallow
+  )
+
+  const onTabBarLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout
+    setTabBarHeight(height + 15)
+  }
+
   return (
     <View
       style={tw.style(
-        'px-4',
-        'bg-white',
-        'dark:bg-black',
+        'absolute',
+        'bottom-2',
+        'left-0',
+        'right-0',
+        'px-5',
         { paddingBottom: insets?.bottom }
       )}
+      onLayout={onTabBarLayout}
     >
       <Shadow
         startColor={tw.color('gray-100')}

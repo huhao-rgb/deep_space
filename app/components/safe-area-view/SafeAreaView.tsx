@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import type { SafeAreaViewProps } from 'react-native-safe-area-context'
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context'
 
-import tw from '../../tailwind'
+import tw from '@/tailwind'
 
 type Props = {
   enablePageMargin?: boolean
