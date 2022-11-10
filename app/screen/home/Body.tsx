@@ -18,6 +18,23 @@ type CardProps = {
   style?: StyleProp<ViewStyle>
 }
 
+type LabelItemProps = {
+  name: string
+}
+
+const labels = [
+  { name: '每日推荐', key: 'mrtj', route: '' },
+  { name: '私人FM', key: 'srfm', route: '' },
+  { name: '歌单', key: 'gd', route: '' },
+  { name: '排行榜', key: 'phb', route: '' }
+]
+
+const recommends = [
+  { singer: 'The Lab Of Honur', song: 'The Striving', key: '1' },
+  { singer: 'TSocially Buzzed', song: ' Enjoy', key: '2' },
+  { singer: 'Initial Concepts', song: 'Closed Mondays', key: '3' }
+]
+
 const Card: FC<CardProps> = (props) => {
   const { title, describe, style } = props
 
@@ -42,6 +59,43 @@ const Card: FC<CardProps> = (props) => {
   )
 }
 
+const LableItem: FC<LabelItemProps> = (props) => {
+  const { name } = props
+
+  return (
+    <View style={tw.style('flex', 'flex-col', 'justify-center', 'items-center')}>
+      <View style={tw.style('w-14', 'h-14', 'rounded-2xl', 'bg-gray-100')}></View>
+      <Text style={tw.style('mt-2', 'text-sm', 'text-gray-800')}>{name}</Text>
+    </View>
+  )
+}
+
+const Recommend = () => {
+  return (
+    <View style={tw.style('my-3', 'px-5')}>
+      <View>
+        <Text style={tw.style('text-lg')}>推荐给独特的你</Text>
+      </View>
+      <View>
+        {recommends.map((recommend, i) => (
+          <View key={recommend.key} style={tw.style('flex', 'flex-row', 'items-center', 'justify-between', 'mt-3')}>
+            <View style={tw.style('flex', 'flex-row', 'items-center')}>
+              <View style={tw.style('flex', 'flex-row', 'items-center')}>
+                <View style={tw.style('w-24', 'h-20', 'rounded-3xl', 'bg-gray-100')}></View>
+              </View>
+              <View style={tw.style('ml-3')}>
+                <Text style={tw.style('text-base', 'text-gray-800')}>{recommend.song}</Text>
+                <Text style={tw.style('text-sm', 'text-gray-400')}>{recommend.singer}</Text>
+              </View>
+            </View>
+            <View style={tw.style('w-10', 'h-10', 'rounded-full', 'bg-gray-100')}></View>
+          </View>
+        ))}
+      </View>
+    </View>
+  )
+}
+
 const HomeBody = () => {
   const [tabBarHeight] = useAppStore(
     (s) => [s.tabBarHeight],
@@ -58,7 +112,7 @@ const HomeBody = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw.style('px-5')}
+        contentContainerStyle={tw.style('px-5', 'py-3')}
       >
         {new Array(5).fill('').map((_, i) => (
           <Card
@@ -69,6 +123,15 @@ const HomeBody = () => {
           />
         ))}
       </ScrollView>
+      <View style={tw.style('flex', 'flex-row', 'justify-between', 'px-5', 'py-3')}>
+        {labels.map(label => (
+          <LableItem
+            key={label.key}
+            name={label.name}
+          />
+        ))}
+      </View>
+      <Recommend />
     </ScrollView>
   )
 }
