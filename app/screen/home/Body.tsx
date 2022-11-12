@@ -22,6 +22,12 @@ type LabelItemProps = {
   name: string
 }
 
+type SongListItemProps = {
+  name: string
+  like: number
+  style?: StyleProp<ViewStyle>
+}
+
 const labels = [
   { name: '每日推荐', key: 'mrtj', route: '' },
   { name: '私人FM', key: 'srfm', route: '' },
@@ -33,6 +39,14 @@ const recommends = [
   { singer: 'The Lab Of Honur', song: 'The Striving', key: '1' },
   { singer: 'TSocially Buzzed', song: ' Enjoy', key: '2' },
   { singer: 'Initial Concepts', song: 'Closed Mondays', key: '3' }
+]
+
+const songList = [
+  { name: 'Top 15 Rap', like: 115 },
+  { name: 'Radio Mirchi', like: 112 },
+  { name: 'SPB: Top50', like: 1.8 },
+  { name: 'Hot Playlist', like: 14 },
+  { name: 'The Striviong', like: 12.5 }
 ]
 
 const Card: FC<CardProps> = (props) => {
@@ -96,6 +110,27 @@ const Recommend = () => {
   )
 }
 
+const SongListItem: FC<SongListItemProps> = (props) => {
+  const { name, like, style } = props
+
+  return (
+    <View style={[tw.style('flex', 'flex-col', 'justify-center', 'items-center', 'w-22'), style]}>
+      <View style={[tw.style('w-22', 'flex', 'flex-col', 'items-center', 'relative')]}>
+        <View style={tw.style('w-22', 'h-22', 'bg-gray-200', 'rounded-2xl')}></View>
+        <View style={tw.style('w-16', 'h-1', 'rounded-b-lg', 'bg-gray-100')}></View>
+      </View>
+      <Text
+        style={tw.style('mt-2', 'text-base', 'text-gray-800')}
+        numberOfLines={1}
+      >{name}</Text>
+      <Text
+        style={tw.style('text-sm', 'text-gray-400')}
+        numberOfLines={1}
+      >{like}k+ fov</Text>
+    </View>
+  )
+}
+
 const HomeBody = () => {
   const [tabBarHeight] = useAppStore(
     (s) => [s.tabBarHeight],
@@ -119,7 +154,7 @@ const HomeBody = () => {
             key={`card_${i}`}
             title="Wake Your Mind Up"
             describe="Mind Fresh Song"
-            style={[i !== 0 && tw.style('ml-3')]}
+            style={i !== 0 && tw.style('ml-3')}
           />
         ))}
       </ScrollView>
@@ -132,6 +167,26 @@ const HomeBody = () => {
         ))}
       </View>
       <Recommend />
+      <View style={tw.style('py-3')}>
+        <View style={tw.style('px-5', 'flex', 'flex-row', 'justify-between')}>
+          <Text style={tw.style('text-lg')}>你可能喜欢的歌单</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tw.style('px-5', 'pt-3')}
+        >
+          {songList.map((item, i) => (
+            <SongListItem
+              key={`song-list-item_${i}`}
+              name={item.name}
+              like={item.like}
+              style={i !== 0 && tw.style('ml-3')}
+            />
+          ))}
+        </ScrollView>
+      </View>
     </ScrollView>
   )
 }
