@@ -12,6 +12,8 @@ import tw from '@/tailwind'
 import shallow from 'zustand/shallow'
 import { useAppStore } from '@/store'
 
+import FootLoading from '@/components/foot-loading'
+
 type CardProps = {
   title: string
   describe: string
@@ -187,6 +189,7 @@ const HomeBody = () => {
           ))}
         </ScrollView>
       </View>
+      <FootLoading />
     </ScrollView>
   )
 }
