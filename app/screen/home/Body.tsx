@@ -189,7 +189,7 @@ const HomeBody = () => {
           ))}
         </ScrollView>
       </View>
-      <FootLoading />
+      <FootLoading complete={true} />
     </ScrollView>
   )
 }

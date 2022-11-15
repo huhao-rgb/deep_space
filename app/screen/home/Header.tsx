@@ -4,6 +4,8 @@ import {
   Text
 } from 'react-native'
 
+import { useNavigation } from '@react-navigation/native'
+
 import tw from '@/tailwind'
 
 import PlatformPressable from '@/components/platform-pressable'
@@ -12,8 +14,10 @@ import { Icon } from '@/components/svg-icon'
 type Props = {}
 
 const Header: FC<Props> = (props) => {
+  const navigation = useNavigation()
+
   const onSearch = () => {
-    console.log('search')
+    navigation.navigate('Search' as any)
   }
 
   return (

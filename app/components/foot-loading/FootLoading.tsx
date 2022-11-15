@@ -30,9 +30,9 @@ const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) =>
 
   useEffect(
     () => {
-      lottieAnimated.current?.play()
+      complete ? pause() : play()
     },
-    []
+    [complete]
   )
 
   const play = useCallback(() => {

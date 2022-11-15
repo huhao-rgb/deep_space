@@ -7,6 +7,9 @@ import shallow from 'zustand/shallow'
 
 import TabNavigator from './TabNavigator'
 
+// pages
+import Search from './screen/search'
+
 import { useAppStore } from './store'
 
 const Stack = createNativeStackNavigator()
@@ -29,6 +32,7 @@ const Navigation: FC = () => {
   return (
     <Stack.Navigator screenOptions={{ header: () => null }}>
       <Stack.Screen name="TabNavigation" component={TabNavigator} />
+      <Stack.Screen name="Search" component={Search} />
     </Stack.Navigator>
   )
 }
