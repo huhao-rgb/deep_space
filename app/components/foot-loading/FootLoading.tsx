@@ -2,7 +2,6 @@ import {
   forwardRef,
   useRef,
   useEffect,
-  useState,
   useCallback,
   useImperativeHandle
 } from 'react'
@@ -15,6 +14,7 @@ import type { FootLoadingProps, FootLoadingRef } from './types'
 
 const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) => {
   const {
+    complete = false,
     loadingText = '光速飞行中...',
     completeText = '宇宙的尽头在哪里了？',
     style,
@@ -22,8 +22,6 @@ const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) =>
   } = props
 
   const lottieAnimated = useRef<Lottie>(null)
-
-  const [complete, setComplete] = useState(false)
 
   useImperativeHandle(ref, () => ({
     play,

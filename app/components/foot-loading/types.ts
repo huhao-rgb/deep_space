@@ -2,6 +2,7 @@ import { StyleProp, ViewProps } from 'react-native'
 import type { AnimatedLottieViewProps } from 'lottie-react-native'
 
 export type FootLoadingProps = {
+  complete?: boolean
   loadingText?: string
   completeText?: string
   containerStyle?: StyleProp<ViewProps>
