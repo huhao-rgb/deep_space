@@ -48,7 +48,7 @@ const TabBar: FC<Props> = (props) => {
     >
       <Shadow
         startColor={tw.color('gray-100')}
-        distance={15}
+        distance={13}
         style={tw.style('w-full')}
       >
         <Animated.View style={[tw.style('flex', 'flex-row', 'h-18', 'rounded-xl', 'bg-white')]}>
@@ -56,10 +56,10 @@ const TabBar: FC<Props> = (props) => {
             const { options } = descriptors[route.key]
             const labelText =
               options.tabBarLabel !== undefined
-              ? options.tabBarLabel
-              : options.title !== undefined
-              ? options.title
-              : route.name
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name
 
             const isFocused = state.index === i
 

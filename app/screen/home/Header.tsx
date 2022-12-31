@@ -39,7 +39,6 @@ const Header: FC<Props> = (props) => {
             name="Search"
             width='16'
             height='16'
-            viewBox='0 0 1024 1024'
           />
         </View>
       </PlatformPressable>

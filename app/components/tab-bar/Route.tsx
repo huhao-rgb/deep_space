@@ -31,7 +31,6 @@ const getTabBarIcon = (name: string) => {
       name='Home'
       width='25'
       height='25'
-      viewBox='0 0 1024 1024'
     />
   )
 }

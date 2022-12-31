@@ -1,8 +1,13 @@
-import React from 'react'
+import { ReactElement } from 'react'
 import type { SvgProps } from 'react-native-svg'
 
+export type SvgOptions = {
+  svg: ReactElement
+  viewBox?: string
+}
+
 export type SvgObject = {
-  [key: string]: React.ReactElement
+  [key: string]: SvgOptions | ReactElement
 }
 
 export type SvgIconProps = {

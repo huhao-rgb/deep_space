@@ -13,6 +13,7 @@ import { useDeviceContext } from 'twrnc'
 import tw from './tailwind'
 
 import Navigation from './Navigation'
+import Player from './screen/player'
 
 import shallow from 'zustand/shallow'
 import { useAppStore } from './store'
@@ -39,6 +40,7 @@ const App: FC = () => {
       <SafeAreaProvider>
         <NavigationContainer ref={navigationContainerRef}>
           <Navigation />
+          <Player />
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
