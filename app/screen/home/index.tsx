@@ -1,19 +1,16 @@
-import { type FC, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import shallow from 'zustand/shallow'
 
 import { useAppStore } from '@/store'
+import { useFetch } from '@/hooks'
 
 import SafeAreaView from '@/components/safe-area-view'
 
 import Header from './Header'
 import HomeBody from './Body'
 
-import { useFetch } from '@/hooks'
-
-type Props = {}
-
-const Home: FC<Props> = (props) => {
+const Home = () => {
   const [navigationContainer] = useAppStore(
     (s) => [s.navigationContainer],
     shallow
@@ -22,7 +19,7 @@ const Home: FC<Props> = (props) => {
   const [api] = useFetch({ url: '我是url' })
 
   useEffect(() => {
-    api().then(res => { console.log(res) })
+    api().then(res => { console.log(res) }).catch(error => {})
   }, [])
 
   return (

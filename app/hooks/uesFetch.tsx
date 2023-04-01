@@ -59,12 +59,19 @@ const chooseUserAgent = (ua: UA = false) => {
     : ua
 }
 
+type FetchError = string
+
 export const useFetch = (options: FetchOptions) => {
   const {
     url,
     method = 'GET',
-    headers
+    headers,
+    ...rest
   } = options
+
+  const createHeaders = () => {
+    
+  }
 
   const customHeaders = {
     ...headers,
@@ -75,9 +82,11 @@ export const useFetch = (options: FetchOptions) => {
 
   const trigger = useCallback(
     () => {
-      return new Promise((resolve, reject) => {
+      return new Promise<string>((resolve, reject: (error: FetchError) => void) => {
         resolve(`options: ${url}`)
-        // fetch(url)
+
+        setTimeout(() => { reject('我是一个错误提示') }, 1000)
+        // fetch(url, { ...rest })
         //   .then(response => {
         //     resolve(response)
         //   })
