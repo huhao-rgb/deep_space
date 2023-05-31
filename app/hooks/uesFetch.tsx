@@ -17,7 +17,7 @@ const postContentType = (isPost: boolean) => {
 
 const referer = (isReferer: boolean) => {
   return isReferer
-    ? { 'Referer': 'https://music.163.com' }
+    ? { Referer: 'https://music.163.com' }
     : null
 }
 
@@ -70,7 +70,7 @@ export const useFetch = (options: FetchOptions) => {
   } = options
 
   const createHeaders = () => {
-    
+
   }
 
   const customHeaders = {

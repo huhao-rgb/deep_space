@@ -29,8 +29,8 @@ const SvgIcon: FC<SvgIconProps> = (props) => {
 
   const defaultViewBox = viewBox ||
     isReactElement
-      ? '0 0 100 100'
-      : svg.viewBox
+    ? '0 0 100 100'
+    : svg.viewBox
 
   return (
     <Svg

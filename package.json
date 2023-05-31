@@ -7,7 +7,10 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "clean": "yarn cache clean",
+    "clean-rn": "react-native start --reset-cache",
+    "clean-android": "cd ./android && ./gradlew clean"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.5.7",
@@ -19,8 +22,10 @@
     "react-native-gesture-handler": "^2.10.1",
     "react-native-reanimated": "^3.2.0",
     "react-native-safe-area-context": "^4.5.3",
+    "react-native-screens": "^3.20.0",
     "react-native-shadow-2": "^7.0.8",
     "react-native-svg": "^13.9.0",
+    "react-native-track-player": "^3.2.0",
     "twrnc": "^3.6.1",
     "zustand": "^4.3.8"
   },
@@ -35,6 +40,7 @@
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "babel-jest": "^29.2.1",
+    "babel-plugin-root-import": "^6.6.0",
     "eslint": "^8.19.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-standard-react": "^13.0.0",

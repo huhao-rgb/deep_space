@@ -44,7 +44,7 @@ const Route: FC<Props> = (props) => {
   const animatedLableColorStyle = useAnimatedStyle(() => ({
     color: labelColor.value
   }))
-  
+
   const iconBgOpacity = useSharedValue(0)
   const iconBgTranslateX = useSharedValue(BLUR_TRANSLATE)
   const iconBgTranslateY = useSharedValue(BLUR_TRANSLATE)

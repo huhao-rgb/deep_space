@@ -19,5 +19,8 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     }
+  },
+  rules: {
+    '@typescript-eslint/no-var-requires': 'off'
   }
 }

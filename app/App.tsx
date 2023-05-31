@@ -15,7 +15,7 @@ import tw from './tailwind'
 import Navigation from './Navigation'
 import Player from './screen/player'
 
-import shallow from 'zustand/shallow'
+import { shallow } from 'zustand/shallow'
 import { useAppStore } from './store'
 
 const App: FC = () => {

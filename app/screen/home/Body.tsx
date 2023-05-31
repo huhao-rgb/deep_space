@@ -9,7 +9,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 
 import tw from '@/tailwind'
 
-import shallow from 'zustand/shallow'
+import { shallow } from 'zustand/shallow'
 import { useAppStore } from '@/store'
 
 import FootLoading from '@/components/foot-loading'

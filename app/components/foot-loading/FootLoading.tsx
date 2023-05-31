@@ -42,7 +42,7 @@ const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) =>
   const pause = useCallback(() => {
     lottieAnimated.current?.pause()
   }, [])
-  
+
   return (
     <View style={[tw.style('flex', 'flex-row', 'items-center', 'justify-center'), containerStyle]}>
       <Lottie

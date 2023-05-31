@@ -64,7 +64,7 @@ export class Http {
     )
   }
 
-  public request <T>(): Promise<Response<T>> {
+  public request <T> (): Promise<Response<T>> {
     return new Promise((resolve, reject) => {
       this.instance.request(this.options).then()
     })

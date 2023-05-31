@@ -11,7 +11,7 @@ import tw from '@/tailwind'
 import Route from './Route'
 import PlatformPressable from '../platform-pressable'
 
-import shallow from 'zustand/shallow'
+import { shallow } from 'zustand/shallow'
 import { useAppStore } from '@/store'
 
 type Props = {} & BottomTabBarProps
@@ -58,8 +58,8 @@ const TabBar: FC<Props> = (props) => {
               options.tabBarLabel !== undefined
                 ? options.tabBarLabel
                 : options.title !== undefined
-                ? options.title
-                : route.name
+                  ? options.title
+                  : route.name
 
             const isFocused = state.index === i
 
@@ -69,7 +69,7 @@ const TabBar: FC<Props> = (props) => {
                 target: route.key,
                 canPreventDefault: true
               })
-    
+
               if (!isFocused && !event.defaultPrevented) {
                 // The `merge: true` option makes sure that the params inside the tab screen are preserved
                 navigation.navigate(route.name)

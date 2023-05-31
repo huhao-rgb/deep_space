@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 
-import tw from '@/tailwind'
+import tw from '../../tailwind'
 
 const Player = () => {
   return (
