@@ -95,7 +95,7 @@ export const useFetch = (options: FetchOptions) => {
         //   })
       })
     },
-    []
+    [url]
   )
 
   return [trigger]

@@ -1,4 +1,4 @@
-import create, { StateCreator } from 'zustand'
+import { create, StateCreator } from 'zustand'
 
 import type { NavigationContainerRefWithCurrent } from '@react-navigation/native'
 import type { EdgeInsets } from 'react-native-safe-area-context'

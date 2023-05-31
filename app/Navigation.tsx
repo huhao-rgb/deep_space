@@ -26,11 +26,13 @@ const Navigation: FC = () => {
     () => {
       if (insets) setSafeAreaInsets(insets)
     },
-    [insets]
+    [insets, setSafeAreaInsets]
   )
-  
+
   return (
-    <Stack.Navigator screenOptions={{ header: () => null }}>
+    <Stack.Navigator
+      screenOptions={{ header: () => null }}
+    >
       <Stack.Screen name="TabNavigation" component={TabNavigator} />
       <Stack.Screen name="Search" component={Search} />
     </Stack.Navigator>
