@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import shallow from 'zustand/shallow'
+import { shallow } from 'zustand/shallow'
 
 import TabNavigator from './TabNavigator'
 
