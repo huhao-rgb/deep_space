@@ -1,40 +1,57 @@
 import type { FC } from 'react'
+import { useMemo } from 'react'
+import { View } from 'react-native'
 
-import type { SafeAreaViewProps } from 'react-native-safe-area-context'
-import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import tw from '@/tailwind'
 
-type Props = {
-  enablePageMargin?: boolean
-} & SafeAreaViewProps
+import type { SafeAreaViewProps } from './types'
 
-const SafeAreaView: FC<Props> = (props) => {
+type EdgeStyles = Partial<{
+  paddingTop: number
+  paddingLeft: number
+  paddingRight: number
+  paddingBottom: number
+}>
+
+const SafeAreaView: FC<SafeAreaViewProps> = (props) => {
   const {
-    children,
-    enablePageMargin = false,
-    edges = ['top', 'bottom'],
+    edges,
     style,
-    ...safeAreaViewProps
+    children
   } = props
 
+  const insets = useSafeAreaInsets()
+
+  const edgeStyles = useMemo<EdgeStyles | undefined>(
+    () => {
+      if (edges !== undefined) {
+        const style: EdgeStyles = {}
+
+        edges.forEach(edge => {
+          const edgeUpperCase = edge.replace(edge[0], edge[0].toUpperCase())
+          const key = `padding${edgeUpperCase}` as keyof EdgeStyles
+
+          style[key] === undefined && (style[key] = insets[edge])
+        })
+
+        return style
+      }
+    },
+    [edges, insets]
+  )
+
   return (
-    <RNSafeAreaView
+    <View
       style={[
-        tw.style(
-          'flex-1',
-          'pb-2',
-          'bg-white',
-          'dark:bg-black',
-          enablePageMargin && 'px-5'
-        ),
+        tw.style('flex-1'),
+        edgeStyles,
         style
       ]}
-      edges={edges}
-      {...safeAreaViewProps}
     >
       {children}
-    </RNSafeAreaView>
+    </View>
   )
 }
 
