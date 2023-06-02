@@ -1,5 +1,6 @@
 import { type FC, useState } from 'react'
 import {
+  Button,
   ScrollView,
   Text,
   View,
@@ -7,12 +8,11 @@ import {
 } from 'react-native'
 import type { StyleProp, ViewStyle } from 'react-native'
 
+import FootLoading from '@/components/foot-loading'
+
 import tw from '@/tailwind'
 
-import { shallow } from 'zustand/shallow'
-import { useAppStore } from '@/store'
-
-import FootLoading from '@/components/foot-loading'
+import { useThemeStore } from '@/store'
 
 type CardProps = {
   title: string
@@ -118,15 +118,15 @@ const SongListItem: FC<SongListItemProps> = (props) => {
   return (
     <View style={[tw.style('flex', 'flex-col', 'justify-center', 'items-center', 'w-22'), style]}>
       <View style={[tw.style('w-22', 'flex', 'flex-col', 'items-center', 'relative')]}>
-        <View style={tw.style('w-22', 'h-22', 'bg-gray-200', 'rounded-2xl')}></View>
-        <View style={tw.style('w-16', 'h-1', 'rounded-b-lg', 'bg-gray-100')}></View>
+        <View style={tw`w-22 h-22 bg-gray-200 rounded-2xl dark:bg-slate-700`} />
+        <View style={tw`w-14 h-1 rounded-b-lg bg-gray-100 dark:bg-slate-600`} />
       </View>
       <Text
-        style={tw.style('mt-2', 'text-base', 'text-gray-800')}
+        style={tw`mt-2 text-base text-gray-800 dark:text-slate-300`}
         numberOfLines={1}
       >{name}</Text>
       <Text
-        style={tw.style('text-sm', 'text-gray-400')}
+        style={tw`text-sm text-gray-400 dark:text-slate-400`}
         numberOfLines={1}
       >{like}k+ fov</Text>
     </View>
@@ -134,17 +134,27 @@ const SongListItem: FC<SongListItemProps> = (props) => {
 }
 
 const HomeBody = () => {
-  const [tabBarHeight] = useAppStore(
-    (s) => [s.tabBarHeight],
-    shallow
+  const [theme, setTheme] = useThemeStore(
+    (s) => [
+      s.theme,
+      s.setTheme
+    ]
   )
+
+  const changeTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light')
+    console.log(theme)
+  }
 
   return (
     <ScrollView
-      contentContainerStyle={[
-        !!tabBarHeight && { paddingBottom: tabBarHeight }
-      ]}
+      contentContainerStyle={tw`bg-white dark:bg-slate-900`}
     >
+      <Text style={tw`text-gray-500`}>当前主题{theme}</Text>
+      <Button
+        onPress={changeTheme}
+        title="更改主题"
+      />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

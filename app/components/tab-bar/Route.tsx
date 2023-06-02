@@ -1,12 +1,11 @@
 import { FC, useEffect } from 'react'
-import type { StyleProp, ViewProps } from 'react-native'
+import type { StyleProp, ViewStyle } from 'react-native'
 import { View } from 'react-native'
 
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
-  cancelAnimation
+  withSpring
 } from 'react-native-reanimated'
 
 import tw from '../../tailwind'
@@ -16,7 +15,7 @@ type Props = {
   label: string
   name: string
   focus: boolean
-  style?: StyleProp<ViewProps>
+  style?: StyleProp<ViewStyle>
 }
 
 const FOCUS_COLOR = tw.color('red-500') as string
@@ -28,7 +27,7 @@ const BLUR_TRANSLATE = 4
 const getTabBarIcon = (name: string) => {
   return (
     <Icon
-      name='Home'
+      name={name}
       width='25'
       height='25'
     />
@@ -39,11 +38,6 @@ const Route: FC<Props> = (props) => {
   const { label, name, focus, style } = props
 
   const color = focus ? FOCUS_COLOR : BLUR_COLOR
-
-  const labelColor = useSharedValue(color)
-  const animatedLableColorStyle = useAnimatedStyle(() => ({
-    color: labelColor.value
-  }))
 
   const iconBgOpacity = useSharedValue(0)
   const iconBgTranslateX = useSharedValue(BLUR_TRANSLATE)
@@ -58,15 +52,12 @@ const Route: FC<Props> = (props) => {
 
   useEffect(
     () => {
-      cancelAnimation(labelColor)
-      labelColor.value = withSpring(color)
-
       const activeTranslateValue = focus ? FOUCS_TRANSLATE : BLUR_TRANSLATE
       iconBgOpacity.value = withSpring(focus ? 1 : 0)
       iconBgTranslateX.value = withSpring(activeTranslateValue)
       iconBgTranslateY.value = withSpring(activeTranslateValue)
     },
-    [focus]
+    [color, focus, iconBgOpacity, iconBgTranslateX, iconBgTranslateY]
   )
   return (
     <Animated.View
@@ -83,8 +74,11 @@ const Route: FC<Props> = (props) => {
       </View>
       <Animated.Text
         style={[
-          animatedLableColorStyle,
-          tw.style('mt-0.5', 'text-sm')
+          tw.style(
+            'mt-0.5',
+            'text-sm',
+            focus ? 'text-red-500' : 'text-black dark:text-slate-400'
+          )
         ]}
       >{label}</Animated.Text>
     </Animated.View>

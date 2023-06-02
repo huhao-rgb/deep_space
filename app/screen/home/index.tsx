@@ -1,9 +1,9 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
+import { View } from 'react-native'
 
 import { useFetch } from '@/hooks'
-
-import SafeAreaView from '@/components/safe-area-view'
+import tw from '@/tailwind'
 
 import type { BottomTabsScreenProps } from '@/types'
 
@@ -22,10 +22,10 @@ const Home: FC<BottomTabsScreenProps<'Home'>> = () => {
   }, [api])
 
   return (
-    <SafeAreaView edges={['top']}>
+    <View style={tw.style('flex-1')}>
       <Header />
       <HomeBody />
-    </SafeAreaView>
+    </View>
   )
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   forwardRef,
   useRef,
@@ -44,7 +45,12 @@ const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) =>
   }, [])
 
   return (
-    <View style={[tw.style('flex', 'flex-row', 'items-center', 'justify-center'), containerStyle]}>
+    <View
+      style={[
+        tw.style('flex', 'flex-row', 'items-center', 'justify-center'),
+        containerStyle
+      ]}
+    >
       <Lottie
         ref={lottieAnimated}
         source={require('@/assets/lottie/loading.json')}

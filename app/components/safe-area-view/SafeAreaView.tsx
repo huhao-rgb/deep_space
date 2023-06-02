@@ -4,8 +4,6 @@ import { View } from 'react-native'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import tw from '@/tailwind'
-
 import type { SafeAreaViewProps } from './types'
 
 type EdgeStyles = Partial<{
@@ -45,7 +43,6 @@ const SafeAreaView: FC<SafeAreaViewProps> = (props) => {
   return (
     <View
       style={[
-        tw.style('flex-1'),
         edgeStyles,
         style
       ]}

@@ -1,22 +1,22 @@
 import { create, StateCreator } from 'zustand'
 
-export enum ThemeEnum {
-  Default = 'white',
-  Blue = 'blue',
-  Block = 'black' // 暗黑模式默认为黑色主题
-}
+type Theme = 'dark' | 'light'
 
 export type App = {
-  theme: ThemeEnum
-  tabBarHeight: number | null
-  setTheme: (theme: ThemeEnum) => void
+  theme: Theme // 当前主题的模式
+  tabBarHeight: number | null // tabbar的高度
+  withDeviceColorScheme: boolean // 跟随系统主题
+  setTheme: (theme: Theme) => void
+  setWithDeviceColorScheme: (withDevice: boolean) => void
   setTabBarHeight: (height: number) => void
 }
 
 const createStore: StateCreator<App> = (set) => ({
-  theme: ThemeEnum.Default,
+  theme: 'light',
   tabBarHeight: null,
+  withDeviceColorScheme: false,
   setTheme: (theme) => set({ theme }),
+  setWithDeviceColorScheme: (withDevice) => { set({ withDeviceColorScheme: withDevice }) },
   setTabBarHeight: (height) => set({ tabBarHeight: height })
 })
 
