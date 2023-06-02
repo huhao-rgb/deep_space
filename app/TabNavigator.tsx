@@ -7,9 +7,11 @@ import TabBar from './components/tab-bar'
 import Home from './screen/home'
 import My from './screen/my'
 
-const Tab = createBottomTabNavigator()
+import type { BottomTabsParamsList } from '@/types'
 
-const TabNavigator: FC = (props) => {
+const Tab = createBottomTabNavigator<BottomTabsParamsList>()
+
+const TabNavigator: FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{

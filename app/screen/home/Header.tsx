@@ -11,13 +11,13 @@ import tw from '@/tailwind'
 import PlatformPressable from '@/components/platform-pressable'
 import { Icon } from '@/components/svg-icon'
 
-type Props = {}
+import type { BottomTabsNavigationProps } from '@/types'
 
-const Header: FC<Props> = (props) => {
-  const navigation = useNavigation()
+const Header: FC = () => {
+  const navigation = useNavigation<BottomTabsNavigationProps<'Home'>>()
 
   const onSearch = () => {
-    navigation.navigate('Search' as any)
+    navigation.navigate('Search')
   }
 
   return (
