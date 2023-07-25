@@ -3,7 +3,6 @@ import type { FC } from 'react'
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import Animated from 'react-native-reanimated'
-import { useAppColorScheme } from 'twrnc'
 
 import tw from '@/tailwind'
 
@@ -17,10 +16,6 @@ const TabBar: FC<BottomTabBarProps> = (props) => {
     descriptors,
     navigation
   } = props
-
-  const [colorScheme] = useAppColorScheme(tw)
-
-  console.log(colorScheme)
 
   return (
     <SafeAreaView

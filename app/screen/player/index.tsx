@@ -1,11 +1,12 @@
-import { View } from 'react-native'
+import type { FC } from 'react'
+
+import Animated from 'react-native-reanimated'
 
 import tw from '../../tailwind'
 
-const Player = () => {
+const Player: FC = () => {
   return (
-    <View style={tw.style('')}>
-    </View>
+    <Animated.View></Animated.View>
   )
 }
 

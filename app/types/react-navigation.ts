@@ -18,7 +18,7 @@ import type {
 } from '@react-navigation/bottom-tabs'
 
 export type BottomTabsParamsList = {
-  Home: undefined
+  HomePage: undefined
   My: undefined
 }
 

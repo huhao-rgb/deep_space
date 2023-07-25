@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 import TabBar from './components/tab-bar'
 
-import Home from './screen/home'
+import HomePage from './screen/home-page'
 import My from './screen/my'
 
 import type { BottomTabsParamsList } from '@/types'
@@ -18,9 +18,9 @@ const TabNavigator: FC = () => {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen
-        name='Home'
+        name='HomePage'
         options={{ title: '首页' }}
-        component={Home}
+        component={HomePage}
       />
       <Tab.Screen
         name='My'

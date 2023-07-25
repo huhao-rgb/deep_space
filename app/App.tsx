@@ -1,10 +1,12 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { StatusBar } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context'
+
+import { shallow } from 'zustand/shallow'
 import { useDeviceContext, useAppColorScheme } from 'twrnc'
 
 import tw from './tailwind'
@@ -31,19 +33,27 @@ const App: FC = () => {
 
   useEffect(
     () => {
+      console.log('当前主题:', theme, colorScheme)
+      if (theme !== colorScheme) toggleColorScheme()
     },
-    [withDeviceColorScheme, theme, colorScheme]
+    [theme, colorScheme, toggleColorScheme]
   )
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <NavigationContainer>
-          <Navigation />
-          <Player />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+      />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          <NavigationContainer>
+            <Navigation />
+            <Player />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </>
   )
 }
 
