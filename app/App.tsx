@@ -31,9 +31,6 @@ const App: FC = () => {
 
   useEffect(
     () => {
-      console.log(withDeviceColorScheme)
-      console.log(colorScheme)
-      console.log(theme)
     },
     [withDeviceColorScheme, theme, colorScheme]
   )
