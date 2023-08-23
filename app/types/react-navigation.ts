@@ -1,6 +1,6 @@
 /**
  * react navigation typescript支持
- * 请参考https://reactnavigation.org/docs/typescript/
+ * 请参考 https://reactnavigation.org/docs/typescript/
  */
 
 import type {
@@ -17,6 +17,7 @@ import type {
   BottomTabNavigationProp
 } from '@react-navigation/bottom-tabs'
 
+// 底部tabbar路由参数
 export type BottomTabsParamsList = {
   HomePage: undefined
   My: undefined
@@ -38,10 +39,10 @@ NativeStackNavigationProp<RootStackParamList, T>
 
 // 底部切换 route和navigation道具
 export type BottomTabsScreenProps<T extends keyof BottomTabsParamsList> = CompositeScreenProps<
-BottomTabScreenProps<BottomTabsParamsList, T>,
-RootStackScreenProps<keyof RootStackParamList>
+  BottomTabScreenProps<BottomTabsParamsList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
 >
 export type BottomTabsNavigationProps<T extends keyof BottomTabsParamsList> = CompositeNavigationProp<
-BottomTabNavigationProp<BottomTabsParamsList, T>,
-RootStackNavigationProps<keyof RootStackParamList>
+  BottomTabNavigationProp<BottomTabsParamsList, T>,
+  RootStackNavigationProps<keyof RootStackParamList>
 >

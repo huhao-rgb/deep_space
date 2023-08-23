@@ -1,7 +1,7 @@
 import { G, Path } from 'react-native-svg'
 
 export default {
-  Home: {
+  HomePage: {
     svg: (
       <G>
         <Path

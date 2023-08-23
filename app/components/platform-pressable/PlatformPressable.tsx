@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // https://github.com/satya164/react-native-tab-view/blob/main/src/PlatformPressable.tsx
 import * as React from 'react'
 import { Platform, Pressable, PressableProps } from 'react-native'

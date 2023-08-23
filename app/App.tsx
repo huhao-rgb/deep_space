@@ -14,7 +14,7 @@ import tw from './tailwind'
 import { useAppStore } from '@/store'
 
 import Navigation from './Navigation'
-import Player from './screen/player'
+// import Player from './screen/player'
 
 const App: FC = () => {
   const [
@@ -49,8 +49,8 @@ const App: FC = () => {
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <NavigationContainer>
             <Navigation />
-            <Player />
           </NavigationContainer>
+          {/* <Player /> */}
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </>

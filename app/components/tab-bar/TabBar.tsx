@@ -52,6 +52,7 @@ const TabBar: FC<BottomTabBarProps> = (props) => {
               key={`routez_${route.name}_i`}
               style={tw.style('flex-1')}
               testID={options.tabBarTestID}
+              pressColor={tw.color('red-50')}
               onPress={onPress}
             >
               <Route
