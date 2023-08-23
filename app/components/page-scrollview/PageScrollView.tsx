@@ -9,15 +9,13 @@ import Animated, {
   scrollTo
 } from 'react-native-reanimated'
 
-import tw from '@/tailwind'
-
 import { PageScrollViewProps } from './types'
 
 const PageScrollView: FC<PageScrollViewProps> = (props) => {
   const {
     routes,
     paddingHorizontal = 0,
-    offset = tw.style('w-5').width as number,
+    offset = 0,
     width,
     style,
     routeStyle,
@@ -31,7 +29,7 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
 
   const defaultWidth = width ?? windowWidth
   // 单个页面的宽度
-  const itemTotalSize = defaultWidth - (paddingHorizontal * 2 + offset)
+  const itemTotalSize = defaultWidth - paddingHorizontal * 2
 
   const scrollToNearestItem = (offsetX: number) => {
     'worklet'

@@ -17,6 +17,8 @@ import Card from './Card'
 import type { BottomTabsScreenProps } from '@/types'
 import tw from '@/tailwind'
 
+const offset = tw.style('w-5').width as number
+
 const HomePage: FC<BottomTabsScreenProps<'HomePage'>> = () => {
   const [recommend] = useState(new Array(10).fill(''))
 
@@ -24,7 +26,45 @@ const HomePage: FC<BottomTabsScreenProps<'HomePage'>> = () => {
 
   const RenderScreen = () => {
     return (
-      <View style={tw`w-full h-10 bg-gray-100`}></View>
+      <>
+        {new Array(3).fill('').map((ite, i) => (
+          <View
+            style={[
+              i !== 0 && tw`mt-2`,
+              tw`flex-row items-center`
+            ]}
+            key={`list-page-${i}`}
+          >
+            <Image
+                source={{ uri: 'https://picsum.photos/200' }}
+                style={tw`w-20 h-20 rounded-xl bg-gray-100 mr-3`}
+              />
+            <View style={tw`flex-row items-center flex-1`}>
+              <View style={tw`flex-1 mr-2`}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={tw`text-zinc-600 text-base`}
+                >
+                    带你去找夜生活
+                  </Text>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={tw`text-zinc-400 text-sm`}
+                >
+                  告五人 - 带你去找夜生活
+                </Text>
+                <View style={tw`flex-row mt-1`}>
+                  <Text style={tw`px-3 py-0.5 rounded-full text-xs bg-red-100 text-red-600`}>
+                    小众推荐
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        ))}
+      </>
     )
   }
 
@@ -77,43 +117,11 @@ const HomePage: FC<BottomTabsScreenProps<'HomePage'>> = () => {
         style={tw`mt-8`}
       >
         <PageScrollView
+          offset={offset}
           routes={Array(3).fill('').map((_, i) => ({ key: String(i) }))}
-          paddingHorizontal={tw.style('w-5').width as number}
+          paddingHorizontal={offset}
           RenderScreen={RenderScreen}
         />
-        {/* {recommend.map((ite, i) => (
-          <View
-            style={[
-              i !== 0 && tw`mt-2`,
-              tw`flex-row items-center`
-            ]}
-          >
-            <View style={tw`w-20 h-20 rounded-xl bg-gray-100 mr-3`} />
-            <View style={tw`flex-row items-center flex-1`}>
-              <View style={tw`flex-1 mr-2`}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={tw`text-zinc-600 text-base`}
-                >
-                    带你去找夜生活
-                  </Text>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={tw`text-zinc-400 text-sm`}
-                >
-                  告五人 - 带你去找夜生活
-                </Text>
-                <View style={tw`flex-row mt-1`}>
-                  <Text style={tw`px-3 py-0.5 rounded-full text-xs bg-red-100 text-red-600`}>
-                    小众推荐
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        ))} */}
       </Card>
     </ScrollView>
   )

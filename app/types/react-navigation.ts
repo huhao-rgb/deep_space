@@ -8,7 +8,7 @@ import type {
   NativeStackNavigationProp
 } from '@react-navigation/native-stack'
 import type {
-  NavigatorScreenParams,
+  // NavigatorScreenParams,
   CompositeScreenProps,
   CompositeNavigationProp
 } from '@react-navigation/native'
@@ -25,7 +25,9 @@ export type BottomTabsParamsList = {
 
 // 所有屏幕的路由参数
 export type RootStackParamList = {
-  TabNavigation: NavigatorScreenParams<BottomTabsParamsList>
+  // TabNavigation: NavigatorScreenParams<BottomTabsParamsList>
+  HomePage: undefined
+  My: undefined
   Search: undefined
 }
 
