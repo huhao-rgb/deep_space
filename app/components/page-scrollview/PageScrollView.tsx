@@ -1,11 +1,10 @@
 import type { FC } from 'react'
 
-import { useWindowDimensions } from 'react-native'
+import { View, useWindowDimensions } from 'react-native'
 import Animated, {
   useAnimatedRef,
   useSharedValue,
   useAnimatedScrollHandler,
-  useAnimatedStyle,
   scrollTo
 } from 'react-native-reanimated'
 
@@ -70,33 +69,28 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
       onScroll={scrollHandler}
     >
       {routes.map((route, i) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const uas = useAnimatedStyle(() => {
-          const style: {
-            marginLeft?: number;
-            marginRight?: number;
-          } = {}
+        const style: {
+          marginLeft?: number
+          marginRight?: number
+        } = {}
 
-          if (i === 0) {
-            style.marginLeft = paddingHorizontal
-          } else if (i === routes.length - 1) {
-            style.marginRight = paddingHorizontal
-          }
-
-          return style
-        })
+        if (i === 0) {
+          style.marginLeft = paddingHorizontal
+        } else if (i === routes.length - 1) {
+          style.marginRight = paddingHorizontal
+        }
 
         return (
-          <Animated.View
+          <View
             style={[
               { paddingRight: offset, width: itemTotalSize },
               routeStyle,
-              uas
+              style
             ]}
             key={`PageScrollViewRoute_${i}`}
           >
             {RenderScreen({ route })}
-          </Animated.View>
+          </View>
         )
       })}
     </Animated.ScrollView>

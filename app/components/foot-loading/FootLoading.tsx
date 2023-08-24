@@ -16,8 +16,8 @@ import type { FootLoadingProps, FootLoadingRef } from './types'
 const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) => {
   const {
     complete = false,
-    loadingText = '光速飞行中...',
-    completeText = '宇宙的尽头在哪里了？',
+    loadingText = '数据加载中...',
+    completeText = '没有更多内容了',
     style,
     containerStyle
   } = props
@@ -47,16 +47,18 @@ const FootLoading = forwardRef<FootLoadingRef, FootLoadingProps>((props, ref) =>
   return (
     <View
       style={[
-        tw.style('flex', 'flex-row', 'items-center', 'justify-center'),
+        tw`flex-row items-center justify-center`,
         containerStyle
       ]}
     >
       <Lottie
         ref={lottieAnimated}
-        source={require('@/assets/lottie/loading.json')}
-        style={[tw.style('h-18'), style]}
+        source={require('@/assets/lottie/moon.json')}
+        style={[tw`w-12 h-12`, style]}
       />
-      <Text style={[tw.style('text-sm', 'text-gray-600')]}>{complete ? completeText : loadingText}</Text>
+      <Text style={tw`text-sm text-gray-600`}>
+        {complete ? completeText : loadingText}
+      </Text>
     </View>
   )
 })
