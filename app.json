@@ -1,11 +1,14 @@
 {
   "expo": {
     "name": "deep-space-expo",
-    "slug": "deep-space-expo",
+    "slug": "deep-space",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "experiments": {
+      "typedRoutes": true
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -24,7 +27,18 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ce54d4c0-d125-4cd8-b72f-5674671776d0"
+      }
+    },
+    "owner": "miniflower",
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "deep-space-scheme"
   }
 }
