@@ -16,7 +16,8 @@ const Card: FC<CardProps> = (props) => {
     headStyle,
     containerStyle,
     renderHeadLeftTextEle,
-    children
+    children,
+    onPress
   } = props
 
   return (
@@ -37,6 +38,7 @@ const Card: FC<CardProps> = (props) => {
           <TouchableOpacity
             activeOpacity={0.8}
             style={tw`py-1`}
+            onPress={onPress}
           >
             <Text style={tw`text-zinc-400/80 text-sm`}>{moreText}</Text>
           </TouchableOpacity>

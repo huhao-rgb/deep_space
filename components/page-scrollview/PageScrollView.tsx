@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useMemo } from 'react'
 
 import { View, useWindowDimensions } from 'react-native'
 import Animated, {
@@ -16,6 +17,7 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
     paddingHorizontal = 0,
     offset = 0,
     width,
+    thresholdValue = 1,
     style,
     routeStyle,
     RenderScreen
@@ -23,6 +25,15 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
 
   const animatedRef = useAnimatedRef<Animated.ScrollView>()
   const position = useSharedValue(0)
+
+  const finalThresholdValue = useMemo(
+    () => {
+      const unZero = Math.abs(thresholdValue) || 0.1 // 如果是0，默认赋值0.1
+      if (unZero > 1) return 1
+      return unZero
+    },
+    [thresholdValue]
+  )
 
   const { width: windowWidth } = useWindowDimensions()
 
@@ -53,7 +64,6 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
     },
     onEndDrag (e) {
       scrollToNearestItem(e.contentOffset.x)
-      console.log('触发了：onEndDrag')
     },
     onMomentumEnd (e) {
       scrollToNearestItem(e.contentOffset.x)

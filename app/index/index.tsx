@@ -141,6 +141,7 @@ const Home: FC = () => {
         <PageScrollView
           offset={offset}
           routes={Array(3).fill('').map((_, i) => ({ key: String(i) }))}
+          thresholdValue={0.5}
           paddingHorizontal={offset}
           RenderScreen={RenderScreen}
         />
