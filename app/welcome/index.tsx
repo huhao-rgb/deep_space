@@ -2,15 +2,21 @@ import type { FC } from 'react'
 import {
   useMemo,
   useRef,
-  memo
+  memo,
+  Suspense
 } from 'react'
 import * as random from 'maath/random/dist/maath-random.esm'
 
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber/native'
-import { Points, PointMaterial } from '@react-three/drei/native'
+import {
+  Points,
+  PointMaterial,
+  Float
+} from '@react-three/drei/native'
 
 import Spaceman from './Spaceman'
+import LoadFallback from './LoadFallback'
 
 const Starts = memo(() => {
   const startsRef = useRef<THREE.Points | null>(null)
@@ -46,23 +52,26 @@ const Starts = memo(() => {
 
 const Welcome: FC = () => {
   return (
-    <Canvas
-      shadows
-      gl={{
-        antialias: false,
-        stencil: false
-      }}
-      camera={{ position: [4, 0, 0], fov: 80 }}
-    >
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
+    <Suspense fallback={<LoadFallback />}>
+      <Canvas
+        shadows
+        gl={{
+          antialias: false,
+          stencil: false
+        }}
+        camera={{ position: [4, 0, 0], fov: 80 }}
+      >
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
 
-      <Starts />
+        <Starts />
+        <Float>
+          <Spaceman scale={[0.04, 0.04, 0.04]} />
+        </Float>
 
-      <Spaceman />
-
-      <color attach="background" args={['#12071f']} />
-    </Canvas>
+        <color attach="background" args={['#12071f']} />
+      </Canvas>
+    </Suspense>
   )
 }
 

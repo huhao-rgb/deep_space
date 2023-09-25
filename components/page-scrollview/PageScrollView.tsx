@@ -74,8 +74,11 @@ const PageScrollView: FC<PageScrollViewProps> = (props) => {
     <Animated.ScrollView
       ref={animatedRef}
       horizontal={true}
-      style={style}
+      pagingEnabled={false}
       showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16}
+      style={style}
       onScroll={scrollHandler}
     >
       {routes.map((route, i) => {
