@@ -1,33 +1,48 @@
 import type { FC } from 'react'
-import { useRef, useState } from 'react'
+import {
+  useMemo,
+  useRef,
+  memo
+} from 'react'
+import * as random from 'maath/random/dist/maath-random.esm'
 
+import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber/native'
+import { Points, PointMaterial } from '@react-three/drei/native'
 
-function Box(props) {
-  const meshRef = useRef(null)
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  useFrame((state, delta) => (meshRef.current.rotation.x += 0.01))
-  return (
-    <mesh
-      {...props}
-      ref={meshRef}
-      scale={active ? 1.5 : 1}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}>
-      <boxGeometry args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
+import Spaceman from './Spaceman'
 
-const Rig = () => {
-  useFrame((state) => {
-    state.camera.position.lerp({ x: 0, y: -state.pointer.y / 4, z: state.pointer.x / 2 }, 0.1)
-    state.camera.lookAt(-1, 0, 0)
+const Starts = memo(() => {
+  const startsRef = useRef<THREE.Points | null>(null)
+
+  const sphere = useMemo(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }), [])
+
+  useFrame((_, delta) => {
+    if (startsRef.current) {
+      startsRef.current.rotation.x -= delta / 60
+      startsRef.current.rotation.y -= delta / 60
+    }
   })
-}
+
+  return (
+    <group scale={[3, 3, 3]} rotation={[0, 0, Math.PI / 4]}>
+      <Points
+        ref={startsRef}
+        positions={sphere}
+        stride={3}
+        frustumCulled={false}
+      >
+        <PointMaterial
+          transparent
+          color="#ffa0e0"
+          size={0.005}
+          sizeAttenuation={true}
+          depthWrite={false}
+        />
+      </Points>
+    </group>
+  )
+})
 
 const Welcome: FC = () => {
   return (
@@ -41,9 +56,12 @@ const Welcome: FC = () => {
     >
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      <color attach="background" args={['black']} />
-      <Box position={[-0.5, 0, 0]} />
-      <Box position={[0.8, 0, 0]} />
+
+      <Starts />
+
+      <Spaceman />
+
+      <color attach="background" args={['#12071f']} />
     </Canvas>
   )
 }
