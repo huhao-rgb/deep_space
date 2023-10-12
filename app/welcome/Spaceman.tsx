@@ -1,5 +1,6 @@
 import { memo } from 'react'
 
+import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei/native'
 import { GLTF } from 'three-stdlib'
 
@@ -30,7 +31,6 @@ const Spaceman = memo<JSX.IntrinsicElements['group']>((props) => {
           castShadow
           receiveShadow
           geometry={nodes.RetopoGroup1_default_0.geometry}
-          material={materials['default.001']}
           scale={[13.718, 13.718, 13.718]}
         />
       </group>
