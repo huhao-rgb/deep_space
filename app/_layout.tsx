@@ -11,7 +11,7 @@ import BottomPlayer, { type BottomPlayer as BottomPlayerRef } from '@/components
 
 import { tw } from '../utils'
 
-// TrackPlayer.registerPlaybackService(() => require('@/service'))
+// TrackPlayer.registerPlaybackService(() => require('../service'))
 
 export default function RootLayout () {
   const player = useRef<BottomPlayerRef>()
