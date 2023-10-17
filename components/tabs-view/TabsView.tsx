@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react'
 
-import { View } from 'react-native'
+import { View, useWindowDimensions } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedRef
@@ -37,11 +37,16 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
     initialPage = 0,
     lazy = true,
     tabsBarScrollEnabled = false,
+    labelStyle,
+    tabStyle,
+    width: customWidth,
     style,
-    tabsBarStyle,
+    renderLazyPlaceholder = (lazyBarProps) => null,
     renderTabBar = (tabBarProps) => <TabBar {...tabBarProps} />,
-    RenderScene
+    renderScene
   } = props
+
+  const width = customWidth ?? useWindowDimensions().width
 
   const apRef = useAnimatedRef<PagerView>()
 
@@ -91,6 +96,14 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
       }}
     >
       <View style={[tw`flex-1`, style]}>
+        {renderTabBar({
+          ...sceneRendererProps,
+          routes,
+          width,
+          scrollEnabled: tabsBarScrollEnabled,
+          tabStyle,
+          labelStyle
+        })}
         <AnimatedPagerView
           ref={apRef}
           initialPage={initialPage}
@@ -108,11 +121,11 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
             >
               {({ loading }) => (
                 loading
-                  ? <></>
-                  : <RenderScene
-                      {...sceneRendererProps}
-                      route={route}
-                    />
+                  ? renderLazyPlaceholder({ route })
+                  : renderScene({
+                      ...sceneRendererProps,
+                      route
+                    })
               )}
             </SceneView>
           ))}

@@ -7,6 +7,7 @@ import type {
   TextStyle
 } from 'react-native'
 import type { SharedValue } from 'react-native-reanimated'
+import type { PagerViewProps } from 'react-native-pager-view'
 
 export interface Route {
   key: string
@@ -16,6 +17,15 @@ export interface Route {
   testID?: string
 }
 
+export type PagerProps = Omit<
+  PagerViewProps,
+  | 'children'
+  | 'onPageScrollStateChanged'
+  | 'onPageSelected'
+  | 'onPageScroll'
+>
+
+
 export interface SceneRendererProps {
   position: SharedValue<number>
   jumpTo: (key: string) => void
@@ -24,36 +34,52 @@ export interface SceneRendererProps {
 export type RouteProps<T extends Route> = { route: T }
 export type RenderSceneProps<T extends Route> = SceneRendererProps & RouteProps<T>
 
-export interface TabsViewProps <T extends Route> {
+
+export type KeyExtractor = string
+
+export type TabBarProps<T extends Route> = SceneRendererProps & {
   routes: T[]
-  initialPage?: number
+  scrollEnabled?: boolean
+  labelStyle?: StyleProp<TextStyle>
+  tabStyle?: StyleProp<ViewStyle>
+  width: number
+  onTabPress?: (key: KeyExtractor) => void
+  onTabLongPress?: (key: KeyExtractor) => void
+}
+
+export interface TabsViewProps <T extends Route> extends PagerProps {
+  routes: T[]
   lazy?: boolean
+  labelStyle?: StyleProp<TextStyle>
+  tabStyle?: StyleProp<ViewStyle>
+  width: number
   tabsBarScrollEnabled?: boolean
   style?: StyleProp<ViewStyle>
-  tabsBarStyle?: StyleProp<ViewStyle>
-  renderTabBar?: (props: TabBarProps) => ReactNode
-  RenderScene: (props: RenderSceneProps<Route>) => ReactNode
+  renderLazyPlaceholder?: (props: RouteProps<T>) => React.ReactNode
+  renderTabBar?: (props: TabBarProps<T>) => ReactNode
+  renderScene: (props: RenderSceneProps<Route>) => ReactNode
 }
 
-export type TabBarProps = Pick<TabsViewProps<Route>,
-  | 'routes'
-  | 'tabsBarScrollEnabled'
-  | 'tabsBarStyle'
-> & {
-  width?: number
-  onTabPress: (key: string) => void
-  onTabLongPress?: (key: string) => void
-}
-
-export type TabBarItemProps = {
+export interface TabBarItemProps {
   label: string
-  keyExtractor: string
+  keyExtractor: KeyExtractor
   index: number
-  scrollEnabled: TabBarProps['tabsBarScrollEnabled']
+  labelStyle?: StyleProp<TextStyle>
+  scrollEnabled: TabBarProps<Route>['scrollEnabled']
   scrollPosition: SharedValue<number>
   onLayout: (e: LayoutChangeEvent) => void
-  onPress: (key: TabBarItemProps['keyExtractor']) => void
-  onLongPress?: (key: TabBarItemProps['keyExtractor']) => void
+  onPress?: (key: KeyExtractor) => void
+  onLongPress?: (key: KeyExtractor) => void
+}
+
+export interface ItemsLayout {
+  width: number
+  x: number
+}
+
+export interface TabBarIndicatorProps {
+  indicatorWidth?: number
+  itemsLayout: ItemsLayout[]
 }
 
 export interface SceneViewProps {

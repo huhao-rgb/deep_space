@@ -18,7 +18,9 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { useTabsViewContext } from './Context'
+
 import TabBarItem from './TabBarItem'
+import TabBarIndicator from './TabBarIndicator'
 
 import type { TabBarProps, Route } from './types'
 
@@ -29,12 +31,13 @@ interface ItemLayout {
   x: number
 }
 
-const TabBar: FC<TabBarProps> = (props) => {
+const TabBar: FC<TabBarProps<Route>> = (props) => {
   const {
     routes,
     width: containerWidth,
-    tabsBarScrollEnabled,
-    tabsBarStyle,
+    scrollEnabled,
+    tabStyle,
+    labelStyle,
     onTabPress,
     onTabLongPress
   } = props
@@ -48,7 +51,7 @@ const TabBar: FC<TabBarProps> = (props) => {
   const w = containerWidth ?? width
 
   const [itemsLayout, setItemsLayout] = useState<ItemLayout[]>(
-    tabsBarScrollEnabled
+    scrollEnabled
       ? routes.map((_, i) => {
         const tabWidth = w / routes.length
         return { width: tabWidth, x: i * tabWidth }
@@ -78,7 +81,7 @@ const TabBar: FC<TabBarProps> = (props) => {
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent, route: Route) => {
-      if (tabsBarScrollEnabled) {
+      if (scrollEnabled) {
         if (!e.nativeEvent?.layout) return
 
         const { width, x } = e.nativeEvent.layout
@@ -94,13 +97,13 @@ const TabBar: FC<TabBarProps> = (props) => {
         }
       }
     },
-    [routes, tabsBarScrollEnabled]
+    [routes, scrollEnabled]
   )
 
   useAnimatedReaction(
     () => currentPage.value,
     (nextIndex) => {
-      if (tabsBarScrollEnabled) {
+      if (scrollEnabled) {
         cancelAnimation(currentPageToSync)
         targetIndexToSync.value = nextIndex
         currentPageToSync.value = withTiming(nextIndex)
@@ -114,7 +117,7 @@ const TabBar: FC<TabBarProps> = (props) => {
     (canSync) => {
       if (
         canSync &&
-        tabsBarScrollEnabled &&
+        scrollEnabled &&
         itemsLayout.length === routes.length &&
         itemsLayout[currentPage.value]
       ) {
@@ -129,11 +132,11 @@ const TabBar: FC<TabBarProps> = (props) => {
         }
       }
     },
-    [itemsLayout, tabsBarScrollEnabled]
+    [itemsLayout, scrollEnabled]
   )
 
   return (
-    <View style={[tw`w-full`, tabsBarStyle]}>
+    <View style={[tw`w-full`, tabStyle]}>
       <Animated.ScrollView
         ref={scrollViewRef}
         horizontal={true}
@@ -141,7 +144,7 @@ const TabBar: FC<TabBarProps> = (props) => {
         scrollEventThrottle={16}
         scrollsToTop={false}
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={tabsBarScrollEnabled}
+        scrollEnabled={scrollEnabled}
         contentContainerStyle={[tw`flex-row flex-nowrap overflow-hidden`]}
         onScroll={onScroll}
       >
@@ -150,7 +153,8 @@ const TabBar: FC<TabBarProps> = (props) => {
             index={i}
             key={route.key}
             keyExtractor={route.key}
-            scrollEnabled={tabsBarScrollEnabled}
+            labelStyle={labelStyle}
+            scrollEnabled={scrollEnabled}
             scrollPosition={scrollPosition}
             label={route.title ?? ''}
             onLayout={(event) => { onLayout(event, route) }}
@@ -158,6 +162,8 @@ const TabBar: FC<TabBarProps> = (props) => {
             onLongPress={onTabLongPress}
           />
         ))}
+
+        <TabBarIndicator itemsLayout={itemsLayout} />
       </Animated.ScrollView>
     </View>
   )

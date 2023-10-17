@@ -16,10 +16,11 @@ const inactiveColor = tw.color('gray-500')
 const TabBarItem: FC<TabBarItemProps> = (props) => {
   const {
     label,
+    keyExtractor,
     index,
+    labelStyle,
     scrollEnabled,
     scrollPosition,
-    keyExtractor,
     onPress,
     onLongPress,
     onLayout
@@ -64,7 +65,9 @@ const TabBarItem: FC<TabBarItemProps> = (props) => {
         ]}
         onLayout={onLayout}
       >
-        <Animated.Text style={stylez}>{label}</Animated.Text>
+        <Animated.Text style={[stylez, labelStyle]}>
+          {label}
+        </Animated.Text>
       </Animated.View>
     </RectButton>
   )
