@@ -5,6 +5,7 @@ import { I18nManager } from 'react-native'
 import Animated, {
   withTiming,
   interpolate,
+  Extrapolation,
   useSharedValue,
   useAnimatedStyle
 } from 'react-native-reanimated'
@@ -18,7 +19,7 @@ const { isRTL } = I18nManager
 
 const TabBarIndicator: FC<TabBarIndicatorProps> = (props) => {
   const {
-    indicatorWidth = 15,
+    indicatorWidth = 18,
     itemsLayout
   } = props
 
@@ -35,34 +36,60 @@ const TabBarIndicator: FC<TabBarIndicatorProps> = (props) => {
 
   const stylez = useAnimatedStyle(
     () => {
-      const transform =
-      itemsLayout.length > 1
-        ? [
-            {
-              translateX: interpolate(
-                scrollPosition.value,
-                itemsLayout.map((_, i) => i),
-                itemsLayout.map((v) => {
-                  const left = v.width / 2 - indicatorWidth / 2 + v.x
-                  return isRTL ? -1 * left : left
-                })
-              )
-            }
-          ]
-        : undefined
+      const canAnimated = itemsLayout.length > 1
+
+      let transform = undefined
+
+      if (canAnimated) {
+        const maxScaleXCount = itemsLayout.length * 2 - 1
+
+        const outputRange: number[] = []
+        const inputRange = Array.from(
+          { length: maxScaleXCount },
+          (v, i) => {
+            const tabWidth = itemsLayout[Math.floor(i / 2)].width
+            outputRange.push(i % 2 ? tabWidth / (tabWidth * 0.3) : 1)
+            return i / 2
+          }
+        )
+
+        transform = [
+          {
+            translateX: interpolate(
+              scrollPosition.value,
+              itemsLayout.map((_, i) => i),
+              itemsLayout.map((v) => {
+                const left = v.width / 2 - indicatorWidth / 2 + v.x
+                return isRTL ? -1 * left : left
+              })
+            )
+          },
+          {
+            scaleX: interpolate(
+              scrollPosition.value,
+              inputRange,
+              outputRange,
+              {
+                extrapolateLeft: Extrapolation.CLAMP,
+                extrapolateRight: Extrapolation.CLAMP
+              }
+            )
+          }
+        ] 
+      }
 
     return {
       opacity: withTiming(opacity.value),
       transform
     }
     },
-    []
+    [itemsLayout]
   )
 
   return (
     <Animated.View
       style={[
-        tw`absolute bottom-0 z-10 h-2 bg-red-500 rounded-md`,
+        tw`absolute bottom-1.5 z-10 h-1 bg-red-500 rounded-md`,
         stylez,
         { width: indicatorWidth }
       ]}

@@ -23,6 +23,7 @@ import {
   usePageSelectedHandler,
   usePageScrollStateChangedHandler
 } from './hooks'
+import type { KeyExtractor } from './types'
 
 import SceneView from './SceneView'
 import TabBar from './TabBar'
@@ -55,7 +56,7 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
   const scrollState = useSharedValue<PageScrollStateChangedNativeEventData['pageScrollState']>('idle')
 
   const jumpTo = useCallback(
-    (key: string) => {
+    (key: KeyExtractor) => {
       const cIndex = routes.findIndex((route) => route.key === key)
       apRef.current?.setPage(cIndex)
     },
@@ -88,6 +89,13 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
     }
   })
 
+  const onTabPress = useCallback(
+    (key: KeyExtractor) => {
+      if (scrollState.value !== 'dragging') jumpTo(key)
+    },
+    []
+  )
+
   return (
     <TabsViewContextProvider
       value={{
@@ -102,7 +110,8 @@ const TabsView = memo<TabsViewProps<Route>>((props) => {
           width,
           scrollEnabled: tabsBarScrollEnabled,
           tabStyle,
-          labelStyle
+          labelStyle,
+          onTabPress
         })}
         <AnimatedPagerView
           ref={apRef}

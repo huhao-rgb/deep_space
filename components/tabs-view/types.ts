@@ -52,7 +52,7 @@ export interface TabsViewProps <T extends Route> extends PagerProps {
   lazy?: boolean
   labelStyle?: StyleProp<TextStyle>
   tabStyle?: StyleProp<ViewStyle>
-  width: number
+  width?: number
   tabsBarScrollEnabled?: boolean
   style?: StyleProp<ViewStyle>
   renderLazyPlaceholder?: (props: RouteProps<T>) => React.ReactNode

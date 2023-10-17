@@ -6,7 +6,7 @@ import {
 } from 'react'
 
 import type { LayoutChangeEvent } from 'react-native'
-import { View, useWindowDimensions } from 'react-native'
+import { View } from 'react-native'
 import Animated, {
   scrollTo,
   cancelAnimation,
@@ -34,7 +34,7 @@ interface ItemLayout {
 const TabBar: FC<TabBarProps<Route>> = (props) => {
   const {
     routes,
-    width: containerWidth,
+    width,
     scrollEnabled,
     tabStyle,
     labelStyle,
@@ -47,20 +47,17 @@ const TabBar: FC<TabBarProps<Route>> = (props) => {
   const currentPageToSync = useSharedValue(currentPage.value)
   const targetIndexToSync = useSharedValue(currentPage.value)
 
-  const { width } = useWindowDimensions()
-  const w = containerWidth ?? width
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>()
+  const itemLayoutGathering = useRef(new Map<Route['key'], ItemLayout>())
 
   const [itemsLayout, setItemsLayout] = useState<ItemLayout[]>(
     scrollEnabled
       ? routes.map((_, i) => {
-        const tabWidth = w / routes.length
+        const tabWidth = width / routes.length
         return { width: tabWidth, x: i * tabWidth }
       })
       : []
   )
-
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>()
-  const itemLayoutGathering = useRef(new Map<Route['key'], ItemLayout>())
 
   const tabsOffset = useSharedValue(0)
   const isScrolling = useSharedValue(false)
@@ -97,7 +94,7 @@ const TabBar: FC<TabBarProps<Route>> = (props) => {
         }
       }
     },
-    [routes, scrollEnabled]
+    [routes, scrollEnabled, itemLayoutGathering]
   )
 
   useAnimatedReaction(
