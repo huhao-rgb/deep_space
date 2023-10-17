@@ -46,7 +46,7 @@ const Card: FC<CardProps> = (props) => {
       </View>
       <View
         style={[
-          tw`mt-2`,
+          tw`mt-4`,
           containerStyle
         ]}
       >

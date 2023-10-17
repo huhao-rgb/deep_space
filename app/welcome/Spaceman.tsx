@@ -1,7 +1,8 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 
 import * as THREE from 'three'
-import { useGLTF } from '@react-three/drei/native'
+import { useTexture } from '@react-three/drei/native'
+import { useGLTFCustom } from '@/hooks'
 import { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
@@ -16,9 +17,32 @@ type GLTFResult = GLTF & {
 }
 
 const Spaceman = memo<JSX.IntrinsicElements['group']>((props) => {
-  const { nodes, materials, animations } = useGLTF(require('@/assets/model/spaceman/spaceman.glb')) as GLTFResult
+  const { nodes, materials } = useGLTFCustom(require('@/assets/model/spaceman/spaceman.glb')) as GLTFResult
 
-  console.log('是否有动画：', animations)
+  const texture = useTexture(
+    require('@/assets/model/spaceman/textures/default_baseColor.png'),
+    tex => {
+      if (Array.isArray(tex)) {
+        throw new Error('Array of textures is not supported')
+      }
+
+      tex.flipY = false
+      tex.unpackAlignment = 8
+    }
+  )
+
+  const material = materials['default.001']
+  const customMaterial = useMemo(
+    () => {
+      const cloneMaterial = material.clone()
+
+      cloneMaterial.map = texture
+      cloneMaterial.emissiveMap = texture
+
+      return cloneMaterial
+    },
+    [material, texture]
+  )
 
   return (
     <group {...props} dispose={null}>
@@ -31,6 +55,7 @@ const Spaceman = memo<JSX.IntrinsicElements['group']>((props) => {
           castShadow
           receiveShadow
           geometry={nodes.RetopoGroup1_default_0.geometry}
+          material={customMaterial}
           scale={[13.718, 13.718, 13.718]}
         />
       </group>

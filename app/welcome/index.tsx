@@ -61,7 +61,7 @@ const Welcome: FC = () => {
         }}
         camera={{ position: [4, 0, 0], fov: 80 }}
       >
-        <ambientLight />
+        <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} />
 
         <Starts />
