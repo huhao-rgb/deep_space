@@ -11,15 +11,21 @@ import BottomPlayer, { type BottomPlayer as BottomPlayerRef } from '@/components
 
 import { tw } from '../utils'
 
+import { useWyCloudApi } from '@/hooks'
+
 // TrackPlayer.registerPlaybackService(() => require('../service'))
 
 export default function RootLayout () {
   const player = useRef<BottomPlayerRef>()
 
+  const { wyCloud } = useWyCloudApi('registerAnonimous')
+
   useEffect(
     () => {
       NavigationBar.setPositionAsync('absolute')
       NavigationBar.setBackgroundColorAsync('#ffffff00')
+
+      wyCloud()
 
       ;(async () => {
         // await TrackPlayer.setupPlayer()
