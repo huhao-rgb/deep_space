@@ -2,6 +2,8 @@ import type { FC } from 'react'
 import { useMemo, useCallback } from 'react'
 
 import { Text } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import Crypto from 'react-native-quick-crypto'
 
 import SafeAreaView from '@/components/safe-area-view'
 import TabsView from '@/components/tabs-view'
@@ -25,8 +27,17 @@ const SongList: FC = () => {
 
   const renderScene = useCallback(
     (props: RenderSceneProps<Route>) => {
+
+      const testCrypto = () => {
+      }
+
       return (
-        <Text>123123</Text>
+        <TouchableOpacity
+          onPress={testCrypto}
+          style={tw`mt-4 ml-5`}
+        >
+          <Text>123123</Text>
+        </TouchableOpacity>
       )
     },
     []
