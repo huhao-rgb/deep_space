@@ -14,4 +14,4 @@ export const openDatabase = (name?: string) => {
   )
 }
 
-export const API_CACHE = 'api_cache' // api缓存的数据
+export const API_CACHE_TABLE = 'api_cache_table' // api缓存的数据的表名

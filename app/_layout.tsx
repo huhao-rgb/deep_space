@@ -7,25 +7,54 @@ import TrackPlayer from 'react-native-track-player'
 import { Stack } from 'expo-router'
 import * as NavigationBar from 'expo-navigation-bar'
 
+import dayjs from 'dayjs'
+
 import BottomPlayer, { type BottomPlayer as BottomPlayerRef } from '@/components/bottom-player'
 
-import { tw } from '../utils'
+import {
+  tw,
+  mmkvDefaultStorage,
+  wyCloudCookieToJson
+} from '../utils'
+import { ANONYMOUS_TOKEN } from '@/constants'
 
 import { useWyCloudApi } from '@/hooks'
 
 // TrackPlayer.registerPlaybackService(() => require('../service'))
 
+const TAG = 'rootLog'
+
 export default function RootLayout () {
   const player = useRef<BottomPlayerRef>()
 
-  const { wyCloud } = useWyCloudApi('registerAnonimous')
+  const wyCloud = useWyCloudApi('registerAnonimous', 1000 * 60 * 2)
 
   useEffect(
     () => {
       NavigationBar.setPositionAsync('absolute')
       NavigationBar.setBackgroundColorAsync('#ffffff00')
 
-      wyCloud()
+      const musicAMmkv = mmkvDefaultStorage.getString(ANONYMOUS_TOKEN)?.split('@')[1]
+      const currentTimestamp = dayjs().valueOf()
+
+      if (
+        musicAMmkv === undefined ||
+        currentTimestamp - Number(musicAMmkv) > 1000 * 60 * 60 * 24 // 超过一天
+      ) {
+        // 游客登录
+        wyCloud()
+          .then(response => {
+            const { status, body, cookie } = response
+            if (
+              status === 200 &&
+              body.code === 200 &&
+              cookie[0]
+            ) {
+              const cookieJson = wyCloudCookieToJson(cookie[0])
+              mmkvDefaultStorage.set(ANONYMOUS_TOKEN, `${cookieJson.MUSIC_A}@${dayjs().valueOf()}`)
+            }
+          })
+      }
 
       ;(async () => {
         // await TrackPlayer.setupPlayer()

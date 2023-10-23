@@ -3426,7 +3426,7 @@ dag-map@~1.0.0:
   resolved "https://registry.npmmirror.com/dag-map/-/dag-map-1.0.2.tgz#e8379f041000ed561fc515475c1ed2c85eece8d7"
   integrity sha512-+LSAiGFwQ9dRnRdOeaj7g47ZFJcOUPukAP8J3A3fuZ1g9Y44BG+P1sgApjLXTQPOzC4+7S9Wr8kXsfpINM4jpw==
 
-dayjs@^1.8.15:
+dayjs@^1.11.10, dayjs@^1.8.15:
   version "1.11.10"
   resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
   integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
@@ -6674,6 +6674,11 @@ react-native-track-player@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmmirror.com/react-native-track-player/-/react-native-track-player-3.2.0.tgz#c7b7a53eaf4c248af2ac876ef349feaee2ef774a"
   integrity sha512-svv6TOgU/quFV1aajG5PskVhgFG0wHQtO+aYs6cIH0D27ckzN8WVoC3jI94m1CVaSgLMw48P911csYuD2fIcqA==
+
+react-native-uuid@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmmirror.com/react-native-uuid/-/react-native-uuid-2.0.1.tgz#ed4e2dfb1683eddb66967eb5dca140dfe1abddb9"
+  integrity sha512-cptnoIbL53GTCrWlb/+jrDC6tvb7ypIyzbXNJcpR3Vab0mkeaaVd5qnB3f0whXYzS+SMoSQLcUUB0gEWqkPC0g==
 
 react-native-web@~0.19.6:
   version "0.19.9"

@@ -5,19 +5,32 @@
  * 项目运行逻辑： 加入缓存机制，将上次的请求的结果进行缓存，可以设置缓存时间
  * 接口方法：单独配置，使用时引入传给useWymApi hooks，hooks内部做逻辑处理
  */
-import { useEffect, useRef } from 'react'
+import {
+  useEffect,
+  useRef,
+  useCallback
+} from 'react'
 
 import type { SQLiteDatabase } from 'expo-sqlite'
+import uuid from 'react-native-uuid'
+
 import axios from 'axios'
+import dayjs from 'dayjs'
 
 import * as apiMethods from '@/api'
 
 import {
   wyCloudEncode,
+  wyCloudDecode,
   openDatabase,
-  API_CACHE
+  API_CACHE_TABLE
 } from '@/utils'
-import type { WyCloudOptions } from '@/utils'
+import type {
+  WyCloudOptions,
+  WyCloudDecodeAnswer
+} from '@/utils'
+
+const TAG = 'wyCloud'
 
 /**
  * 网易云音乐请求接口
@@ -25,7 +38,10 @@ import type { WyCloudOptions } from '@/utils'
  * @param cacheDuration number 缓存的时长，单位为毫秒，传0获取最新数据
  * @returns promise
  */
-export const useWyCloudApi = (method: keyof typeof apiMethods, cacheDuration?: number) => {
+export function useWyCloudApi <T = any> (
+  method: keyof typeof apiMethods,
+  cacheDuration?: number
+): (option?: WyCloudOptions) => Promise<WyCloudDecodeAnswer<T>> {
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
@@ -34,20 +50,25 @@ export const useWyCloudApi = (method: keyof typeof apiMethods, cacheDuration?: n
 
   useEffect(
     () => {
-      /**
-       * 创建数据库
-       * 
-       */
       if (!db.current) {
         db.current = openDatabase()
 
         db.current.transaction(
           (tx) => {
-            
+            // 创建表结构
+            tx.executeSql(
+              `create table if not exists ${API_CACHE_TABLE} (
+                id char(50) primary KEY not null,
+                apiMethodName CHAR(50),
+                responseJson TEXT,
+                cookieHeaderJson TEXT,
+                saveTimestamp INT,
+                status INT
+              )`
+            )
           }
         )
       }
-      
 
       // 页面卸载，需要同步关闭数据库
       () => db.current?.closeAsync()
@@ -56,34 +77,101 @@ export const useWyCloudApi = (method: keyof typeof apiMethods, cacheDuration?: n
   )
 
   // 请求的实例，返回一个promise
-  const requestInstance = (options?: WyCloudOptions) => {
-    const mergeOptions = {
-      ...apiMethods[method](),
-      ...options
-    }
-    const wyCloudRequestOption = wyCloudEncode(mergeOptions)
+  const requestInstance = useCallback(
+    (options?: WyCloudOptions) => {
+      const duration = cacheDuration ?? 0
 
-    return new Promise(() => {
-      db.current?.transaction(
-        (tx) => {
-          tx.executeSql(
-            `select * from ${API_CACHE}`,
-            [],
-            (_, { rows }) => {
-              console.log('获取到的记录', rows)
-            }
-          )
-        }
-      )
-      // if (first) {
-      //   axios(wyCloudRequestOption)
-      //     .then(response => {
-      //       console.log('fetch请求：', response)
-      //       console.log('fetch请求：', response.data)
-      //     })
-      // }
-    })
-  }
+      const mergeOptions = {
+        ...apiMethods[method](),
+        ...options
+      }
+      const wyCloudRequestOption = wyCloudEncode(mergeOptions)
 
-  return { wyCloud: requestInstance }
+      return new Promise<WyCloudDecodeAnswer<T>>((resolve, reject) => {
+        db.current?.transaction(
+          (tx) => {
+            tx.executeSql(
+              `select * from ${API_CACHE_TABLE} where apiMethodName = ?`,
+              [method],
+              (_, { rows }) => {
+                const currentTimestamp = dayjs().valueOf()
+                const invalid =
+                  duration === 0 ||
+                  rows.length === 0 ||
+                  currentTimestamp - rows._array[0].saveTimestamp > duration
+
+                if (invalid) {
+                  axios(wyCloudRequestOption)
+                    .then(response => {
+                      // 解密网易云音乐数据
+                      const requestResult = wyCloudDecode(mergeOptions.crypto, response)
+                      const { status, body, cookie } = requestResult
+
+                      const bodyJson = JSON.stringify(body)
+                      const cookieHeaderJson = JSON.stringify(cookie)
+                      const saveTimestamp = dayjs().valueOf()
+
+                      // 执行sqlite语句
+                      if (rows.length === 0) {
+                        db.current?.transaction(ttx => {
+                          ttx.executeSql(
+                            `insert into ${API_CACHE_TABLE}
+                            (id, apiMethodName, responseJson, cookieHeaderJson, saveTimestamp, status)
+                            values (?, ?, ?, ?, ?, ?)`,
+                            [
+                              uuid.v4() as string,
+                              method,
+                              bodyJson,
+                              cookieHeaderJson,
+                              saveTimestamp,
+                              status
+                            ]
+                          )
+                        })
+                      } else {
+                        db.current?.transaction(ttx => {
+                          ttx.executeSql(
+                            `update ${API_CACHE_TABLE}
+                            set responseJson = ?, cookieHeaderJson = ?, saveTimestamp =?, status =?
+                            where apiMethodName = ?`,
+                            [
+                              bodyJson,
+                              cookieHeaderJson,
+                              saveTimestamp,
+                              status,
+                              method
+                            ]
+                          )
+                        })
+                      }
+
+                      resolve(requestResult)
+                    })
+                    .catch(err => {
+                      console.error(TAG, `请求错误：`, err)
+                      reject(err)
+                    })
+                } else {
+                  const {
+                    responseJson,
+                    cookieHeaderJson,
+                    status
+                  } = rows._array[0]
+
+                  resolve({
+                    status,
+                    body: JSON.parse(responseJson),
+                    cookie: JSON.parse(cookieHeaderJson)
+                  })
+                }
+              }
+            )
+          }
+        )
+      })
+    },
+    []
+  )
+
+  return requestInstance
 }

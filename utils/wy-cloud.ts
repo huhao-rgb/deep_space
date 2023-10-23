@@ -28,12 +28,6 @@ export type AnyObject = Record<string, any>
 // 加密的方式
 export type CryptoType = 'weapi' | 'linuxapi' | 'eapi'
 
-export interface Answer {
-  status: number
-  body: AnyObject
-  cookie: string[]
-}
-
 export interface WyCloudOptions <T extends Record<string, any> = {}> {
   url: string // 这个是完整的路径，带域名的
   method: Method
@@ -42,6 +36,12 @@ export interface WyCloudOptions <T extends Record<string, any> = {}> {
   cookie?: AnyObject
   ua?: UA
   data?: T
+}
+
+export interface WyCloudDecodeAnswer <T> {
+  status: number
+  body: T
+  cookie: string[]
 }
 
 const chooseUserAgent = (ua: UA) => {
@@ -120,7 +120,8 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
     if (!cookie.MUSIC_U) {
       // 游客
       if (!cookie.MUSIC_A) {
-        cookies.MUSIC_A = mmkvDefaultStorage.getString(ANONYMOUS_TOKEN)
+        const musicAMmkv = mmkvDefaultStorage.getString(ANONYMOUS_TOKEN)
+        cookies.MUSIC_A = musicAMmkv?.split('@')?.[0]
       }
     }
 
@@ -200,7 +201,11 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
 
 // 网易云响应解密
 export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
-  const answer: Answer = { status: 500, body: {}, cookie: [] }
+  const answer: WyCloudDecodeAnswer<any> = {
+    status: 500,
+    body: {},
+    cookie: []
+  }
   
   const { status, data, headers } = response
   answer.cookie = (headers['set-cookie'] || []).map((x) =>
@@ -240,4 +245,15 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
     100 < answer.status && answer.status < 600 ? answer.status : 400
 
   return answer
+}
+
+export const wyCloudCookieToJson = (cookie: string) => {
+  if (!cookie) return {}
+  const cookieArr = cookie.split(';')
+  const obj: AnyObject = {}
+  cookieArr.forEach((i) => {
+    let arr = i.split('=')
+    obj[arr[0]] = arr[1]
+  })
+  return obj
 }
