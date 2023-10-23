@@ -1,5 +1,8 @@
 import type { FC } from 'react'
-import { useState } from 'react'
+import {
+  useState,
+  useEffect
+} from 'react'
 
 import {
   Text,
@@ -11,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Lottie from 'lottie-react-native'
+import { useMMKVString } from 'react-native-mmkv'
 
 import SearchBox from './SearchBox'
 import Navs from './Navs'
@@ -18,7 +22,9 @@ import Card from './Card'
 
 import PageScrollView from '@/components/page-scrollview'
 
+import { useWyCloudApi } from '@/hooks'
 import { tw } from '@/utils'
+import { ANONYMOUS_TOKEN } from '@/constants'
 
 const offset = tw.style('w-5').width as number
 
@@ -67,9 +73,31 @@ const RenderScreen = () => {
 }
 
 const Home: FC = () => {
+  const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
+
+  const wyCloud = useWyCloudApi('homepageBlockPage', 1000 * 60 * 5)
+
   const [recommend] = useState(new Array(10).fill(''))
 
   const { top, bottom } = useSafeAreaInsets()
+
+  useEffect(
+    () => {
+      const token = anonymousToken?.split('@')[1]
+
+      if (token) {
+        wyCloud({ data: { refresh: false } })
+          .then(response => {
+            const { status, body } = response
+            if (status === 200 && body.code === 200) {
+              const { blocks, cursor } = body.data
+              console.log(cursor)
+            }
+          })
+      }
+    },
+    [anonymousToken]
+  )
 
   return (
     <ScrollView

@@ -23,7 +23,8 @@ import {
   wyCloudEncode,
   wyCloudDecode,
   openDatabase,
-  API_CACHE_TABLE
+  API_CACHE_TABLE,
+  wyCloudCookieToJson
 } from '@/utils'
 import type {
   WyCloudOptions,
@@ -41,7 +42,7 @@ const TAG = 'wyCloud'
 export function useWyCloudApi <T = any> (
   method: keyof typeof apiMethods,
   cacheDuration?: number
-): (option?: WyCloudOptions) => Promise<WyCloudDecodeAnswer<T>> {
+): (options?: Partial<WyCloudOptions>) => Promise<WyCloudDecodeAnswer<T>> {
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
@@ -78,7 +79,7 @@ export function useWyCloudApi <T = any> (
 
   // 请求的实例，返回一个promise
   const requestInstance = useCallback(
-    (options?: WyCloudOptions) => {
+    (options?: Partial<WyCloudOptions>) => {
       const duration = cacheDuration ?? 0
 
       const mergeOptions = {

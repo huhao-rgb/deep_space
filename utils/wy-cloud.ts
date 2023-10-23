@@ -208,9 +208,10 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
   }
   
   const { status, data, headers } = response
-  answer.cookie = (headers['set-cookie'] || []).map((x) =>
-    x.replace(/\s*Domain=[^(;|$)]+;*/, ''),
-  )
+  answer.cookie = (headers['set-cookie'] || [])
+    .map((x) => x.replace(/\s*Domain=[^(;|$)]+;*/, ''))
+
+  console.log(answer.cookie)
 
   try {
     if (crypto === 'eapi') {
@@ -252,7 +253,7 @@ export const wyCloudCookieToJson = (cookie: string) => {
   const cookieArr = cookie.split(';')
   const obj: AnyObject = {}
   cookieArr.forEach((i) => {
-    let arr = i.split('=')
+    let arr = (i.trim()).split('=')
     obj[arr[0]] = arr[1]
   })
   return obj
