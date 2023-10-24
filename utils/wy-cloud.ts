@@ -38,6 +38,12 @@ export interface WyCloudOptions <T extends Record<string, any> = {}> {
   data?: T
 }
 
+export interface Response <T = any> {
+  code: number
+  data: T
+  message: string
+}
+
 export interface WyCloudDecodeAnswer <T> {
   status: number
   body: T
