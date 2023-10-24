@@ -3,6 +3,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 
 export type Route = {
   key: string
+  meta?: any
 }
 
 export interface RenderScreenProps {
