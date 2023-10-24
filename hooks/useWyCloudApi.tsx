@@ -23,13 +23,16 @@ import {
   wyCloudEncode,
   wyCloudDecode,
   openDatabase,
-  API_CACHE_TABLE,
-  wyCloudCookieToJson
+  API_CACHE_TABLE
 } from '@/utils'
 import type {
   WyCloudOptions,
   WyCloudDecodeAnswer
 } from '@/utils'
+
+interface RequestInstance extends Partial<WyCloudOptions> {
+  requestCacheDuration?: number
+}
 
 const TAG = 'wyCloud'
 
@@ -77,10 +80,16 @@ export function useWyCloudApi <T = any> (
     []
   )
 
-  // 请求的实例，返回一个promise
+  // 请求对象，返回一个promise
   const requestInstance = useCallback(
-    (options?: Partial<WyCloudOptions>) => {
-      const duration = cacheDuration ?? 0
+    (instanceOptions?: RequestInstance) => {
+      const customOptions = instanceOptions ?? {}
+      const {
+        requestCacheDuration,
+        ...options
+      } = customOptions
+
+      const duration = cacheDuration ?? requestCacheDuration ?? 0
 
       const mergeOptions = {
         ...apiMethods[method](),
