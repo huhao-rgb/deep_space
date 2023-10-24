@@ -43,7 +43,7 @@ const RadarSongList: FC<Props> = (props) => {
               source={{ uri: `${item.uiElement?.image.imageUrl}?param=300y300` }}
               style={tw`w-28 h-28 bg-gray-200 rounded-2xl`}
             />
-            <View style={tw`w-22 h-2 rounded-b-lg bg-gray-100`} />
+            <View style={tw`w-22 h-2 rounded-b-lg bg-red-100`} />
           </View>
           <Text
             style={tw`mt-1 w-28 text-xs text-gray-800 text-center`}

@@ -106,8 +106,15 @@ const Home: FC = () => {
         </View>
         <TouchableOpacity
           activeOpacity={0.8}
-          style={tw`w-12 h-12 rounded-full bg-gray-100`}
-        ></TouchableOpacity>
+          style={tw`justify-center items-center w-12 h-12 rounded-full bg-red-100`}
+        >
+          <Lottie
+            autoPlay
+            loop
+            source={require('@/assets/lottie/astronaut.json')}
+            style={[tw`w-10 h-10`]}
+          />
+        </TouchableOpacity>
       </View>
 
       <SearchBox />

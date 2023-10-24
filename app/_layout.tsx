@@ -20,7 +20,7 @@ import { ANONYMOUS_TOKEN } from '@/constants'
 
 import { useWyCloudApi } from '@/hooks'
 
-// TrackPlayer.registerPlaybackService(() => require('../service'))
+TrackPlayer.registerPlaybackService(() => require('../service'))
 
 const TAG = 'rootLog'
 
@@ -49,7 +49,7 @@ export default function RootLayout () {
         })
 
       ;(async () => {
-        // await TrackPlayer.setupPlayer()
+        await TrackPlayer.setupPlayer()
       })()
     },
     []
