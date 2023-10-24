@@ -1,7 +1,7 @@
 // string转uint8Array
 export const stringToUint8Array = (str: string): Uint8Array => {
   const arr = []
-  for (var i = 0, j = str.length; i < j; ++i) {
+  for (let i = 0, j = str.length; i < j; ++i) {
     arr.push(str.charCodeAt(i))
   }
   return new Uint8Array(arr)

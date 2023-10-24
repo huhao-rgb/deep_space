@@ -206,12 +206,10 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
     body: {},
     cookie: []
   }
-  
+
   const { status, data, headers } = response
   answer.cookie = (headers['set-cookie'] || [])
     .map((x) => x.replace(/\s*Domain=[^(;|$)]+;*/, ''))
-
-  console.log(answer.cookie)
 
   try {
     if (crypto === 'eapi') {
@@ -219,10 +217,10 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
     } else {
       answer.body = data
     }
-  
+
     if (data.code) answer.body.code = Number(data.code)
     answer.status = Number(data.code || status)
-  
+
     if (
       [201, 302, 400, 502, 800, 801, 802, 803].indexOf(answer.body.code) >
       -1
