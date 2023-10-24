@@ -1,17 +1,21 @@
-module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
-  plugins: [
-    [
-      'babel-plugin-root-import',
-      {
-        paths: [
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      "@babel/plugin-proposal-export-namespace-from",
+      "react-native-reanimated/plugin",
+      "expo-router/babel",
+      [
+        'module-resolver',
           {
-            rootPathSuffix: './app',
-            rootPathPrefix: '@/' // 项目别名
-          }
-        ]
-      }
-    ],
-    'react-native-reanimated/plugin'
-  ]
-}
+            alias: {
+            'crypto': 'react-native-quick-crypto',
+            'stream': 'stream-browserify',
+            'buffer': '@craftzdog/react-native-buffer',
+          },
+        },
+      ]
+    ]
+  };
+};
