@@ -6,8 +6,10 @@ import {
   Text
 } from 'react-native'
 
-import { Image } from 'expo-image'
 import { RectButton } from 'react-native-gesture-handler'
+
+import { Image } from 'expo-image'
+import { router } from 'expo-router'
 
 import tw from '@/utils/tailwind'
 
@@ -17,6 +19,12 @@ interface Props {
 
 const Reommend: FC<Props> = (props) => {
   const { data } = props
+
+  const openSongListDetailPage = (item: any) => {
+    if (item.creativeId) {
+      router.push(`/song-list-detail/${item.creativeId}`)
+    }
+  }
 
   return (
     <ScrollView
@@ -30,6 +38,7 @@ const Reommend: FC<Props> = (props) => {
           borderless={false}
           rippleColor={tw.color('red-50')}
           activeOpacity={0.8}
+          onPress={() => { openSongListDetailPage(item) }}
         >
           <View
             style={[

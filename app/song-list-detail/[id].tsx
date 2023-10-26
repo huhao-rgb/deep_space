@@ -12,8 +12,16 @@ import {
   StyleSheet,
   useWindowDimensions
 } from 'react-native'
-import Animated from 'react-native-reanimated'
+import type { LayoutChangeEvent } from 'react-native'
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  interpolate,
+  useDerivedValue
+} from 'react-native-reanimated'
 import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
+import LinearGradient from 'react-native-linear-gradient'
 import { FlashList } from '@shopify/flash-list'
 import type { FlashListProps, ListRenderItem } from '@shopify/flash-list'
 
@@ -44,6 +52,9 @@ const SongListDetail: FC = () => {
   const { id } = useLocalSearchParams()
   const { width } = useWindowDimensions()
 
+  const scrollOffsetY = useSharedValue(0)
+  const listHeadHeight = useSharedValue(0)
+
   const [pageState, setPageState] = useState<PageState>({
     name: '',
     description: '',
@@ -51,10 +62,14 @@ const SongListDetail: FC = () => {
     tracks: [],
     creator: {}
   })
+  const [navBarHeight, setNavBarHeight] = useState(0)
 
   useEffect(
     () => {
-      wyCloud({ data: { id } })
+      wyCloud({
+        data: { id },
+        recordUniqueId: id as string
+      })
         .then(response => {
           const { status, body } = response
           if (status === 200 && body.code === 200) {
@@ -62,6 +77,7 @@ const SongListDetail: FC = () => {
               name,
               description,
               backgroundCoverUrl,
+              coverImgUrl,
               tracks,
               creator
             } = body.playlist
@@ -69,7 +85,7 @@ const SongListDetail: FC = () => {
             setPageState({
               name,
               description,
-              backgroundCoverUrl,
+              backgroundCoverUrl: backgroundCoverUrl ?? coverImgUrl,
               tracks,
               creator
             })
@@ -79,8 +95,46 @@ const SongListDetail: FC = () => {
     []
   )
 
+  const limitedHeightValue = useDerivedValue(() => {
+    return width - navBarHeight - listHeadHeight.value
+  })
+  const listHeadStyle = useAnimatedStyle(() => ({
+    transform: [{
+      translateY: interpolate(
+        scrollOffsetY.value,
+        [0, limitedHeightValue.value, limitedHeightValue.value + 1],
+        [0, 0, 1]
+      )
+    }]
+  }))
+
+  const navBarStyle = useAnimatedStyle(() => ({
+    backgroundColor: `rgba(241, 245, 249, ${interpolate(
+      scrollOffsetY.value,
+      [0, limitedHeightValue.value, limitedHeightValue.value + 1],
+      [0, 0, 1]
+    )})`
+  }))
+
+  const onScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollOffsetY.value = event.contentOffset.y
+    }
+  })
+
+  const onNavBarLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      setNavBarHeight(event.nativeEvent.layout.height)
+    },
+    []
+  )
+
   const ListHeaderComponent = useCallback(
     () => {
+      const onListHeadLayout = (event: LayoutChangeEvent) => {
+        listHeadHeight.value = event.nativeEvent.layout.height
+      }
+
       return (
         <View style={{ width, height: width }}>
           <Image
@@ -93,13 +147,12 @@ const SongListDetail: FC = () => {
               tw`bg-black/30 z-10`
             ]}
           >
-            <NavBar
-              title={pageState.name}
-              bgTransparent
-              backIconColor={tw.color('white')}
-              titleStyle={tw`text-white`}
-            />
-            <View style={tw`my-10 flex-1 px-5`}>
+            <View
+              style={[
+                tw`my-10 flex-1 px-5`,
+                { paddingTop: navBarHeight }
+              ]}
+            >
               <View style={tw`flex-1`}>
                 <View style={tw`flex-row items-center`}>
                   <Image
@@ -108,7 +161,8 @@ const SongListDetail: FC = () => {
                   />
                   <View style={tw`flex-1 ml-4`}>
                     <Text style={tw`text-xl text-white font-bold`}>{pageState.name}</Text>
-                    <Text style={tw`text-white mt-2 text-sm`}>{pageState.creator?.description}</Text>
+                    <Text style={tw`text-white mt-2 text-sm`}>{pageState.creator?.nickname 
+                    ?? pageState.creator?.description}</Text>
                   </View>
                 </View>
                 <BorderlessButton
@@ -128,10 +182,13 @@ const SongListDetail: FC = () => {
 
               </View>
             </View>
-            <View
+
+            <Animated.View
               style={[
-                tw`w-full px-5 py-3 bg-white rounded-t-2xl flex-row justify-between items-center`
+                tw` w-full px-5 py-3 bg-white rounded-t-2xl flex-row justify-between items-center`,
+                listHeadStyle
               ]}
+              onLayout={onListHeadLayout}
             >
               <View style={tw`flex-row items-center`}>
                 <RectButton
@@ -172,12 +229,12 @@ const SongListDetail: FC = () => {
                   height={22}
                 />
               </BorderlessButton>
-            </View>
+            </Animated.View>
           </View>
         </View>
       )
     },
-    [pageState, width]
+    [pageState, width, navBarHeight]
   )
 
   const renderItem = useCallback<ListRenderItem<Track>>(
@@ -219,13 +276,30 @@ const SongListDetail: FC = () => {
   )
 
   return (
-    <AnimatedFlashList
-      data={pageState.tracks}
-      estimatedItemSize={120}
-      ListHeaderComponent={ListHeaderComponent}
-      contentContainerStyle={tw`bg-white`}
-      renderItem={renderItem}
-    />
+    <>
+      <Animated.View
+        style={[
+          tw`absolute left-0 right-0 z-20`,
+          navBarStyle
+        ]}
+        onLayout={onNavBarLayout}
+      >
+        <NavBar
+          title={pageState.name}
+          bgTransparent
+          backIconColor={tw.color('white')}
+          titleStyle={tw`text-white`}
+        />
+      </Animated.View>
+      <AnimatedFlashList
+        data={pageState.tracks}
+        estimatedItemSize={120}
+        ListHeaderComponent={ListHeaderComponent}
+        contentContainerStyle={tw`bg-white`}
+        renderItem={renderItem}
+        onScroll={onScroll}
+      />
+    </>
   )
 }
 

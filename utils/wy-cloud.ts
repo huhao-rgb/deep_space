@@ -128,6 +128,8 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
       if (!cookie.MUSIC_A) {
         const musicAMmkv = mmkvDefaultStorage.getString(ANONYMOUS_TOKEN)
         cookies.MUSIC_A = musicAMmkv?.split('@')?.[0]
+        cookies.os = cookie.os ?? 'ios'
+        cookies.appver = cookie.appver ?? '8.10.90'
       }
     }
 
