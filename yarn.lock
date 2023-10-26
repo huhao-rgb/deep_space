@@ -3955,6 +3955,11 @@ expo-navigation-bar@~2.3.0:
     "@react-native/normalize-color" "^2.0.0"
     debug "^4.3.2"
 
+expo-network@~5.4.0:
+  version "5.4.0"
+  resolved "https://registry.npmmirror.com/expo-network/-/expo-network-5.4.0.tgz#4eddde3e54a80b46c7cd2e4ce22a98e61aa97468"
+  integrity sha512-6Hdm6CRmt7KpEYSTp9Q0fH1V63Y3tLlgkZfJBqJHksxEP/ooOjBLsK8M09q+FiWsStByI/PKj6NO86+uymz5ig==
+
 expo-router@^2.0.0:
   version "2.0.9"
   resolved "https://registry.npmmirror.com/expo-router/-/expo-router-2.0.9.tgz#41064fda35a4e4a56a19d919e65f8f2dc963c9de"

@@ -12,6 +12,8 @@ import {
 } from 'react'
 
 import type { SQLiteDatabase } from 'expo-sqlite'
+import { getIpAddressAsync } from 'expo-network'
+
 import uuid from 'react-native-uuid'
 
 import axios from 'axios'
@@ -99,7 +101,7 @@ export function useWyCloudApi <T = any> (
 
   // 请求对象，返回一个promise
   const requestInstance = useCallback(
-    (instanceOptions?: RequestInstance) => {
+    async (instanceOptions?: RequestInstance) => {
       const customOptions = instanceOptions ?? {}
       const {
         requestCacheDuration,
@@ -114,11 +116,18 @@ export function useWyCloudApi <T = any> (
         ...defaultOptions
       } = apiMethods[method]()
 
+      const ipAddress = await getIpAddressAsync()
+
       const mergeOptions = {
         data: { ...defaultData, ...data },
         ...defaultOptions,
         ...options
       }
+
+      if (!mergeOptions.realIP && ipAddress !== '0.0.0.0') {
+        mergeOptions.realIP = ipAddress
+      }
+
       const { url } = mergeOptions
       const wyCloudRequestOption = wyCloudEncode(mergeOptions)
 
@@ -149,46 +158,51 @@ export function useWyCloudApi <T = any> (
                       const requestResult = wyCloudDecode(mergeOptions.crypto, response)
                       const { status, body, cookie } = requestResult
 
-                      const bodyJson = JSON.stringify(body)
-                      const cookieHeaderJson = JSON.stringify(cookie)
-                      const saveTimestamp = dayjs().valueOf()
+                      if (status === 200) {
+                        const bodyJson = JSON.stringify(body)
+                        const cookieHeaderJson = JSON.stringify(cookie)
+                        const saveTimestamp = dayjs().valueOf()
 
-                      // 执行sqlite语句
-                      if (rows.length === 0) {
-                        db.current?.transaction(ttx => {
-                          ttx.executeSql(
-                            `insert into ${API_CACHE_TABLE}
-                            (id, apiMethodName, responseJson, cookieHeaderJson, saveTimestamp, status, createItem, cacheDuration, recordUniqueId)
-                            values (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                            [
-                              uuid.v4() as string,
-                              method,
-                              bodyJson,
-                              cookieHeaderJson,
-                              saveTimestamp,
-                              status,
-                              currentTimestamp,
-                              1000 * 60 * 60 * 24 * 7, // 一个星期
-                              recordUniqueId ?? ''
-                            ]
-                          )
-                        })
-                      } else {
-                        db.current?.transaction(ttx => {
-                          ttx.executeSql(
-                            `update ${API_CACHE_TABLE}
-                            set responseJson = ?, cookieHeaderJson = ?, saveTimestamp =?, status =?, createItem =?
-                            where apiMethodName = ?`,
-                            [
-                              bodyJson,
-                              cookieHeaderJson,
-                              saveTimestamp,
-                              status,
-                              currentTimestamp,
-                              method
-                            ]
-                          )
-                        })
+                        // 执行sqlite语句
+                        if (rows.length === 0) {
+                          db.current?.transaction(ttx => {
+                            ttx.executeSql(
+                              `insert into ${API_CACHE_TABLE}
+                              (id, apiMethodName, responseJson, cookieHeaderJson, saveTimestamp, status, createItem, cacheDuration, recordUniqueId)
+                              values (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                              [
+                                uuid.v4() as string,
+                                method,
+                                bodyJson,
+                                cookieHeaderJson,
+                                saveTimestamp,
+                                status,
+                                currentTimestamp,
+                                1000 * 60 * 60 * 24 * 7, // 一个星期
+                                recordUniqueId ?? ''
+                              ]
+                            )
+                          })
+                        } else {
+                          const sqlPlaceholders = [
+                            bodyJson,
+                            cookieHeaderJson,
+                            saveTimestamp,
+                            status,
+                            currentTimestamp,
+                            method
+                          ]
+                          if (isMultipleRecord) sqlPlaceholders.push(recordUniqueId ?? '')
+
+                          db.current?.transaction(ttx => {
+                            ttx.executeSql(
+                              `update ${API_CACHE_TABLE}
+                              set responseJson = ?, cookieHeaderJson = ?, saveTimestamp =?, status =?, createItem =?
+                              where apiMethodName = ?${isMultipleRecord ? recordUniqueIdSql : ''}`,
+                              sqlPlaceholders
+                            )
+                          })
+                        }
                       }
 
                       resolve(requestResult)

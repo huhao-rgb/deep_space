@@ -40,8 +40,6 @@ import type {
   TrackId
 } from '@/api/types'
 
-console.log(tw.color('slate-800/50'))
-
 interface PageState {
   name: string
   description: string
