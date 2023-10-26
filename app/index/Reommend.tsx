@@ -46,7 +46,7 @@ const Reommend: FC<Props> = (props) => {
               />
             </View>
             <Text
-              style={[tw`mt-1 text-zinc-600 text-sm`]}
+              style={[tw`mt-1 text-gray-800 text-sm`]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >

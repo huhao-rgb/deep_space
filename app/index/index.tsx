@@ -126,6 +126,7 @@ const Home: FC = () => {
             <Card
               text={block.uiElement.subTitle.title}
               style={i !== 0 && tw`mt-8`}
+              key={`page_card_${i}`}
             >
                 {renderPageContent(block, i)}
             </Card>

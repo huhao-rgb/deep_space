@@ -2,6 +2,7 @@ import type { FC } from 'react'
 
 import { View, Text } from 'react-native'
 import { RectButton } from 'react-native-gesture-handler'
+import LinearGradient from 'react-native-linear-gradient'
 
 import Icon from '@/components/svg-icon'
 
@@ -26,14 +27,19 @@ const Navs: FC = () => {
           borderless={false}
           style={tw`flex-col items-center`}
         >
-          <View style={tw`w-12 h-12 justify-center items-center rounded-2xl bg-red-500/90`}>
+          <LinearGradient
+            colors={[tw.color('red-300') as string, tw.color('red-600') as string]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
+            style={tw`w-12 h-12 justify-center items-center rounded-2xl bg-red-500/90`}
+          >
             <Icon
               name={nav.icon}
               fill={tw.color('white')}
               width={nav.icon === 'SongList' ? 31 : 34}
               height={nav.icon === 'SongList' ? 31 : 34}
             />
-          </View>
+          </LinearGradient>
           <Text style={tw`mt-1 text-gray-600 text-sm`}>
             {nav.name}
           </Text>
