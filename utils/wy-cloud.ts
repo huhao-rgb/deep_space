@@ -10,7 +10,8 @@ import type {
   Method
 } from 'axios'
 
-import { arrayBufferToHexStr } from './array-buffter'
+import Constants from 'expo-constants'
+
 import { mmkvDefaultStorage } from './mmkv'
 import {
   weapi,
@@ -49,6 +50,8 @@ export interface WyCloudDecodeAnswer <T> {
   body: T
   cookie: string[]
 }
+
+const TAG = 'ReqestCookie'
 
 const chooseUserAgent = (ua: UA) => {
   const userAgentList = {
@@ -116,11 +119,11 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
     const cookies: AnyObject = {
       ...cookie,
       __remember_me: true,
-      _ntes_nuid: arrayBufferToHexStr(Crypto.randomBytes(16))
+      _ntes_nuid: Buffer.from(Crypto.randomBytes(16)).toString('hex')
     }
 
     if (url.indexOf('login') === -1) {
-      cookies.NMTID = arrayBufferToHexStr(Crypto.randomBytes(16))
+      cookies.NMTID = Buffer.from(Crypto.randomBytes(16)).toString('hex')
     }
 
     if (!cookie.MUSIC_U) {
@@ -196,6 +199,7 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
     method,
     url: requestUrl,
     headers: headers,
+    proxy: false,
     data: new URLSearchParams(requestData).toString()
   }
 

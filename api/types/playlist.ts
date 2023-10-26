@@ -1,3 +1,5 @@
+import type { Track } from './common'
+
 export interface PlaylistDetailPrivileges {
   chargeInfoList: Array<{
     chargeMessage: null
@@ -52,4 +54,10 @@ export interface PlaylistDetailRes {
   sharedPrivilege: string | null
   songFromUsers: string | null
   urls: string | null
+}
+
+export interface PlaylistTrackAllRes {
+  code: number
+  privileges: any[]
+  songs: Track[]
 }

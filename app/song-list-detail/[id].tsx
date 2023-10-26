@@ -21,7 +21,6 @@ import Animated, {
   useDerivedValue
 } from 'react-native-reanimated'
 import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
-import LinearGradient from 'react-native-linear-gradient'
 import { FlashList } from '@shopify/flash-list'
 import type { FlashListProps, ListRenderItem } from '@shopify/flash-list'
 
@@ -34,7 +33,14 @@ import NavBar from '@/components/nav-bar'
 import { useWyCloudApi } from '@/hooks'
 import { tw } from '@/utils'
 
-import type { PlaylistDetailRes, Track } from '@/api/types'
+import type {
+  PlaylistDetailRes,
+  PlaylistTrackAllRes,
+  Track,
+  TrackId
+} from '@/api/types'
+
+console.log(tw.color('slate-800/50'))
 
 interface PageState {
   name: string
@@ -47,7 +53,10 @@ interface PageState {
 const AnimatedFlashList = Animated.createAnimatedComponent<FlashListProps<Track>>(FlashList)
 
 const SongListDetail: FC = () => {
-  const wyCloud = useWyCloudApi<PlaylistDetailRes>('playlistDetail', 1000 * 60 * 60 * 2)
+  const cacheMill = 1000 * 60 * 60 * 2
+
+  const detailApi = useWyCloudApi<PlaylistDetailRes>('playlistDetail', cacheMill)
+  const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
 
   const { id } = useLocalSearchParams()
   const { width } = useWindowDimensions()
@@ -66,31 +75,47 @@ const SongListDetail: FC = () => {
 
   useEffect(
     () => {
-      wyCloud({
-        data: { id },
-        recordUniqueId: id as string
-      })
-        .then(response => {
-          const { status, body } = response
-          if (status === 200 && body.code === 200) {
-            const {
-              name,
-              description,
-              backgroundCoverUrl,
-              coverImgUrl,
-              tracks,
-              creator
-            } = body.playlist
-
-            setPageState({
-              name,
-              description,
-              backgroundCoverUrl: backgroundCoverUrl ?? coverImgUrl,
-              tracks,
-              creator
-            })
-          }
+      (async () => {
+        const detailRes = await detailApi({
+          data: { id },
+          recordUniqueId: id as string
         })
+
+        const { status, body } = detailRes
+        if (status === 200 && body.code === 200) {
+          const {
+            name,
+            description,
+            backgroundCoverUrl,
+            coverImgUrl,
+            trackIds,
+            creator
+          } = body.playlist
+
+          let tracks: Track[] = []
+
+          const allSongRes = await allSongApi({
+            data: {
+              c: '[' + trackIds
+                .map((item: TrackId) => '{"id":' + item.id + '}')
+                .join(',') + ']'
+            },
+            recordUniqueId: id as string
+          })
+
+          if (allSongRes.status === 200 && allSongRes.body.code === 200) {
+            tracks = allSongRes.body.songs
+          }
+
+          setPageState({
+            name,
+            description,
+            backgroundCoverUrl: backgroundCoverUrl ?? coverImgUrl,
+            tracks,
+            creator
+          })
+        }
+      })()
     },
     []
   )
@@ -109,10 +134,10 @@ const SongListDetail: FC = () => {
   }))
 
   const navBarStyle = useAnimatedStyle(() => ({
-    backgroundColor: `rgba(241, 245, 249, ${interpolate(
+    backgroundColor: `rgba(30, 41, 59, ${interpolate(
       scrollOffsetY.value,
       [0, limitedHeightValue.value, limitedHeightValue.value + 1],
-      [0, 0, 1]
+      [0, 1, 1]
     )})`
   }))
 

@@ -5,6 +5,19 @@ export interface ToneQuality {
   vd: number
 }
 
+export interface TrackId {
+  alg: string
+  at: number
+  f: null
+  id: number
+  rcmdReason: string
+  sc: null
+  sr: null
+  t: number
+  uid: number
+  v: number
+}
+
 export interface Track {
   a: null
   al: {

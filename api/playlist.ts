@@ -13,6 +13,7 @@ export const playlistTrackAll = (): WyCloudOptions => {
   return {
     method: 'POST',
     url: 'https://music.163.com/api/v3/song/detail',
-    crypto: 'weapi'
+    crypto: 'weapi',
+    cookie: {}
   }
 }
