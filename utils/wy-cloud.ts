@@ -26,7 +26,7 @@ type UA = 'mobile' | 'pc' | undefined
 export type AnyObject = Record<string, any>
 
 // 加密的方式
-export type CryptoType = 'weapi' | 'linuxapi' | 'eapi'
+export type CryptoType = 'weapi' | 'linuxapi' | 'eapi' | 'api'
 
 export interface WyCloudOptions <T extends Record<string, any> = {}> {
   url: string // 这个是完整的路径，带域名的
