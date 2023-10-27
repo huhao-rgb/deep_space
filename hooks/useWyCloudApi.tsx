@@ -12,7 +12,6 @@ import {
 } from 'react'
 
 import type { SQLiteDatabase } from 'expo-sqlite'
-import { getIpAddressAsync } from 'expo-network'
 
 import uuid from 'react-native-uuid'
 
@@ -116,17 +115,15 @@ export function useWyCloudApi <T = any> (
         ...defaultOptions
       } = apiMethods[method]()
 
-      const ipAddress = await getIpAddressAsync()
-
       const mergeOptions = {
         data: { ...defaultData, ...data },
         ...defaultOptions,
         ...options
       }
 
-      if (!mergeOptions.realIP && ipAddress !== '0.0.0.0') {
-        mergeOptions.realIP = ipAddress
-      }
+      // if (!mergeOptions.realIP && ipAddress !== '0.0.0.0') {
+      //   mergeOptions.realIP = ipAddress
+      // }
 
       const { url } = mergeOptions
       const wyCloudRequestOption = wyCloudEncode(mergeOptions)
