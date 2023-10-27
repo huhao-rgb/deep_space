@@ -59,7 +59,13 @@ const Home: FC = () => {
 
   useEffect(
     () => {
-      wyCloud({ data: { refresh: false } })
+      if (anonymousToken) {
+        wyCloud({
+        data: {
+          refresh: false,
+          cursor: undefined
+        }
+      })
         .then(response => {
           const { status, body } = response
           if (status === 200 && body.code === 200) {
@@ -67,8 +73,9 @@ const Home: FC = () => {
             setPageState({ blocks, cursor })
           }
         })
+      }
     },
-    []
+    [anonymousToken]
   )
 
   const renderPageContent = useCallback(
@@ -125,10 +132,10 @@ const Home: FC = () => {
           return (
             <Card
               text={block.uiElement.subTitle.title}
-              style={i !== 0 && tw`mt-8`}
+              style={tw`mt-8`}
               key={`page_card_${i}`}
             >
-                {renderPageContent(block, i)}
+              {renderPageContent(block, i)}
             </Card>
           )
         }

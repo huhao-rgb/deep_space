@@ -19,7 +19,7 @@ export const homepageBlockPage = (): WyCloudOptions => {
     crypto: 'weapi',
     cookie: {
       os: 'ios',
-      appver: '8.7.01'
+      appver: '8.10.90'
     }
   }
 }

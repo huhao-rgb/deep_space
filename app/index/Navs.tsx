@@ -18,7 +18,7 @@ const navs = [
 
 const Navs: FC = () => {
   return (
-    <View style={tw`px-5 mb-8 flex-row items-center justify-between`}>
+    <View style={tw`px-5 flex-row items-center justify-between`}>
       {navs.map((nav, i) => (
         <RectButton
           activeOpacity={0.8}
