@@ -17,7 +17,8 @@ const NavBar: FC<NavBarProps> = (props) => {
     style,
     titleStyle,
     backIconColor = tw.color('slate-800'),
-    renderTitle
+    renderTitle,
+    onPress
   } = props
 
   const isTitle = title !== undefined || renderTitle !== undefined
@@ -32,7 +33,7 @@ const NavBar: FC<NavBarProps> = (props) => {
       ]}
     >
       <View style={tw`pt-1 flex-row items-center justify-between`}>
-        <BorderlessButton>
+        <BorderlessButton onPress={onPress}>
           <Icon
             name="LeftArrow"
             width={26}

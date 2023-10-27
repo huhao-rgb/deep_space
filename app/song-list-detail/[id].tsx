@@ -21,11 +21,12 @@ import Animated, {
   useDerivedValue
 } from 'react-native-reanimated'
 import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlashList } from '@shopify/flash-list'
 import type { FlashListProps, ListRenderItem } from '@shopify/flash-list'
 
 import { Image } from 'expo-image'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
@@ -43,6 +44,8 @@ import type {
 interface PageState {
   name: string
   description: string
+  commentCount: number,
+  subscribedCount: number,
   backgroundCoverUrl: string
   tracks: Track[]
   creator: Record<string, any>
@@ -56,6 +59,8 @@ const SongListDetail: FC = () => {
   const detailApi = useWyCloudApi<PlaylistDetailRes>('playlistDetail', cacheMill)
   const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
 
+  const { bottom } = useSafeAreaInsets()
+
   const { id } = useLocalSearchParams()
   const { width } = useWindowDimensions()
 
@@ -65,6 +70,8 @@ const SongListDetail: FC = () => {
   const [pageState, setPageState] = useState<PageState>({
     name: '',
     description: '',
+    commentCount: 0,
+    subscribedCount: 0,
     backgroundCoverUrl: '',
     tracks: [],
     creator: {}
@@ -84,6 +91,8 @@ const SongListDetail: FC = () => {
           const {
             name,
             description,
+            commentCount,
+            subscribedCount,
             backgroundCoverUrl,
             coverImgUrl,
             trackIds,
@@ -108,6 +117,8 @@ const SongListDetail: FC = () => {
           setPageState({
             name,
             description,
+            commentCount,
+            subscribedCount,
             backgroundCoverUrl: backgroundCoverUrl ?? coverImgUrl,
             tracks,
             creator
@@ -152,6 +163,14 @@ const SongListDetail: FC = () => {
     []
   )
 
+  const onBack = useCallback(
+    () => {
+      const canBack = router.canGoBack()
+      canBack ? router.back() : router.replace('/index/')
+    },
+    []
+  )
+
   const ListHeaderComponent = useCallback(
     () => {
       const onListHeadLayout = (event: LayoutChangeEvent) => {
@@ -172,11 +191,11 @@ const SongListDetail: FC = () => {
           >
             <View
               style={[
-                tw`my-10 flex-1 px-5`,
+                tw`flex-1 px-5`,
                 { paddingTop: navBarHeight }
               ]}
             >
-              <View style={tw`flex-1`}>
+              <View style={tw`my-10 flex-1`}>
                 <View style={tw`flex-row items-center`}>
                   <Image
                     source={{ uri: `${pageState.creator?.avatarUrl}?param=200y200` }}
@@ -201,8 +220,33 @@ const SongListDetail: FC = () => {
                   </Text>
                 </BorderlessButton>
               </View>
-              <View style={tw`py-3 flex-row items-center`}>
-
+              <View style={tw`py-3 flex-row justify-center items-center`}>
+                <RectButton
+                  rippleColor={tw.color('red-100')}
+                  activeOpacity={0.8}
+                  style={tw`px-6 py-2 rounded-full bg-slate-800/60 flex-row items-center`}
+                >
+                  <Icon
+                    name="Comment"
+                    width={18}
+                    height={18}
+                    fill={tw.color('white')}
+                  />
+                  <Text style={tw`ml-2 text-white text-xs font-bold`}>{pageState.commentCount}</Text>
+                </RectButton>
+                <RectButton
+                  rippleColor={tw.color('red-100')}
+                  activeOpacity={0.8}
+                  style={tw`ml-1.5 px-6 py-2 rounded-full bg-red-500 flex-row items-center`}
+                >
+                  <Icon
+                    name="Add"
+                    width={20}
+                    height={20}
+                    fill={tw.color('white')}
+                  />
+                  <Text style={tw`ml-2 text-white text-xs font-bold`}>{pageState.subscribedCount}</Text>
+                </RectButton>
               </View>
             </View>
 
@@ -216,7 +260,7 @@ const SongListDetail: FC = () => {
               <View style={tw`flex-row items-center`}>
                 <RectButton
                   borderless={false}
-                  rippleColor={tw.color('gray-200')}
+                  rippleColor={tw.color('red-100')}
                   activeOpacity={0.8}
                   style={tw`rounded-full bg-slate-100`}
                 >
@@ -227,6 +271,7 @@ const SongListDetail: FC = () => {
                         fill={tw.color('white')}
                         width={10}
                         height={10}
+                        style={{ transform: [{ translateX: 1 }] }}
                       />
                     </View>
                     <Text style={tw`mx-2 text-sm text-slate-700`}>播放全部</Text>
@@ -269,28 +314,56 @@ const SongListDetail: FC = () => {
           activeOpacity={0.8}
           style={tw`py-2 pr-5 flex-row items-center`}
         >
-          <Text style={tw`w-12 text-center text-sm text-gray-600`}>{index + 1}</Text>
-          <View style={tw`flex-row items-center flex-1`}>
+          <Text style={tw`w-12 text-center text-sm text-slate-600`}>{index + 1}</Text>
+          <View style={tw`flex-row items-center mr-3 flex-1`}>
             <Image
               source={{ uri: `${item.al.picUrl}?param=80y80` }}
-              style={tw`w-12 h-12 rounded-lg`}
+              style={tw`w-10 h-10 rounded-lg`}
             />
             <View style={tw`ml-3 flex-1`}>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={tw`text-base text-gray-800`}
+                style={tw`text-base text-slate-800`}
               >
                 {item.name}
               </Text>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={tw`mt-1 text-xs text-gray-500`}
+                style={tw`mt-1 text-xs text-slate-500`}
               >
-                {item.al?.name} - {item.alg}
+                {item.al?.name} - {item.ar?.[0]?.name}
               </Text>
             </View>
+          </View>
+          <View style={tw`flex-row items-center`}>
+            {item.mv !== 0 && (
+              <BorderlessButton
+                style={tw`mr-4`}
+              >
+                <View style={tw`p-1`}>
+                  <Icon
+                    name="MvVideo"
+                    width={22}
+                    height={22}
+                    fill={tw.color('slate-600')}
+                  />
+                </View>
+              </BorderlessButton>
+            )}
+            <BorderlessButton
+              style={{ transform: [{ translateX: 3 }] }}
+            >
+              <View style={tw`p-1`}>
+                <Icon
+                  name="VerticalMore"
+                  width={18}
+                  height={18}
+                  fill={tw.color('slate-600')}
+                />
+              </View>
+            </BorderlessButton>
           </View>
         </RectButton>
       )
@@ -312,13 +385,17 @@ const SongListDetail: FC = () => {
           bgTransparent
           backIconColor={tw.color('white')}
           titleStyle={tw`text-white`}
+          onPress={onBack}
         />
       </Animated.View>
       <AnimatedFlashList
         data={pageState.tracks}
         estimatedItemSize={120}
         ListHeaderComponent={ListHeaderComponent}
-        contentContainerStyle={tw`bg-white`}
+        contentContainerStyle={{
+          backgroundColor: tw.color('white'),
+          paddingBottom: bottom
+        }}
         renderItem={renderItem}
         onScroll={onScroll}
       />

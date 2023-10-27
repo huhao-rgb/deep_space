@@ -13,4 +13,5 @@ export interface NavBarProps {
   titleStyle?: StyleProp<TextStyle>
   backIconColor?: string
   renderTitle?: () => ReactNode
+  onPress?: () => void
 }

@@ -11,6 +11,8 @@ import { RectButton } from 'react-native-gesture-handler'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 
+import SongListCover from './SongListCover'
+
 import tw from '@/utils/tailwind'
 
 interface Props {
@@ -36,7 +38,7 @@ const Reommend: FC<Props> = (props) => {
         <RectButton
           key={`recommend_${i}`}
           borderless={false}
-          rippleColor={tw.color('red-50')}
+          rippleColor={tw.color('red-100')}
           activeOpacity={0.8}
           onPress={() => { openSongListDetailPage(item) }}
         >
@@ -48,12 +50,9 @@ const Reommend: FC<Props> = (props) => {
               i === data.length - 1 && tw`ml-1`
             ]}
           >
-            <View style={tw`relative`}>
-              <Image
-                source={{ uri: `${item.uiElement.image.imageUrl}?param=300y300` }}
-                style={tw`w-28 h-28 rounded-xl bg-gray-100`}
-              />
-            </View>
+            <SongListCover
+              cover={item.uiElement.image.imageUrl}
+            />
             <Text
               style={[tw`mt-1 text-gray-800 text-sm`]}
               numberOfLines={2}
