@@ -224,7 +224,7 @@ const SongListDetail: FC = () => {
                 <RectButton
                   rippleColor={tw.color('red-100')}
                   activeOpacity={0.8}
-                  style={tw`px-6 py-2 rounded-full bg-slate-800/60 flex-row items-center`}
+                  style={tw`px-6 h-10 rounded-full bg-slate-800/60 flex-row items-center`}
                 >
                   <Icon
                     name="Comment"
@@ -237,7 +237,7 @@ const SongListDetail: FC = () => {
                 <RectButton
                   rippleColor={tw.color('red-100')}
                   activeOpacity={0.8}
-                  style={tw`ml-1.5 px-6 py-2 rounded-full bg-red-500 flex-row items-center`}
+                  style={tw`ml-1.5 px-6 h-10 rounded-full bg-red-500 flex-row items-center`}
                 >
                   <Icon
                     name="Add"
