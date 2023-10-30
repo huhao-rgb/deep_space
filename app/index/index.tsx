@@ -47,7 +47,7 @@ const showPageType = ['HOMEPAGE_BLOCK_PLAYLIST_RCMD', 'HOMEPAGE_BLOCK_STYLE_RCMD
 const Home: FC = () => {
   const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
 
-  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', 1000 * 60 * 60 * 2)
+  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', 1000 * 60 * 60 * 24 * 7)
 
   const [pageState, setPageState] = useState<PageState>({
     blocks: [],

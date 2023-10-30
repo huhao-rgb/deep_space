@@ -6,3 +6,4 @@
 export * from './register'
 export * from './homepage'
 export * from './playlist'
+export * from './starpick'

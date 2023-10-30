@@ -7,8 +7,9 @@ import {
 } from 'react-native'
 import { RectButton } from 'react-native-gesture-handler'
 
-import { Image } from 'expo-image'
 import { router } from 'expo-router'
+
+import SongListCover from './SongListCover'
 
 import { tw } from '@/utils'
 
@@ -50,10 +51,7 @@ const RadarSongList: FC<Props> = (props) => {
             ]}
           >
           <View style={tw`w-28 flex-col items-center relative`}>
-            <Image
-              source={{ uri: `${item.uiElement?.image.imageUrl}?param=300y300` }}
-              style={tw`w-28 h-28 bg-gray-200 rounded-2xl`}
-            />
+            <SongListCover cover={item.uiElement?.image.imageUrl} />
             <View style={tw`w-22 h-2 rounded-b-lg bg-red-100`} />
           </View>
           <Text

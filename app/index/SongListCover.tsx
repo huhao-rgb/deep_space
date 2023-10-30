@@ -26,14 +26,14 @@ const SongListCover: FC<SongListCoverProps> = (props) => {
       <RectButton
         rippleColor={tw.color('red-100')}
         activeOpacity={0.8}
-        style={tw`absolute right-2 bottom-2 w-7 h-7 bg-white justify-center items-center rounded-full`}
+        style={tw`absolute right-2 bottom-2 w-6 h-6 bg-white justify-center items-center rounded-full`}
         onPress={onPlay}
       >
         <Icon
           name="SolidPlay"
           fill={tw.color('slate-800')}
-          width={12}
-          height={12}
+          width={10}
+          height={10}
           style={{ transform: [{ translateX: 1 }] }}
         />
       </RectButton>
