@@ -9,6 +9,7 @@ import PageScrollView from '@/components/page-scrollview'
 import type { RenderScreenProps } from '@/components/page-scrollview'
 
 import { tw } from '@/utils'
+import { usePlayer } from '@/store'
 
 interface Props {
   data: any[]
@@ -18,6 +19,8 @@ const offset = tw.style('w-5').width as number
 
 const TrackPager: FC<Props> = (props) => {
   const { data } = props
+
+  const [songList, setSongList] = usePlayer((s) => [s.songList, s.setSongList])
 
   const routes = useMemo(
     () => {
@@ -42,6 +45,7 @@ const TrackPager: FC<Props> = (props) => {
               borderless={false}
               rippleColor={tw.color('red-50')}
               activeOpacity={0.8}
+              onPress={() => { setSongList(songList.length > 0 ? [] : [1]) }}
             >
               <View
                 style={[
@@ -84,7 +88,7 @@ const TrackPager: FC<Props> = (props) => {
         </>
       )
     },
-    []
+    [songList]
   )
 
   return (

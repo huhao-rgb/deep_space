@@ -12,7 +12,7 @@ const SearchBox: FC = () => {
   return (
     <View style={tw`px-5 my-6`}>
       <Shadow
-        startColor="#f6f6f6bb"
+        startColor="#00000009"
         distance={20}
         style={tw`w-full`}
       >

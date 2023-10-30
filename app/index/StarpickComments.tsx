@@ -86,7 +86,7 @@ const StarpickComments = memo(() => {
               <View style={tw`flex-row items-center flex-1`}>
                 <Image
                   source={{
-                    uri: `${current?.resourceExtInfo.songData.album.picUrl}?param40y40`
+                    uri: `${current?.resourceExtInfo.songData.album.picUrl}?param=40y40`
                   }}
                   style={tw`w-8 h-8 rounded-md`}
                 />
@@ -121,7 +121,7 @@ const StarpickComments = memo(() => {
         </RectButton>
       )
     },
-    []
+    [randomLinearIndexs]
   )
 
   if (comments.length > 0) {

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
-import { Text } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import TrackPlayer from 'react-native-track-player'
 import NetInfo from '@react-native-community/netinfo'
@@ -10,24 +10,23 @@ import * as NavigationBar from 'expo-navigation-bar'
 
 import dayjs from 'dayjs'
 
-import BottomPlayer, { type BottomPlayer as BottomPlayerRef } from '@/components/bottom-player'
+import BottomPlayer from '@/components/bottom-player'
 
 import {
   tw,
   mmkvDefaultStorage
-} from '../utils'
+} from '@/utils'
 import { ANONYMOUS_TOKEN } from '@/constants'
 
 import { useWyCloudApi } from '@/hooks'
-import { useNetInfo } from '@/store'
+import { useNetInfo, usePlayer } from '@/store'
 
 TrackPlayer.registerPlaybackService(() => require('../service'))
 
 const TAG = 'rootLog'
 
 export default function RootLayout () {
-  const player = useRef<BottomPlayerRef>()
-
+  const [miniPlayerRef] = usePlayer((s) => [s.miniPlayerRef])
   const [setIp, setNetInfoState] = useNetInfo((s) => [
     s.setIp,
     s.setNetInfoState
@@ -84,14 +83,16 @@ export default function RootLayout () {
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-      <Stack screenOptions={{ header: () => null }} />
+      <Animated.View style={[tw`flex-1`]}>
+        <Stack screenOptions={{ header: () => null }} />
+      </Animated.View>
       {/* <TouchableOpacity
         style={tw`mb-10`}
         onPress={() => { player.current?.openPlayer() }}
       >
         <Text style={tw`py-2 px-4`}>打开播放器</Text>
       </TouchableOpacity> */}
-      {/* <BottomPlayer ref={player} /> */}
+      <BottomPlayer ref={miniPlayerRef} />
     </GestureHandlerRootView>
   )
 }
