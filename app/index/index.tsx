@@ -20,6 +20,11 @@ import SearchBox from './SearchBox'
 import Navs from './Navs'
 import Card from './Card'
 
+import Reommend from './Reommend'
+import TrackPager from './TrackPager'
+import RadarSongList from './RadarSongList'
+import StarpickComments from './StarpickComments'
+
 import { useWyCloudApi } from '@/hooks'
 import { tw } from '@/utils'
 import { ANONYMOUS_TOKEN } from '@/constants'
@@ -28,10 +33,6 @@ import type {
   HomepageBlockPageRes,
   HomepageBlockPageBlocks
 } from '@/api/types'
-
-import Reommend from './Reommend'
-import TrackPager from './TrackPager'
-import RadarSongList from './RadarSongList'
 
 interface PageState {
   blocks: HomepageBlockPageBlocks[]
@@ -47,7 +48,7 @@ const showPageType = ['HOMEPAGE_BLOCK_PLAYLIST_RCMD', 'HOMEPAGE_BLOCK_STYLE_RCMD
 const Home: FC = () => {
   const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
 
-  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', 1000 * 60 * 60 * 24 * 7)
+  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', 1000 * 60 * 60 * 2)
 
   const [pageState, setPageState] = useState<PageState>({
     blocks: [],
@@ -142,6 +143,8 @@ const Home: FC = () => {
 
         return null
       })}
+
+      <StarpickComments />
 
       <View style={tw`flex-row items-center justify-center`}>
         <Lottie

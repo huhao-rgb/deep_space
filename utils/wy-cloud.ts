@@ -10,8 +10,6 @@ import type {
   Method
 } from 'axios'
 
-import Constants from 'expo-constants'
-
 import { mmkvDefaultStorage } from './mmkv'
 import {
   weapi,

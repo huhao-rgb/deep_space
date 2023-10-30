@@ -50,23 +50,23 @@ const RadarSongList: FC<Props> = (props) => {
               i === data.length - 1 && tw`ml-1`
             ]}
           >
-          <View style={tw`w-28 flex-col items-center relative`}>
-            <SongListCover cover={item.uiElement?.image.imageUrl} />
-            <View style={tw`w-22 h-2 rounded-b-lg bg-red-100`} />
+            <View style={tw`w-28 flex-col items-center relative`}>
+              <SongListCover cover={item.uiElement?.image.imageUrl} />
+              <View style={tw`w-22 h-2 rounded-b-lg bg-red-100`} />
+            </View>
+            <Text
+              style={tw`mt-1 w-28 text-xs text-gray-800 text-center`}
+              numberOfLines={2}
+            >
+              {item.uiElement?.mainTitle.title}
+            </Text>
+            <Text
+              style={tw`text-xs text-gray-400`}
+              numberOfLines={1}
+            >
+              7.6k+ fov
+            </Text>
           </View>
-          <Text
-            style={tw`mt-1 w-28 text-xs text-gray-800 text-center`}
-            numberOfLines={2}
-          >
-            {item.uiElement?.mainTitle.title}
-          </Text>
-          <Text
-            style={tw`text-xs text-gray-400`}
-            numberOfLines={1}
-          >
-            7.6k+ fov
-          </Text>
-        </View>
         </RectButton>
       ))}
     </ScrollView>
