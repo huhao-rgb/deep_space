@@ -38,8 +38,6 @@ interface RequestInstance extends Partial<WyCloudOptions> {
   recordUniqueId?: string // 同表结构中字段，如果该接口在cacheMultipleRecordApiList数组中出现，则必传，非则会导致缓存异常
 }
 
-const TAG = 'wyCloud'
-
 /**
  * 需要缓存多条记录的api列表，如歌单，歌曲详情，用户详情等
  * 需要使用id作为唯一索引
@@ -213,7 +211,6 @@ export function useWyCloudApi <T = any> (
                       resolve(requestResult)
                     })
                     .catch(err => {
-                      console.error(TAG, `请求错误：`, err)
                       reject(err)
                     })
                 } else {

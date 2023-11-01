@@ -10,6 +10,7 @@ import type { RenderScreenProps } from '@/components/page-scrollview'
 
 import { tw } from '@/utils'
 import { usePlayer } from '@/store'
+import { useTrack } from '@/hooks'
 
 interface Props {
   data: any[]
@@ -20,7 +21,8 @@ const offset = tw.style('w-5').width as number
 const TrackPager: FC<Props> = (props) => {
   const { data } = props
 
-  const [songList, setSongList] = usePlayer((s) => [s.songList, s.setSongList])
+  const [songList, setPlayerList] = usePlayer((s) => [s.songList, s.setPlayerList])
+  const track = useTrack()
 
   const routes = useMemo(
     () => {
@@ -37,6 +39,13 @@ const TrackPager: FC<Props> = (props) => {
       const { route } = rsProps
       const { meta } = route
 
+      const playSong = (item) => {
+        track([item])
+          .then(response => {
+            setPlayerList(response, false)
+          })
+      }
+
       return (
         <>
           {meta?.resources?.map((item: any, i: number) => (
@@ -45,7 +54,7 @@ const TrackPager: FC<Props> = (props) => {
               borderless={false}
               rippleColor={tw.color('red-50')}
               activeOpacity={0.8}
-              onPress={() => { setSongList(songList.length > 0 ? [] : [1]) }}
+              onPress={() => { playSong(item) }}
             >
               <View
                 style={[
@@ -88,7 +97,7 @@ const TrackPager: FC<Props> = (props) => {
         </>
       )
     },
-    [songList]
+    []
   )
 
   return (

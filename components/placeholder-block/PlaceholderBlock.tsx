@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { tw } from '@/utils'
-import { usePlayer } from '@/store'
+import { usePlayerState } from '@/store'
 
 const PlaceholderBlock: FC = () => {
   const height = useSharedValue(0)
@@ -17,7 +17,7 @@ const PlaceholderBlock: FC = () => {
   const [
     isShowMiniPlayer,
     miniPlayerHeight
-  ] = usePlayer((s) => [
+  ] = usePlayerState((s) => [
     s.isShowMiniPlayer,
     s.miniPlayerHeight
   ])

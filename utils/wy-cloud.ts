@@ -49,8 +49,6 @@ export interface WyCloudDecodeAnswer <T> {
   cookie: string[]
 }
 
-const TAG = 'ReqestCookie'
-
 // 网易云请求加密
 export const wyCloudEncode = (options: WyCloudOptions) => {
   const {

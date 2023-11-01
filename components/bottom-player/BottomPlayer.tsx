@@ -6,6 +6,7 @@ import {
   forwardRef,
   memo,
   useImperativeHandle,
+  useEffect,
   useCallback
 } from 'react'
 
@@ -18,6 +19,7 @@ import Animated, {
   Easing
 } from 'react-native-reanimated'
 import { BorderlessButton } from 'react-native-gesture-handler'
+import TrackPlayer, { State } from 'react-native-track-player'
 import { Shadow } from 'react-native-shadow-2'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -26,7 +28,7 @@ import { Image } from 'expo-image'
 import Icon from '@/components/svg-icon'
 
 import { tw } from '@/utils'
-import { usePlayer } from '@/store'
+import { usePlayer, usePlayerState } from '@/store'
 
 import type { BottomPlayerProps } from './types'
 
@@ -40,18 +42,50 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
 
   const { bottom } = useSafeAreaInsets()
 
-  const [miniPlayerHeight, setMniPlayerHeight] = usePlayer((s) => [s.miniPlayerHeight, s.setMniPlayerHeight])
+  const [
+    songList,
+    currentPlayIndex
+  ] = usePlayer((s) => [
+    s.songList,
+    s.currentPlayIndex
+  ])
+  const [
+    playerState,
+    miniPlayerHeight,
+    setMniPlayerHeight,
+    isShowFullPlayer,
+    setIsShowMiniPlayer
+  ] = usePlayerState((s) => [
+    s.playerState,
+    s.miniPlayerHeight,
+    s.setMniPlayerHeight,
+    s.isShowFullPlayer,
+    s.setIsShowMiniPlayer
+  ])
+
+  const currentSong = songList[currentPlayIndex] ?? {}
 
   const bottomValue = useSharedValue(0)
   const playerStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: bottomValue.value || (miniPlayerHeight + 20) }]
+    transform: [{ translateY: bottomValue.value }]
   }))
 
   const setBottomValue = useCallback(
-    (value: number) => {
+    (show: boolean) => {
+      const value = show ? 0 : miniPlayerHeight
       bottomValue.value = withTiming(value, { duration, easing })
     },
-    [easing, duration]
+    [easing, duration, miniPlayerHeight]
+  )
+
+  useEffect(
+    () => {
+      const show = songList.length > 0 && !isShowFullPlayer
+      console.log(show)
+      setBottomValue(show)
+      setIsShowMiniPlayer(show)
+    },
+    [songList, isShowFullPlayer]
   )
 
   const onLayout = useCallback(
@@ -62,9 +96,18 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     []
   )
 
+  const onPlay2Pause = useCallback(
+    () => {
+      playerState === State.Playing
+        ? TrackPlayer.pause()
+        : TrackPlayer.play()
+    },
+    [playerState]
+  )
+
   useImperativeHandle(ref, () => ({
     setShowPlayer: (show: boolean) => {
-      setBottomValue(show ? 0 : miniPlayerHeight)
+      setBottomValue(show)
     }
   }))
 
@@ -92,7 +135,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
           ]}
         >
           <Image
-            source={{ uri: 'http://p1.music.126.net/t48bbdJaeUBFH_FA2Y_xPQ==/3241360279386508.jpg?param=80y80' }}
+            source={{ uri: `${currentSong?.al?.picUrl}?param=80y80` }}
             style={tw`h-12 w-12 rounded-lg`}
           />
           <View style={tw`flex-1 ml-4`}>
@@ -100,34 +143,35 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
               numberOfLines={1}
               style={tw`text-slate-800 text-sm font-bold`}
             >
-              Home to Mama
+              {currentSong?.name}
             </Text>
             <Text
               numberOfLines={1}
               style={tw`text-slate-500 text-xs`}
             >
-              Justin Bieber
+              {currentSong?.ar?.[0]?.name}
             </Text>
           </View>
         </View>
-        <View style={tw`flex-row items-center`}>
+        <View style={tw`flex-row items-center ml-6`}>
           <BorderlessButton
-            style={tw`p-1`}
+            style={tw`p-1.5`}
+            onPress={onPlay2Pause}
           >
             <Icon
-              name="SolidPlay"
-              width={16}
-              height={16}
+              name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
+              width={15}
+              height={15}
               fill={tw.color('slate-700')}
             />
           </BorderlessButton>
           <BorderlessButton
-            style={tw`ml-4`}
+            style={tw`ml-4 p-1`}
           >
             <Icon
-              name="List"
-              width={24}
-              height={24}
+              name="MusicList"
+              width={22}
+              height={22}
               fill={tw.color('slate-700')}
             />
           </BorderlessButton>

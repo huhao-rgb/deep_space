@@ -1,6 +1,3 @@
-import type { RefObject } from 'react'
-import { createRef } from 'react'
-
 import TrackPlayer from 'react-native-track-player'
 import type { Track } from 'react-native-track-player'
 
@@ -10,16 +7,10 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { zutandMmkvStorage } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
-import type { BottomPlayerRef } from '@/components/bottom-player'
 interface PlayerState {
   currentPlayIndex: number
-  miniPlayerRef: RefObject<BottomPlayerRef>
-  miniPlayerHeight: number
-  isShowMiniPlayer: boolean
   songList: CostomTrack[]
   setCurrentPlayIndex: (i: PlayerState['currentPlayIndex']) => void
-  setShowMiniPlayer: () => void
-  setMniPlayerHeight: (h: PlayerState['miniPlayerHeight']) => void
   /**
    * 设置播放器队列
    * @param songData 带url的歌曲数据
@@ -28,6 +19,7 @@ interface PlayerState {
    * @returns void
    */
   setPlayerList: (songData: CostomTrack[], replaceQueue?: boolean, playNow?: boolean) => void
+  initRntpQuene: () => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
 }
 
 // 合并去重歌曲数据
@@ -54,18 +46,8 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
   persist(
     (set, get) => ({
       currentPlayIndex: 0,
-      miniPlayerRef: createRef(),
-      miniPlayerHeight: 0,
-      isShowMiniPlayer: false,
       songList: [],
       setCurrentPlayIndex: (i) => { set({ currentPlayIndex: i }) },
-      setShowMiniPlayer: () => {
-        const { songList, miniPlayerRef } = get()
-        const show = songList.length > 0
-        set({ isShowMiniPlayer: show })
-        miniPlayerRef.current?.setShowPlayer(show)
-      },
-      setMniPlayerHeight: (h) => { set({ miniPlayerHeight: h }) },
       setPlayerList: async (songData, replaceQueue = false, playNow = true) => {
         try {
           const { songList, currentPlayIndex } = get()
@@ -76,32 +58,51 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
             // 获取rntp中的队列
             const rntpQueue = await TrackPlayer.getQueue()
             const addQueueList: Track[] = []
+            list = merge2uniqueSongData(songList, songData)
+            let index = list.length - 1
 
             for (let i = 0; i < songData.length; i++) {
               const item = songData[i]
               const findIndex = rntpQueue.findIndex(qItem => qItem.id === String(item.id))
-              if (findIndex === -1) addQueueList.push(createRntpTrack(item))
+              if (findIndex === -1) {
+                addQueueList.push(createRntpTrack(item))
+              } else {
+                index = findIndex
+              }
             }
 
-            playNow && (playIndex += addQueueList.length) // 设置需要播放的索引
-            list = merge2uniqueSongData(songList, songData)
-
-            TrackPlayer.add(addQueueList)
+            if (addQueueList.length > 0) await TrackPlayer.add(addQueueList)
+            if (index < 0) index = 0
+            if (playNow) playIndex = index
           } else {
             const tracks = songData.map(item => createRntpTrack(item))
 
             playIndex = 0
             list = songList
 
-            TrackPlayer.setQueue(tracks)
+            await TrackPlayer.setQueue(tracks)
           }
 
-          if (playNow || replaceQueue) TrackPlayer.skip(playIndex, 0)
+          if (playNow || replaceQueue) {
+            await TrackPlayer.skip(playIndex, 0)
+            TrackPlayer.play() // 播放
+          }
           set({
             currentPlayIndex: playIndex,
             songList: list
           })
         } catch (error) {}
+      },
+      initRntpQuene: async () => {
+        const { songList, currentPlayIndex } = get()
+
+        if (songList.length === 0) {
+          set({ currentPlayIndex: 0 })
+        } else {
+          const tracks = songList.map(item => createRntpTrack(item))
+          await TrackPlayer.setQueue(tracks)
+          TrackPlayer.skip(currentPlayIndex)
+        }
       }
     }),
     {

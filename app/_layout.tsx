@@ -2,7 +2,11 @@ import { useEffect } from 'react'
 
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import TrackPlayer from 'react-native-track-player'
+import TrackPlayer, {
+  useTrackPlayerEvents,
+  Event,
+  State
+} from 'react-native-track-player'
 import NetInfo from '@react-native-community/netinfo'
 
 import { Stack } from 'expo-router'
@@ -20,15 +24,43 @@ import {
 import { ANONYMOUS_TOKEN } from '@/constants'
 
 import { useWyCloudApi } from '@/hooks'
-import { useNetInfo, usePlayer } from '@/store'
+import {
+  useNetInfo,
+  usePlayer,
+  usePlayerState
+} from '@/store'
 
 TrackPlayer.registerPlaybackService(() => require('../service'))
 
-const TAG = 'rootLog'
+const events = [
+  Event.PlaybackState,
+  Event.RemotePlay,
+  Event.RemotePause,
+  Event.RemoteNext,
+  Event.RemotePrevious
+]
 
 export default function RootLayout () {
-  const [miniPlayerRef] = usePlayer((s) => [s.miniPlayerRef])
-  const [setIp, setNetInfoState] = useNetInfo((s) => [
+  const [
+    initRntpQuene,
+    currentPlayIndex,
+    setCurrentPlayIndex
+  ] = usePlayer((s) => [
+    s.initRntpQuene,
+    s.currentPlayIndex,
+    s.setCurrentPlayIndex
+  ])
+  const [
+    miniPlayerRef,
+    setPlayerState
+  ] = usePlayerState((s) => [
+    s.miniPlayerRef,
+    s.setPlayerState
+  ])
+  const [
+    setIp,
+    setNetInfoState
+  ] = useNetInfo((s) => [
     s.setIp,
     s.setNetInfoState
   ])
@@ -73,6 +105,7 @@ export default function RootLayout () {
 
       ;(async () => {
         await TrackPlayer.setupPlayer()
+        initRntpQuene()
       })()
 
       return () => {
@@ -81,6 +114,28 @@ export default function RootLayout () {
     },
     []
   )
+
+  useTrackPlayerEvents(events, (event) => {
+    switch (event.type) {
+      case Event.PlaybackState:
+        setPlayerState(event.state)
+        break
+      case Event.RemotePlay:
+        setPlayerState(State.Paused)
+        break
+      case Event.RemotePause:
+        setPlayerState(State.Playing)
+        break
+      case Event.RemoteNext:
+        setCurrentPlayIndex(currentPlayIndex + 1)
+        break
+      case Event.RemotePrevious:
+        setCurrentPlayIndex(currentPlayIndex === 0 ? 0 : currentPlayIndex - 1)
+        break
+      default:
+        break
+    }
+  })
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
