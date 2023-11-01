@@ -4,17 +4,15 @@
  */
 import { useCallback } from 'react'
 
-import type { Track as RNTrack } from 'react-native-track-player'
-
 import { useWyCloudApi } from './useWyCloudApi'
 import type {
   Track,
   SongUrlV1Level,
-  SongUrlV1Res
+  SongUrlV1Res,
+  SongUrl
 } from '@/api/types'
 
-export interface CostomTrack extends RNTrack, Omit<Track, 'id'> {
-}
+export type CostomTrack = Track & SongUrl 
 
 export const useTrack = () => {
   const songUrlApi = useWyCloudApi<SongUrlV1Res>('songUrlV1', 1000 * 60 * 60 * 2)
@@ -26,34 +24,20 @@ export const useTrack = () => {
           const ids = tracks.map(item => item.id).join(',')
 
           const songUrlsRes = await songUrlApi({
-            data: {
-              ids,
-              level
-            },
+            data: { ids, level },
             recordUniqueId: ids
           })
 
           const { status, body } = songUrlsRes
           if (status === 200 && body.code === 200) {
             const { data } = body
-            const rnTracks = tracks.map<CostomTrack>((item, i) => {
-              const { url, type } = data[i]
-              const { id, ...rest } = item
-              return {
-                id: String(id),
-                url,
-                contentType: type,
-                title: item.name,
-                artist: item.ar?.[0].name,
-                album: item.al.name,
-                ...rest
-              }
-            })
-            resolve(rnTracks)
+            const songTracks = tracks.map<CostomTrack>((item, i) => ({
+              ...data[i],
+              ...item
+            }))
+            resolve(songTracks)
           }
-        } catch (err) {
-          reject(err)
-        }
+        } catch (err) { reject(err) }
       })
     },
     []

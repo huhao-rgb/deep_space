@@ -42,9 +42,9 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
 
   const [miniPlayerHeight, setMniPlayerHeight] = usePlayer((s) => [s.miniPlayerHeight, s.setMniPlayerHeight])
 
-  const bottomValue = useSharedValue(-miniPlayerHeight)
+  const bottomValue = useSharedValue(0)
   const playerStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: bottomValue.value }]
+    transform: [{ translateY: bottomValue.value || (miniPlayerHeight + 20) }]
   }))
 
   const setBottomValue = useCallback(

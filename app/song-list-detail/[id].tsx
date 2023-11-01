@@ -33,6 +33,7 @@ import NavBar from '@/components/nav-bar'
 
 import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
+import { usePlayer } from '@/store'
 
 import type {
   PlaylistDetailRes,
@@ -60,6 +61,7 @@ const SongListDetail: FC = () => {
   const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
 
   const track = useTrack()
+  const [setPlayerList] = usePlayer((s) => [s.setPlayerList])
 
   const { bottom } = useSafeAreaInsets()
 
@@ -311,6 +313,9 @@ const SongListDetail: FC = () => {
     ({ item, index }) => {
       const playSong = () => {
         track([item])
+          .then(response => {
+            setPlayerList(response, false)
+          })
       }
 
       return (

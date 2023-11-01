@@ -21,13 +21,33 @@ interface PlayerState {
   setShowMiniPlayer: () => void
   setMniPlayerHeight: (h: PlayerState['miniPlayerHeight']) => void
   /**
-   * 设置播放器歌曲列表
-   * songData 如果是数组，则替换整个播放列表，如果是对象，则push到播放列表
-   * 替换列表通常在播放全部操作时发送
-   * 如果使用push操作，则调用rntp播放器add方法，如果是替换操作，则调用rntp播放器setQueue方法
-   * addPlayNow - 操作后是否立即播放最后一条音频
+   * 设置播放器队列
+   * @param songData 带url的歌曲数据
+   * @param replaceQueue 是否替换掉队列
+   * @param playNow 操作结束后是否立即播放歌曲，替换操作播放第一条(替换操作即使设置成false也会立即播放)
+   * @returns void
    */
-  addPlayerList: (songData: CostomTrack | CostomTrack[], addPlayNow?: boolean) => void
+  setPlayerList: (songData: CostomTrack[], replaceQueue?: boolean, playNow?: boolean) => void
+}
+
+// 合并去重歌曲数据
+const merge2uniqueSongData = (arr1: CostomTrack[], arr2: CostomTrack[]) => {
+  const mergeArray = [...arr1, ...arr2]
+  const map = new Map()
+  return mergeArray.filter(item => {
+      return !map.has(item.id) && map.set(item.id, 1)
+  })
+}
+
+const createRntpTrack = (data: CostomTrack): Track => {
+  return {
+    id: String(data.id),
+    url: data.url,
+    contentType: data.type,
+    title: data.name,
+    artist: data.ar?.[0].name,
+    album: data.al?.name
+  }
 }
 
 export const usePlayer = createWithEqualityFn<PlayerState>()(
@@ -38,9 +58,7 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
       miniPlayerHeight: 0,
       isShowMiniPlayer: false,
       songList: [],
-      setCurrentPlayIndex: (i) => {
-        set({ currentPlayIndex: i })
-      },
+      setCurrentPlayIndex: (i) => { set({ currentPlayIndex: i }) },
       setShowMiniPlayer: () => {
         const { songList, miniPlayerRef } = get()
         const show = songList.length > 0
@@ -48,43 +66,42 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
         miniPlayerRef.current?.setShowPlayer(show)
       },
       setMniPlayerHeight: (h) => { set({ miniPlayerHeight: h }) },
-      addPlayerList: (songData, addPlayNow = false) => {
-        const { songList, currentPlayIndex } = get()
-        const isQueue = Array.isArray(songData)
+      setPlayerList: async (songData, replaceQueue = false, playNow = true) => {
+        try {
+          const { songList, currentPlayIndex } = get()
+          let playIndex = currentPlayIndex // 需要播放的索引
+          let list: CostomTrack[] = []
 
-        let songs = isQueue ? songData : [songData]
-        let newSongList: CostomTrack[] = []
+          if (!replaceQueue) {
+            // 获取rntp中的队列
+            const rntpQueue = await TrackPlayer.getQueue()
+            const addQueueList: Track[] = []
 
-        !isQueue
-          ? newSongList = [...songList, ...songs]
-          : newSongList = songs
+            for (let i = 0; i < songData.length; i++) {
+              const item = songData[i]
+              const findIndex = rntpQueue.findIndex(qItem => qItem.id === String(item.id))
+              if (findIndex === -1) addQueueList.push(createRntpTrack(item))
+            }
 
-        const rntpTracks = newSongList.map<Track>((item) => {
-          const { id, url, contentType, title, artist, album } = item
-          return {
-            id,
-            url,
-            contentType,
-            title,
-            artist,
-            album
+            playNow && (playIndex += addQueueList.length) // 设置需要播放的索引
+            list = merge2uniqueSongData(songList, songData)
+
+            TrackPlayer.add(addQueueList)
+          } else {
+            const tracks = songData.map(item => createRntpTrack(item))
+
+            playIndex = 0
+            list = songList
+
+            TrackPlayer.setQueue(tracks)
           }
-        })
 
-        let currentIndex: number = currentPlayIndex
-        if (isQueue) {
-          currentIndex = 0
-          TrackPlayer.setQueue(rntpTracks)
-        } else {
-          // 设置当前索引
-          addPlayNow === true && (currentIndex = newSongList.length - 1)
-          TrackPlayer.add(rntpTracks)
-        }
-
-        set({
-          currentPlayIndex: currentIndex,
-          songList: newSongList
-        })
+          if (playNow || replaceQueue) TrackPlayer.skip(playIndex, 0)
+          set({
+            currentPlayIndex: playIndex,
+            songList: list
+          })
+        } catch (error) {}
       }
     }),
     {
