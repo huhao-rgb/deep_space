@@ -1,5 +1,14 @@
 import type { Track } from './common'
 
+export interface PlaylistDetailData {
+  id: string
+  s?: number // s : 歌单最近的 s 个收藏者,默认为 8
+}
+
+export interface PlaylistTrackAllData {
+  ids: string // 逗号分隔的字符串
+}
+
 export interface PlaylistDetailPrivileges {
   chargeInfoList: Array<{
     chargeMessage: null

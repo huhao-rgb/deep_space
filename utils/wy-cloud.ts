@@ -29,6 +29,7 @@ export type CryptoType = 'weapi' | 'linuxapi' | 'eapi' | 'api'
 
 export interface WyCloudOptions <T extends Record<string, any> = {}> {
   url: string // 这个是完整的路径，带域名的
+  toUrl?: string
   method: Method
   crypto: CryptoType
   realIP?: string
@@ -140,8 +141,11 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
         .toString()
         .padStart(4, '0')}`,
     }
+
+    const musicAMmkv = mmkvDefaultStorage.getString(ANONYMOUS_TOKEN)
+
     if (cookie.MUSIC_U) header['MUSIC_U'] = cookie.MUSIC_U
-    if (cookie.MUSIC_A) header['MUSIC_A'] = cookie.MUSIC_A
+    // if (musicAMmkv) header['MUSIC_A'] = cookie.MUSIC_A ?? musicAMmkv?.split('@')?.[0]
     headers['Cookie'] = Object.keys(header)
       .map(
         (key) =>
@@ -149,7 +153,8 @@ export const wyCloudEncode = (options: WyCloudOptions) => {
       )
       .join('; ')
     requestData.header = header
-    requestData = eapi(options.url, requestData)
+    // 当crypto为eapi时，需要传递toUrl字段
+    requestData = eapi(options.toUrl!, requestData)
     requestUrl = url.replace(/\w*api/, 'eapi')
   }
 
@@ -182,7 +187,7 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
 
   try {
     if (crypto === 'eapi') {
-      answer.body = JSON.parse(decrypt(data).toString())
+      answer.body = JSON.parse(Buffer.from(data).toString())
     } else {
       answer.body = data
     }
@@ -198,7 +203,6 @@ export const wyCloudDecode = (crypto: CryptoType, response: AxiosResponse) => {
       answer.status = 200
     }
   } catch (e) {
-    // console.log(e)
     try {
       answer.body = JSON.parse(data.toString())
     } catch (err) {

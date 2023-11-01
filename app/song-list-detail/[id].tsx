@@ -31,7 +31,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
 
-import { useWyCloudApi } from '@/hooks'
+import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
 
 import type {
@@ -58,6 +58,8 @@ const SongListDetail: FC = () => {
 
   const detailApi = useWyCloudApi<PlaylistDetailRes>('playlistDetail', cacheMill)
   const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
+
+  const track = useTrack()
 
   const { bottom } = useSafeAreaInsets()
 
@@ -103,9 +105,9 @@ const SongListDetail: FC = () => {
 
           const allSongRes = await allSongApi({
             data: {
-              c: '[' + trackIds
+              ids: trackIds
                 .map((item: TrackId) => '{"id":' + item.id + '}')
-                .join(',') + ']'
+                .join(',')
             },
             recordUniqueId: id as string
           })
@@ -307,12 +309,17 @@ const SongListDetail: FC = () => {
 
   const renderItem = useCallback<ListRenderItem<Track>>(
     ({ item, index }) => {
+      const playSong = () => {
+        track([item])
+      }
+
       return (
         <RectButton
           borderless={false}
           rippleColor={tw.color('gray-200')}
           activeOpacity={0.8}
           style={tw`py-2 pr-5 flex-row items-center`}
+          onPress={playSong}
         >
           <Text style={tw`w-12 text-center text-sm text-slate-600`}>{index + 1}</Text>
           <View style={tw`flex-row items-center mr-3 flex-1`}>

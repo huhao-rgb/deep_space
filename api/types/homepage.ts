@@ -3,6 +3,11 @@ import type { Response } from '@/utils'
 export type BlockCode = 'HOMEPAGE_BLOCK_PLAYLIST_RCMD' | 'HOMEPAGE_BLOCK_STYLE_RCMD' | 'HOMEPAGE_BLOCK_MGC_PLAYLIST' | 'HOMEPAGE_BLOCK_LISTEN_LIVE' | 'HOMEPAGE_BLOCK_NEW_HOT_COMMENT'
 export type ShowType = 'HOMEPAGE_SLIDE_PLAYLIST'
 
+export interface HomepageBlockPageData {
+  refresh: boolean
+  cursor?: string
+}
+
 export interface HomepageBlockPageBlocks {
   action?: string
   actionType?: string

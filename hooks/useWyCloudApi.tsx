@@ -46,7 +46,8 @@ const TAG = 'wyCloud'
  */
 const cacheMultipleRecordApiList = [
   'https://music.163.com/api/v6/playlist/detail',
-  'https://music.163.com/api/v3/song/detail'
+  'https://music.163.com/api/v3/song/detail',
+  'https://interface.music.163.com/eapi/song/enhance/player/url/v1'
 ]
 
 /**
@@ -89,7 +90,7 @@ export function useWyCloudApi <T = any> (
                 status INT,
                 createItem INT,
                 cacheDuration INT,
-                recordUniqueId CHAR(255)
+                recordUniqueId TEXT
               )`
             )
           }
@@ -117,10 +118,10 @@ export function useWyCloudApi <T = any> (
       const {
         data: defaultData,
         ...defaultOptions
-      } = apiMethods[method]()
+      } = apiMethods[method as 'songUrlV1'](data as any)
 
       const mergeOptions = {
-        data: { ...defaultData, ...data },
+        data: defaultData,
         ...defaultOptions,
         ...options
       }

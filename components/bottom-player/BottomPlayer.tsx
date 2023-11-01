@@ -35,7 +35,7 @@ const ptValue = tw`pt-2`.paddingTop as number
 const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   const {
     easing = Easing.bezier(0.57, 0.18, 0.26, 0.99),
-    duration = 400
+    duration = 200
   } = props
 
   const { bottom } = useSafeAreaInsets()
@@ -72,7 +72,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     <Animated.View
       style={[
         playerStyles,
-        tw`absolute left-0 right-0`
+        tw`absolute left-0 right-0 bottom-0`
       ]}
       onLayout={onLayout}
     >

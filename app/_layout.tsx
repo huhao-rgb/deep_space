@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import Animated from 'react-native-reanimated'
+import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import TrackPlayer from 'react-native-track-player'
 import NetInfo from '@react-native-community/netinfo'
@@ -11,6 +11,7 @@ import * as NavigationBar from 'expo-navigation-bar'
 import dayjs from 'dayjs'
 
 import BottomPlayer from '@/components/bottom-player'
+import PlaceholderBlock from '@/components/placeholder-block'
 
 import {
   tw,
@@ -83,15 +84,11 @@ export default function RootLayout () {
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-      <Animated.View style={[tw`flex-1`]}>
+      <View style={[tw`flex-1`]}>
         <Stack screenOptions={{ header: () => null }} />
-      </Animated.View>
-      {/* <TouchableOpacity
-        style={tw`mb-10`}
-        onPress={() => { player.current?.openPlayer() }}
-      >
-        <Text style={tw`py-2 px-4`}>打开播放器</Text>
-      </TouchableOpacity> */}
+        {/* 占位块，用于弹出mini播放器后撑开页面 */}
+        <PlaceholderBlock />
+      </View>
       <BottomPlayer ref={miniPlayerRef} />
     </GestureHandlerRootView>
   )

@@ -76,7 +76,7 @@ export const eapi = (url: string, object: AnyObject) => {
 export const decrypt = (cipherBuffer: Buffer) => {
   const decipher = Crypto.createDecipheriv('aes-128-ecb', eapiKey, '')
   return Buffer.concat([
-    Buffer.from(decipher.update(cipherBuffer) as ArrayBuffer),
+    Buffer.from(decipher.update(Buffer.from(cipherBuffer)) as ArrayBuffer),
     Buffer.from(decipher.final())
   ])
 }

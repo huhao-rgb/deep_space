@@ -1,4 +1,5 @@
 import type { WyCloudOptions } from '@/utils'
+import type { HomepageBlockPageData } from './types/homepage'
 
 export const homepageDragonBall = (): WyCloudOptions => {
   return {
@@ -12,11 +13,17 @@ export const homepageDragonBall = (): WyCloudOptions => {
   }
 }
 
-export const homepageBlockPage = (): WyCloudOptions => {
+export const homepageBlockPage = (data?: HomepageBlockPageData): WyCloudOptions => {
+  const {
+    refresh = false,
+    cursor
+  } = data ?? {}
+
   return {
     method: 'POST',
     url: 'https://music.163.com/api/homepage/block/page',
     crypto: 'weapi',
+    data: { refresh, cursor },
     cookie: {
       os: 'ios',
       appver: '8.10.90'
