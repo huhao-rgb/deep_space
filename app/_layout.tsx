@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 
 import BottomPlayer from '@/components/bottom-player'
 import PlaceholderBlock from '@/components/placeholder-block'
+import BottomPlayerQueue from '@/components/bottom-player-queue'
 
 import {
   tw,
@@ -145,6 +146,7 @@ export default function RootLayout () {
         <PlaceholderBlock />
       </View>
       <BottomPlayer ref={miniPlayerRef} />
+      <BottomPlayerQueue />
     </GestureHandlerRootView>
   )
 }

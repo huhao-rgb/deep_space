@@ -2,6 +2,8 @@ import type { RefObject } from 'react'
 import { createRef } from 'react'
 
 import { create } from 'zustand'
+
+import BottomSheet from '@gorhom/bottom-sheet'
 import { State } from 'react-native-track-player'
 
 import type { BottomPlayerRef } from '@/components/bottom-player'
@@ -9,6 +11,7 @@ import type { BottomPlayerRef } from '@/components/bottom-player'
 export interface UsePlayerState {
   playerState: State
   miniPlayerRef: RefObject<BottomPlayerRef>
+  bottomPlayerQueueRef: RefObject<BottomSheet>
   miniPlayerHeight: number
   isShowFullPlayer: boolean // 全屏播放器和迷你播放器是互斥的
   isShowMiniPlayer: boolean
@@ -21,6 +24,7 @@ export interface UsePlayerState {
 export const usePlayerState = create<UsePlayerState>()((set) => ({
   playerState: State.None,
   miniPlayerRef: createRef(),
+  bottomPlayerQueueRef: createRef(),
   miniPlayerHeight: 0,
   isShowFullPlayer: false,
   isShowMiniPlayer: false,

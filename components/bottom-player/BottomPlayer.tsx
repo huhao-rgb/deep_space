@@ -54,13 +54,15 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     miniPlayerHeight,
     setMniPlayerHeight,
     isShowFullPlayer,
-    setIsShowMiniPlayer
+    setIsShowMiniPlayer,
+    bottomPlayerQueueRef
   ] = usePlayerState((s) => [
     s.playerState,
     s.miniPlayerHeight,
     s.setMniPlayerHeight,
     s.isShowFullPlayer,
-    s.setIsShowMiniPlayer
+    s.setIsShowMiniPlayer,
+    s.bottomPlayerQueueRef
   ])
 
   const currentSong = songList[currentPlayIndex] ?? {}
@@ -167,6 +169,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
           </BorderlessButton>
           <BorderlessButton
             style={tw`ml-4 p-1`}
+            onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
           >
             <Icon
               name="MusicList"
