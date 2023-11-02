@@ -28,6 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 
 import Icon from '@/components/svg-icon'
+import ProgressBar from './ProgressBar'
 
 import { tw } from '@/utils'
 import { usePlayer, usePlayerState } from '@/store'
@@ -134,57 +135,62 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
         offset={[0, 3]}
         style={[
           { paddingBottom: bottom + ptValue },
-          tw`flex-1 px-5 flex-row items-center bg-white`
+          tw`bg-white`
         ]}
       >
-        <View
-          style={[
-            { paddingTop: ptValue },
-            tw`flex-1 flex-row items-center`
-          ]}
-        >
-          <Image
-            source={{ uri: `${currentSong?.al?.picUrl}?param=80y80` }}
-            style={tw`h-12 w-12 rounded-lg`}
-          />
-          <View style={tw`flex-1 ml-4`}>
-            <Text
-              numberOfLines={1}
-              style={tw`text-slate-800 text-sm font-bold`}
-            >
-              {currentSong?.name}
-            </Text>
-            <Text
-              numberOfLines={1}
-              style={tw`text-slate-500 text-xs`}
-            >
-              {currentSong?.ar?.[0]?.name}
-            </Text>
+        <ProgressBar />
+        <View style={[{ paddingTop: ptValue }, tw`w-full flex-row items-center px-5`]}>
+          <View style={tw`flex-1 flex-row items-center`}>
+            <Image
+              source={{ uri: `${currentSong?.al?.picUrl}?param=80y80` }}
+              style={tw`h-12 w-12 rounded-lg`}
+            />
+            <View style={tw`flex-1 ml-4`}>
+              <Text
+                numberOfLines={1}
+                style={tw`text-slate-800 text-sm font-bold`}
+              >
+                {currentSong?.name}
+              </Text>
+              <View style={tw`w-full flex-row items-center mt-1`}>
+                {currentSong?.fee === 1 && (
+                  <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
+                    <Text style={tw`text-white text-2xs`}>vip</Text>
+                  </View>
+                )}
+                <Text
+                  numberOfLines={1}
+                  style={tw`text-slate-500 text-xs`}
+                >
+                  {currentSong?.ar?.[0]?.name}
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
-        <View style={tw`flex-row items-center ml-6`}>
-          <BorderlessButton
-            style={tw`p-1.5`}
-            onPress={onPlay2Pause}
-          >
-            <Icon
-              name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
-              width={15}
-              height={15}
-              fill={tw.color('slate-700')}
-            />
-          </BorderlessButton>
-          <BorderlessButton
-            style={tw`ml-4 p-1`}
-            onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
-          >
-            <Icon
-              name="MusicList"
-              width={22}
-              height={22}
-              fill={tw.color('slate-700')}
-            />
-          </BorderlessButton>
+          <View style={tw`flex-row items-center ml-6`}>
+            <BorderlessButton
+              style={tw`p-1.5`}
+              onPress={onPlay2Pause}
+            >
+              <Icon
+                name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
+                width={15}
+                height={15}
+                fill={tw.color('slate-700')}
+              />
+            </BorderlessButton>
+            <BorderlessButton
+              style={tw`ml-4 p-1`}
+              onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
+            >
+              <Icon
+                name="MusicList"
+                width={22}
+                height={22}
+                fill={tw.color('slate-700')}
+              />
+            </BorderlessButton>
+          </View>
         </View>
       </Shadow>
     </Animated.View>
