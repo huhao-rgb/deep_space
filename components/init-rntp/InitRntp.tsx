@@ -6,7 +6,8 @@ import { shallow } from 'zustand/shallow'
 import TrackPlayer, {
   useTrackPlayerEvents,
   Event,
-  State
+  State,
+  Capability
 } from 'react-native-track-player'
 
 import { usePlayer, usePlayerState } from '@/store'
@@ -43,6 +44,27 @@ const InitRntp: FC = () => {
     () => {
       ;(async () => {
         await TrackPlayer.setupPlayer()
+
+        TrackPlayer.updateOptions({
+          capabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious
+          ],
+          compactCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious
+          ],
+          playIcon: require('@/assets/rntp/play.png'),
+          pauseIcon: require('@/assets/rntp/pause.png'),
+          stopIcon: require('@/assets/rntp/stop.png'),
+          previousIcon: require('@/assets/rntp/previous.png'),
+          nextIcon: require('@/assets/rntp/next.png')
+        })
+
         initRntpQuene()
       })()
     },
