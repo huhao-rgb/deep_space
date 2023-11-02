@@ -109,5 +109,6 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
       name: 'mmkv-zustand-storage-player',
       storage: createJSONStorage(() => zutandMmkvStorage)
     }
-  )
+  ),
+  Object.is
 )

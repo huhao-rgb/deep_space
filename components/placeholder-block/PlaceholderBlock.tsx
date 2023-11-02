@@ -1,6 +1,8 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
 
+import { shallow } from 'zustand/shallow'
+
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,10 +19,13 @@ const PlaceholderBlock: FC = () => {
   const [
     isShowMiniPlayer,
     miniPlayerHeight
-  ] = usePlayerState((s) => [
-    s.isShowMiniPlayer,
-    s.miniPlayerHeight
-  ])
+  ] = usePlayerState(
+    (s) => [
+      s.isShowMiniPlayer,
+      s.miniPlayerHeight
+    ],
+    shallow
+  )
 
   useEffect(
     () => {

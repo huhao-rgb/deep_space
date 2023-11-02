@@ -1,7 +1,7 @@
 import type { RefObject } from 'react'
 import { createRef } from 'react'
 
-import { create } from 'zustand'
+import { createWithEqualityFn } from 'zustand/traditional'
 
 import BottomSheet from '@gorhom/bottom-sheet'
 import { State } from 'react-native-track-player'
@@ -21,15 +21,18 @@ export interface UsePlayerState {
   setMniPlayerHeight: (h: UsePlayerState['miniPlayerHeight']) => void
 }
 
-export const usePlayerState = create<UsePlayerState>()((set) => ({
-  playerState: State.None,
-  miniPlayerRef: createRef(),
-  bottomPlayerQueueRef: createRef(),
-  miniPlayerHeight: 0,
-  isShowFullPlayer: false,
-  isShowMiniPlayer: false,
-  setIsShowFullPlayer: (show) => { set({ isShowFullPlayer: show }) },
-  setIsShowMiniPlayer: (show) => { set({ isShowMiniPlayer: show }) },
-  setMniPlayerHeight: (h) => { set({ miniPlayerHeight: h }) },
-  setPlayerState: (state) => { set({ playerState: state }) }
-}))
+export const usePlayerState = createWithEqualityFn<UsePlayerState>(
+  (set) => ({
+    playerState: State.None,
+    miniPlayerRef: createRef(),
+    bottomPlayerQueueRef: createRef(),
+    miniPlayerHeight: 0,
+    isShowFullPlayer: false,
+    isShowMiniPlayer: false,
+    setIsShowFullPlayer: (show) => { set({ isShowFullPlayer: show }) },
+    setIsShowMiniPlayer: (show) => { set({ isShowMiniPlayer: show }) },
+    setMniPlayerHeight: (h) => { set({ miniPlayerHeight: h }) },
+    setPlayerState: (state) => { set({ playerState: state }) }
+  }),
+  Object.is
+)

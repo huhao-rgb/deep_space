@@ -6,6 +6,8 @@ import {
   useCallback
 } from 'react'
 
+import { shallow } from 'zustand/shallow'
+
 import {
   View,
   Text,
@@ -61,7 +63,10 @@ const SongListDetail: FC = () => {
   const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
 
   const track = useTrack()
-  const [setPlayerList] = usePlayer((s) => [s.setPlayerList])
+  const [setPlayerList] = usePlayer(
+    (s) => [s.setPlayerList],
+    shallow
+  )
 
   const { bottom } = useSafeAreaInsets()
 

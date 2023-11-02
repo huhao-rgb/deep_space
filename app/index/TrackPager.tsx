@@ -1,6 +1,8 @@
 import type { FC } from 'react'
 import { useCallback, useMemo } from 'react'
 
+import { shallow } from 'zustand/shallow'
+
 import { View, Text } from 'react-native'
 import { Image } from 'expo-image'
 import { RectButton } from 'react-native-gesture-handler'
@@ -21,7 +23,10 @@ const offset = tw.style('w-5').width as number
 const TrackPager: FC<Props> = (props) => {
   const { data } = props
 
-  const [songList, setPlayerList] = usePlayer((s) => [s.songList, s.setPlayerList])
+  const [songList, setPlayerList] = usePlayer(
+    (s) => [s.songList, s.setPlayerList],
+    shallow
+  )
   const track = useTrack()
 
   const routes = useMemo(

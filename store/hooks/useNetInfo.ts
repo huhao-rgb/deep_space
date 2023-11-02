@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { createWithEqualityFn } from 'zustand/traditional'
 import axios from 'axios'
 
 import type { NetInfoStateType } from '@react-native-community/netinfo'
@@ -17,33 +17,36 @@ interface Response { ip: string }
 
 const nullNetworkType = ['none', 'unknown']
 
-export const useNetInfo = create<UseNetInfoState>()((set) => ({
-  ip: '',
-  netInfoState: null,
-  async setIp () {
-    try {
-      const ipResponse = await axios<Response>({
-        url: 'https://api.ipify.org',
-        params: { format: 'json' }
-      })
+export const useNetInfo = createWithEqualityFn<UseNetInfoState>(
+  (set) => ({
+    ip: '',
+    netInfoState: null,
+    async setIp () {
+      try {
+        const ipResponse = await axios<Response>({
+          url: 'https://api.ipify.org',
+          params: { format: 'json' }
+        })
 
-      if (ipResponse.status === 200 && ipResponse.data.ip) {
-        set({ ip: ipResponse.data.ip })
+        if (ipResponse.status === 200 && ipResponse.data.ip) {
+          set({ ip: ipResponse.data.ip })
+        }
+      } catch (err) {
+        console.error(`获取ip地址错误，错误信息：${err}`)
       }
-    } catch (err) {
-      console.error(`获取ip地址错误，错误信息：${err}`)
-    }
-  },
-  setNetInfoState (state) {
-    let netState: NetinfoState = null
+    },
+    setNetInfoState (state) {
+      let netState: NetinfoState = null
 
-    if (nullNetworkType.indexOf(state) !== -1) {
-    } else if (state === 'cellular') {
-      netState = 'cellular'
-    } else {
-      netState = 'other'
-    }
+      if (nullNetworkType.indexOf(state) !== -1) {
+      } else if (state === 'cellular') {
+        netState = 'cellular'
+      } else {
+        netState = 'other'
+      }
 
-    set({ netInfoState: netState })
-  }
-}))
+      set({ netInfoState: netState })
+    }
+  }),
+  Object.is
+)

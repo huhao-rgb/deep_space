@@ -5,7 +5,7 @@ export interface UseAnonimousState {
   setAnonimousToken: () => Promise<boolean>
 }
 
-export const useAnonimous = create<UseAnonimousState>()(() => ({
+export const useAnonimous = create<UseAnonimousState>(() => ({
   anonimousToken: null,
   setAnonimousToken () {
     return new Promise((resolve, reject) => {})

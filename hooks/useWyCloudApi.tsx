@@ -31,8 +31,6 @@ import type {
   WyCloudDecodeAnswer
 } from '@/utils'
 
-import { useNetInfo } from '@/store'
-
 interface RequestInstance extends Partial<WyCloudOptions> {
   requestCacheDuration?: number
   recordUniqueId?: string // 同表结构中字段，如果该接口在cacheMultipleRecordApiList数组中出现，则必传，非则会导致缓存异常
@@ -61,8 +59,6 @@ export function useWyCloudApi <T = any> (
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
-
-  const [ip] = useNetInfo((s) => [s.ip])
 
   const db = useRef<SQLiteDatabase>()
 
@@ -124,8 +120,8 @@ export function useWyCloudApi <T = any> (
         ...options
       }
 
-      if (!mergeOptions.realIP && ip !== '') {
-        mergeOptions.realIP = ip
+      if (!mergeOptions.realIP) {
+        mergeOptions.realIP = '::1'
       }
 
       const { url } = mergeOptions
@@ -235,7 +231,7 @@ export function useWyCloudApi <T = any> (
         )
       })
     },
-    [ip]
+    []
   )
 
   return requestInstance

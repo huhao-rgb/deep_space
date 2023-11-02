@@ -10,6 +10,8 @@ import {
   useCallback
 } from 'react'
 
+import { shallow } from 'zustand/shallow'
+
 import { View, Text } from 'react-native'
 import type { LayoutChangeEvent } from 'react-native'
 import Animated, {
@@ -45,10 +47,13 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   const [
     songList,
     currentPlayIndex
-  ] = usePlayer((s) => [
-    s.songList,
-    s.currentPlayIndex
-  ])
+  ] = usePlayer(
+    (s) => [
+      s.songList,
+      s.currentPlayIndex
+    ],
+    shallow
+  )
   const [
     playerState,
     miniPlayerHeight,
@@ -56,14 +61,17 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     isShowFullPlayer,
     setIsShowMiniPlayer,
     bottomPlayerQueueRef
-  ] = usePlayerState((s) => [
-    s.playerState,
-    s.miniPlayerHeight,
-    s.setMniPlayerHeight,
-    s.isShowFullPlayer,
-    s.setIsShowMiniPlayer,
-    s.bottomPlayerQueueRef
-  ])
+  ] = usePlayerState(
+    (s) => [
+      s.playerState,
+      s.miniPlayerHeight,
+      s.setMniPlayerHeight,
+      s.isShowFullPlayer,
+      s.setIsShowMiniPlayer,
+      s.bottomPlayerQueueRef
+    ],
+    shallow
+  )
 
   const currentSong = songList[currentPlayIndex] ?? {}
 
@@ -83,7 +91,6 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   useEffect(
     () => {
       const show = songList.length > 0 && !isShowFullPlayer
-      console.log(show)
       setBottomValue(show)
       setIsShowMiniPlayer(show)
     },
