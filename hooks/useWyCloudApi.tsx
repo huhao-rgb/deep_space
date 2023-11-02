@@ -120,10 +120,6 @@ export function useWyCloudApi <T = any> (
         ...options
       }
 
-      if (!mergeOptions.realIP) {
-        mergeOptions.realIP = '::1'
-      }
-
       const { url } = mergeOptions
       const wyCloudRequestOption = wyCloudEncode(mergeOptions)
 

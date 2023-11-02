@@ -13,7 +13,7 @@ import { View, Text } from 'react-native'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
-import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet'
+import type { BottomSheetBackdropProps, BottomSheetHandleProps } from '@gorhom/bottom-sheet'
 import { BorderlessButton, RectButton } from 'react-native-gesture-handler'
 import { FlashList } from '@shopify/flash-list'
 import type { ListRenderItem } from '@shopify/flash-list'
@@ -25,6 +25,8 @@ import {
   usePlayerState
 } from '@/store'
 import { tw } from '@/utils'
+
+import BottomSheetHandle from '../bottom-sheet-handle'
 
 import type { CostomTrack } from '@/hooks'
 
@@ -53,6 +55,11 @@ const BottomPlayerQueue: FC = () => {
         pressBehavior="close"
       />
     ),
+    []
+  )
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <BottomSheetHandle {...props} />,
     []
   )
 
@@ -109,6 +116,7 @@ const BottomPlayerQueue: FC = () => {
       snapPoints={snapPoints}
       enablePanDownToClose
       backdropComponent={renderBackdrop}
+      handleComponent={renderHandle}
       onChange={onChange}
     >
       <View style={tw`px-4 py-3 flex-row items-center justify-between`}>
