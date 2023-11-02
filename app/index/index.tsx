@@ -43,7 +43,12 @@ enum PageError {
   NETERROR = 0
 }
 
-const showPageType = ['HOMEPAGE_BLOCK_PLAYLIST_RCMD', 'HOMEPAGE_BLOCK_STYLE_RCMD', 'HOMEPAGE_BLOCK_MGC_PLAYLIST']
+const showPageType = [
+  'HOMEPAGE_BLOCK_PLAYLIST_RCMD',
+  'HOMEPAGE_BLOCK_STYLE_RCMD',
+  'HOMEPAGE_BLOCK_MGC_PLAYLIST',
+  'HOMEPAGE_BLOCK_TOPLIST'
+]
 
 const Home: FC = () => {
   const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
@@ -87,6 +92,7 @@ const Home: FC = () => {
         case 'HOMEPAGE_BLOCK_PLAYLIST_RCMD':
           return <Reommend data={item.creatives} />
         case 'HOMEPAGE_BLOCK_STYLE_RCMD':
+        case 'HOMEPAGE_BLOCK_TOPLIST':
           return <TrackPager data={item.creatives} />
         case 'HOMEPAGE_BLOCK_MGC_PLAYLIST':
           return <RadarSongList data={item.creatives} />

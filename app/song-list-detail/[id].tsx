@@ -345,13 +345,20 @@ const SongListDetail: FC = () => {
               >
                 {item.name}
               </Text>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={tw`mt-1 text-xs text-slate-500`}
-              >
-                {item.al?.name} - {item.ar?.[0]?.name}
-              </Text>
+              <View style={tw`w-full flex-row items-center mt-1`}>
+                {item.fee === 1 && (
+                  <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
+                    <Text style={tw`text-white text-2xs`}>vip</Text>
+                  </View>
+                )}
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={tw`flex-1 text-xs text-slate-500`}
+                >
+                  {item.al?.name} - {item.ar?.[0]?.name}
+                </Text>
+              </View>
             </View>
           </View>
           <View style={tw`flex-row items-center`}>

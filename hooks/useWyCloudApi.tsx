@@ -17,6 +17,7 @@ import uuid from 'react-native-uuid'
 
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { shallow } from 'zustand/shallow'
 
 import * as apiMethods from '@/api'
 
@@ -30,6 +31,8 @@ import type {
   WyCloudOptions,
   WyCloudDecodeAnswer
 } from '@/utils'
+
+// import { useNetInfo } from '@/store'
 
 interface RequestInstance extends Partial<WyCloudOptions> {
   requestCacheDuration?: number
@@ -59,6 +62,8 @@ export function useWyCloudApi <T = any> (
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
+
+  // const [ip] = useNetInfo((s) => [s.ip], shallow)
 
   const db = useRef<SQLiteDatabase>()
 
@@ -119,6 +124,10 @@ export function useWyCloudApi <T = any> (
         ...defaultOptions,
         ...options
       }
+
+      // if (!mergeOptions.realIP && ip !== '') {
+      //   mergeOptions.realIP = ip
+      // }
 
       const { url } = mergeOptions
       const wyCloudRequestOption = wyCloudEncode(mergeOptions)

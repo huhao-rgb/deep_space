@@ -77,7 +77,7 @@ const BottomPlayerQueue: FC = () => {
           <View style={tw`flex-1 flex-row items-center`}>
             <Text style={tw`text-sm text-slate-700 mr-3`}>{index + 1}</Text>
             {item.fee === 1 && (
-              <View style={[tw`mr-2 px-1 rounded-md bg-red-500`, { paddingVertical: 1 }]}>
+              <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
                 <Text style={tw`text-white text-2xs`}>vip</Text>
               </View>
             )}

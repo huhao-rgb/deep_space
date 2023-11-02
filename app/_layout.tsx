@@ -27,8 +27,8 @@ import { useNetInfo } from '@/store'
 
 
 export default function RootLayout () {
-  const [setNetInfoState] = useNetInfo(
-    (s) => [s.setNetInfoState],
+  const [setNetInfoState, setIp] = useNetInfo(
+    (s) => [s.setNetInfoState, s.setIp],
     shallow
   )
 
@@ -64,8 +64,9 @@ export default function RootLayout () {
         })
       
       const unsubscribeNetInfo = NetInfo.addEventListener(state => {
-        const { type } = state
+        const { type, isConnected } = state
         setNetInfoState(type)
+        // if (isConnected) setIp()
       })
 
       return () => {
