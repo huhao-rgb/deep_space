@@ -21,7 +21,7 @@ export const useTrack = () => {
     (tracks: Track[], level?: SongUrlV1Level) => {
       return new Promise<CostomTrack[]>(async (resolve, reject) => {
         try {
-          const ids = tracks.map(item => item.id).join(',')
+          const ids = tracks.map(item => Number(item.id)).join(',')
 
           const songUrlsRes = await songUrlApi({
             data: { ids, level },
@@ -32,8 +32,8 @@ export const useTrack = () => {
           if (status === 200 && body.code === 200) {
             const { data } = body
             const songTracks = tracks.map<CostomTrack>((item, i) => ({
-              ...data[i],
-              ...item
+              ...item,
+              ...data[i]
             }))
             resolve(songTracks)
           }

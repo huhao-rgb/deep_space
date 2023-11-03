@@ -11,6 +11,7 @@ import { shallow } from 'zustand/shallow'
 
 import { View, Text } from 'react-native'
 
+import TrackPlayer from 'react-native-track-player'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type { BottomSheetBackdropProps, BottomSheetHandleProps } from '@gorhom/bottom-sheet'
@@ -72,8 +73,17 @@ const BottomPlayerQueue: FC = () => {
 
   const renderItem = useCallback<ListRenderItem<CostomTrack>>(
     ({ item, index }) => {
+      const onPlaySong = () => {
+        const findIndex = songList.findIndex(sItem => sItem.id === item.id)
+        TrackPlayer.skip(findIndex < 0 ? index : findIndex)
+        TrackPlayer.play()
+      }
+
       return (
-        <RectButton style={tw`flex-row items-center py-2`}>
+        <RectButton
+          style={tw`flex-row items-center py-2`}
+          onPress={onPlaySong}
+        >
           <View style={tw`flex-1 flex-row items-center`}>
             <Text style={tw`text-sm text-slate-700 mr-3`}>{index + 1}</Text>
             {item.fee === 1 && (
@@ -106,7 +116,7 @@ const BottomPlayerQueue: FC = () => {
         </RectButton>
       )
     },
-    []
+    [songList]
   )
 
   return (

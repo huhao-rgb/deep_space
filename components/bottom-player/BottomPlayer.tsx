@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
   Easing
 } from 'react-native-reanimated'
-import { BorderlessButton } from 'react-native-gesture-handler'
+import { BorderlessButton, RectButton } from 'react-native-gesture-handler'
 import TrackPlayer, { State } from 'react-native-track-player'
 import { Shadow } from 'react-native-shadow-2'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -107,12 +107,12 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   )
 
   const onPlay2Pause = useCallback(
-    () => {
+    async () => {
       playerState === State.Playing
         ? TrackPlayer.pause()
         : TrackPlayer.play()
     },
-    [playerState]
+    [playerState, currentPlayIndex]
   )
 
   useImperativeHandle(ref, () => ({
@@ -133,13 +133,20 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
         startColor="#00000010"
         distance={16}
         offset={[0, 3]}
-        style={[
-          { paddingBottom: bottom + ptValue },
-          tw`bg-white`
-        ]}
+        style={[tw`bg-white`]}
       >
         <ProgressBar />
-        <View style={[{ paddingTop: ptValue }, tw`w-full flex-row items-center px-5`]}>
+        <RectButton
+          rippleColor={tw.color('red-50')}
+          activeOpacity={0.8}
+          style={[
+            {
+              paddingTop: ptValue,
+              paddingBottom: bottom + ptValue
+            },
+            tw`w-full flex-row items-center px-5`
+          ]}
+        >
           <View style={tw`flex-1 flex-row items-center`}>
             <Image
               source={{ uri: `${currentSong?.al?.picUrl}?param=80y80` }}
@@ -191,7 +198,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
               />
             </BorderlessButton>
           </View>
-        </View>
+        </RectButton>
       </Shadow>
     </Animated.View>
   )

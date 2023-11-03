@@ -17,12 +17,12 @@ const ProgressBar: FC = () => {
   useEffect(
     () => {
       let i = 0
-      setInterval(() => {
-        i += 1
-        widthValue.value = i
+      // setInterval(() => {
+      //   i += 1
+      //   widthValue.value = i
 
-        if (i === 100) i = 0
-      }, 1000)
+      //   if (i === 100) i = 0
+      // }, 1000)
     },
     []
   )

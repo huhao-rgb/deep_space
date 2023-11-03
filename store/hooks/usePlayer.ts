@@ -19,7 +19,7 @@ interface PlayerState {
    * @returns void
    */
   setPlayerList: (songData: CostomTrack[], replaceQueue?: boolean, playNow?: boolean) => void
-  initRntpQuene: () => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
+  initRntpQuene: (quene: CostomTrack[]) => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
 }
 
 // 合并去重歌曲数据
@@ -85,7 +85,7 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
 
           if (playNow || replaceQueue) {
             await TrackPlayer.skip(playIndex, 0)
-            TrackPlayer.play() // 播放
+            TrackPlayer.play()
           }
           set({
             currentPlayIndex: playIndex,
@@ -93,16 +93,24 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           })
         } catch (error) {}
       },
-      initRntpQuene: async () => {
-        const { songList, currentPlayIndex } = get()
+      initRntpQuene: async (quene) => {
+        const { currentPlayIndex } = get()
 
-        if (songList.length === 0) {
-          set({ currentPlayIndex: 0 })
+        let playIndex = currentPlayIndex
+        if (quene[playIndex] === undefined) playIndex = 0
+
+        if (quene.length === 0) {
+          playIndex = 0
         } else {
-          const tracks = songList.map(item => createRntpTrack(item))
+          const tracks = quene.map(item => createRntpTrack(item))
           await TrackPlayer.setQueue(tracks)
-          TrackPlayer.skip(currentPlayIndex)
+          TrackPlayer.skip(playIndex, 0)
         }
+
+        set({
+          currentPlayIndex: playIndex,
+          songList: quene
+        })
       }
     }),
     {
