@@ -11,8 +11,6 @@ export const songUrlV1 = (data?: SongUrlV1Data): WyCloudOptions => {
     level = 'standard'
   } = data ?? {}
 
-  console.log(`[${ids}]`)
-
   return {
     method: 'POST',
     url: 'https://interface.music.163.com/eapi/song/enhance/player/url/v1',

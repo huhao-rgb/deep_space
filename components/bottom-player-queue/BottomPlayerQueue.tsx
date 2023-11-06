@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import {
   useMemo,
   useCallback,
+  useEffect,
   useState,
   memo
 } from 'react'
@@ -20,6 +21,9 @@ import { FlashList } from '@shopify/flash-list'
 import type { ListRenderItem } from '@shopify/flash-list'
 
 import Icon from '../svg-icon'
+import BottomSheetHandle from '../bottom-sheet-handle'
+
+import LottieIcon from './LottieIcon'
 
 import {
   usePlayer,
@@ -27,17 +31,15 @@ import {
 } from '@/store'
 import { tw } from '@/utils'
 
-import BottomSheetHandle from '../bottom-sheet-handle'
-
 import type { CostomTrack } from '@/hooks'
 
 const BottomPlayerQueue: FC = () => {
-  const [songList] = usePlayer(
-    (s) => [s.songList],
+  const [songList, currentPlayIndex] = usePlayer(
+    (s) => [s.songList, s.currentPlayIndex],
     shallow
   )
   const [bottomPlayerQueueRef] = usePlayerState(
-    (s) => [s.bottomPlayerQueueRef],
+    (s) => [s.bottomPlayerQueueRef, s.playerState],
     shallow
   )
 
@@ -46,6 +48,30 @@ const BottomPlayerQueue: FC = () => {
   const snapPoints = useMemo(() => ['60%'], [])
 
   const [firstOpen, setFirstOpen] = useState(false)
+  const [playIndex, setPlayIndex] = useState<number | undefined>()
+
+  useEffect(
+    () => {
+      TrackPlayer.getActiveTrack()
+        .then(track => {
+          let index = currentPlayIndex
+
+          if (track) {
+            const id = track.id
+            const findIndex = songList.findIndex(item => item.id === Number(id))
+            if (index !== findIndex) index = findIndex
+          }
+
+          setPlayIndex(index)
+        })
+        .catch(() => {
+          setPlayIndex(currentPlayIndex ?? 0)
+        })
+    },
+    [songList, currentPlayIndex]
+  )
+
+  console.log('当前播放的索引', playIndex)
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -100,9 +126,17 @@ const BottomPlayerQueue: FC = () => {
               <Text style={tw`ml-3 text-sm text-slate-600`}>{item.ar?.[0]?.name}</Text>
             </Text>
           </View>
+          <View
+            style={[
+              tw`ml-4 w-8 h-8`,
+              { opacity: playIndex === index ? 1 : 0 }
+            ]}
+          >
+            <LottieIcon />
+          </View>
           <BorderlessButton
             style={[
-              tw`p-1 ml-4`,
+              tw`p-1 ml-3`,
               { transform: [{ translateX: 2 }] }
             ]}
           >
@@ -116,7 +150,7 @@ const BottomPlayerQueue: FC = () => {
         </RectButton>
       )
     },
-    [songList]
+    [songList, playIndex]
   )
 
   return (
