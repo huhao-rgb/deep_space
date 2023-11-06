@@ -10,7 +10,7 @@ import { toRad } from 'react-native-redash'
 
 import type { HandleProps } from './types'
 
-const RAD = 60
+const RAD = 40
 
 // @ts-ignore
 export const transformOrigin = ({ x, y }, ...transformations) => {
