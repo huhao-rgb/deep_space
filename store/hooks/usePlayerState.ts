@@ -11,6 +11,7 @@ import type { BottomPlayerRef } from '@/components/bottom-player'
 export interface UsePlayerState {
   playerState: State
   miniPlayerRef: RefObject<BottomPlayerRef>
+  playerRef: RefObject<BottomSheet>
   bottomPlayerQueueRef: RefObject<BottomSheet>
   miniPlayerHeight: number
   isShowFullPlayer: boolean // 全屏播放器和迷你播放器是互斥的
@@ -25,6 +26,7 @@ export const usePlayerState = createWithEqualityFn<UsePlayerState>(
   (set) => ({
     playerState: State.None,
     miniPlayerRef: createRef(),
+    playerRef: createRef(),
     bottomPlayerQueueRef: createRef(),
     miniPlayerHeight: 0,
     isShowFullPlayer: false,

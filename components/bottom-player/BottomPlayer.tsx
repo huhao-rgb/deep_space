@@ -61,7 +61,8 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     setMniPlayerHeight,
     isShowFullPlayer,
     setIsShowMiniPlayer,
-    bottomPlayerQueueRef
+    bottomPlayerQueueRef,
+    playerRef
   ] = usePlayerState(
     (s) => [
       s.playerState,
@@ -69,7 +70,8 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
       s.setMniPlayerHeight,
       s.isShowFullPlayer,
       s.setIsShowMiniPlayer,
-      s.bottomPlayerQueueRef
+      s.bottomPlayerQueueRef,
+      s.playerRef
     ],
     shallow
   )
@@ -115,6 +117,14 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     [playerState, currentPlayIndex]
   )
 
+  const showPlayer = useCallback(
+    () => {
+      if (songList.length === 0) return
+      playerRef.current?.snapToIndex(0)
+    },
+    [songList, playerRef]
+  )
+
   useImperativeHandle(ref, () => ({
     setShowPlayer: (show: boolean) => {
       setBottomValue(show)
@@ -146,6 +156,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
             },
             tw`w-full flex-row items-center px-5`
           ]}
+          onPress={showPlayer}
         >
           <View style={tw`flex-1 flex-row items-center`}>
             <Image

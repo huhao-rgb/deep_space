@@ -39,7 +39,7 @@ const BottomPlayerQueue: FC = () => {
     shallow
   )
   const [bottomPlayerQueueRef] = usePlayerState(
-    (s) => [s.bottomPlayerQueueRef, s.playerState],
+    (s) => [s.bottomPlayerQueueRef],
     shallow
   )
 
@@ -48,30 +48,6 @@ const BottomPlayerQueue: FC = () => {
   const snapPoints = useMemo(() => ['60%'], [])
 
   const [firstOpen, setFirstOpen] = useState(false)
-  const [playIndex, setPlayIndex] = useState<number | undefined>()
-
-  useEffect(
-    () => {
-      TrackPlayer.getActiveTrack()
-        .then(track => {
-          let index = currentPlayIndex
-
-          if (track) {
-            const id = track.id
-            const findIndex = songList.findIndex(item => item.id === Number(id))
-            if (index !== findIndex) index = findIndex
-          }
-
-          setPlayIndex(index)
-        })
-        .catch(() => {
-          setPlayIndex(currentPlayIndex ?? 0)
-        })
-    },
-    [songList, currentPlayIndex]
-  )
-
-  console.log('当前播放的索引', playIndex)
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -129,7 +105,7 @@ const BottomPlayerQueue: FC = () => {
           <View
             style={[
               tw`ml-4 w-8 h-8`,
-              { opacity: playIndex === index ? 1 : 0 }
+              { opacity: currentPlayIndex === index ? 1 : 0 }
             ]}
           >
             <LottieIcon />
@@ -150,7 +126,7 @@ const BottomPlayerQueue: FC = () => {
         </RectButton>
       )
     },
-    [songList, playIndex]
+    [songList, currentPlayIndex]
   )
 
   return (
@@ -196,6 +172,7 @@ const BottomPlayerQueue: FC = () => {
       {firstOpen && (
         <FlashList
           data={songList}
+          keyExtractor={(item) => String(item.id)}
           estimatedItemSize={80}
           contentContainerStyle={{ paddingBottom: bottom, paddingHorizontal: 20 }}
           renderItem={renderItem}

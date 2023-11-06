@@ -12,6 +12,7 @@ import * as NavigationBar from 'expo-navigation-bar'
 import dayjs from 'dayjs'
 
 import BottomPlayer from '@/components/bottom-player'
+import Player from '@/components/player'
 import PlaceholderBlock from '@/components/placeholder-block'
 import BottomPlayerQueue from '@/components/bottom-player-queue'
 import InitRntp from '@/components/init-rntp'
@@ -86,6 +87,7 @@ export default function RootLayout () {
         <PlaceholderBlock />
       </View>
       <BottomPlayer />
+      <Player />
       <BottomPlayerQueue />
       <InitRntp />
     </GestureHandlerRootView>
