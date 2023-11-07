@@ -34,20 +34,12 @@ import type {
 
 // import { useNetInfo } from '@/store'
 
-interface RequestInstance extends Partial<WyCloudOptions> {
-  requestCacheDuration?: number
-  recordUniqueId?: string // 同表结构中字段，如果该接口在cacheMultipleRecordApiList数组中出现，则必传，非则会导致缓存异常
-}
+type AnyObject = Record<string, any>
 
-/**
- * 需要缓存多条记录的api列表，如歌单，歌曲详情，用户详情等
- * 需要使用id作为唯一索引
- */
-const cacheMultipleRecordApiList = [
-  'https://music.163.com/api/v6/playlist/detail',
-  'https://music.163.com/api/v3/song/detail',
-  'https://interface.music.163.com/eapi/song/enhance/player/url/v1'
-]
+interface RequestInstance <D extends AnyObject> extends Partial<WyCloudOptions<D>> {
+  requestCacheDuration?: number
+  recordUniqueId?: string // 同表结构中字段
+}
 
 /**
  * 网易云音乐请求接口
@@ -55,10 +47,10 @@ const cacheMultipleRecordApiList = [
  * @param cacheDuration number 缓存的时长，单位为毫秒，传0获取最新数据
  * @returns promise
  */
-export function useWyCloudApi <T = any> (
+export function useWyCloudApi <T = any, D extends AnyObject = {}> (
   method: keyof typeof apiMethods,
   cacheDuration?: number
-): (options?: RequestInstance) => Promise<WyCloudDecodeAnswer<T>> {
+): (options?: RequestInstance<D>) => Promise<WyCloudDecodeAnswer<T>> {
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
@@ -104,7 +96,7 @@ export function useWyCloudApi <T = any> (
 
   // 请求对象，返回一个promise
   const requestInstance = useCallback(
-    async (instanceOptions?: RequestInstance) => {
+    async (instanceOptions?: RequestInstance<D>) => {
       const customOptions = instanceOptions ?? {}
       const {
         requestCacheDuration,
@@ -132,7 +124,7 @@ export function useWyCloudApi <T = any> (
       const { url } = mergeOptions
       const wyCloudRequestOption = wyCloudEncode(mergeOptions)
 
-      const isMultipleRecord = cacheMultipleRecordApiList.indexOf(url) !== -1
+      const isMultipleRecord = recordUniqueId !== undefined
 
       return new Promise<WyCloudDecodeAnswer<T>>((resolve, reject) => {
         db.current?.transaction(
