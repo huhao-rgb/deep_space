@@ -65,23 +65,21 @@ const Home: FC = () => {
 
   useEffect(
     () => {
-      if (anonymousToken) {
-        wyCloud({
-          data: {
-            refresh: false,
-            cursor: undefined
+      wyCloud({
+        data: {
+          refresh: false,
+          cursor: undefined
+        }
+      })
+        .then(response => {
+          const { status, body } = response
+          if (status === 200 && body.code === 200) {
+            const { blocks, cursor } = body.data
+            setPageState({ blocks, cursor })
           }
         })
-          .then(response => {
-            const { status, body } = response
-            if (status === 200 && body.code === 200) {
-              const { blocks, cursor } = body.data
-              setPageState({ blocks, cursor })
-            }
-          })
-      }
     },
-    [anonymousToken]
+    []
   )
 
   const renderPageContent = useCallback(

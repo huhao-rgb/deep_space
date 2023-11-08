@@ -3,7 +3,6 @@ import type { FC } from 'react'
 import {
   useMemo,
   useCallback,
-  useEffect,
   useState,
   memo
 } from 'react'
@@ -74,12 +73,16 @@ const BottomPlayerQueue: FC = () => {
   )
 
   const renderItem = useCallback<ListRenderItem<CostomTrack>>(
-    ({ item, index }) => {
+    ({ item, index, extraData }) => {
       const onPlaySong = () => {
         const findIndex = songList.findIndex(sItem => sItem.id === item.id)
         TrackPlayer.skip(findIndex < 0 ? index : findIndex)
         TrackPlayer.play()
       }
+
+      const { playIndex } = extraData
+
+      console.log('当前播放的索引', playIndex)
 
       return (
         <RectButton
@@ -105,7 +108,7 @@ const BottomPlayerQueue: FC = () => {
           <View
             style={[
               tw`ml-4 w-8 h-8`,
-              { opacity: currentPlayIndex === index ? 1 : 0 }
+              { opacity: playIndex === index ? 1 : 0 }
             ]}
           >
             <LottieIcon />
@@ -126,7 +129,7 @@ const BottomPlayerQueue: FC = () => {
         </RectButton>
       )
     },
-    [songList, currentPlayIndex]
+    [songList]
   )
 
   return (
@@ -175,6 +178,7 @@ const BottomPlayerQueue: FC = () => {
           keyExtractor={(item) => String(item.id)}
           estimatedItemSize={80}
           contentContainerStyle={{ paddingBottom: bottom, paddingHorizontal: 20 }}
+          extraData={{ playIndex: currentPlayIndex }}
           renderItem={renderItem}
           // @ts-ignore
           renderScrollComponent={BottomSheetScrollView}

@@ -1,7 +1,9 @@
 import {
   memo,
   useMemo,
-  useCallback
+  useCallback,
+  useEffect,
+  useState
 } from 'react'
 
 import {
@@ -28,9 +30,20 @@ import Icon from '../svg-icon'
 
 import ProgressBar from './ProgressBar'
 import ButtonIcon from './ButtonIcon'
+import Lyric from './Lyric'
 
 import { usePlayerState, usePlayer } from '@/store'
 import { tw } from '@/utils'
+import { useWyCloudApi } from '@/hooks'
+
+import type { LyricParams, LyricResponse } from '@/api/types'
+
+export interface LyricData {
+  lrc: string
+  tlyric: string
+  transUser?: string
+  lyricUser?: string
+}
 
 const gapWidth = tw`w-5`.width as number
 
@@ -42,8 +55,12 @@ const Player = memo(() => {
   const { height, width } = useWindowDimensions()
   const { bottom } = useSafeAreaInsets()
 
+  const lyricApi = useWyCloudApi<LyricResponse, LyricParams>('lyric', 1000 * 60 * 60 * 2)
+
   const snapPoints = useMemo(() => [height + bottom], [height, bottom])
   const coverWidth = useMemo(() => width - gapWidth * 2, [width])
+
+  const [lyricData, setLyricData] = useState<LyricData>()
 
   const [songList, currentPlayIndex] = usePlayer(
     (s) => [s.songList, s.currentPlayIndex],
@@ -56,7 +73,29 @@ const Player = memo(() => {
 
   const currentSong = songList[currentPlayIndex] ?? {}
 
-  console.log('底部状态栏刷新次数')
+  useEffect(
+    () => {
+      const { id } = currentSong
+
+      lyricApi({
+        data: { id },
+        recordUniqueId: String(id)
+      })
+        .then(response => {
+          const { status, body } = response
+          if (status === 200 && body.code === 200) {
+            const { lrc, transUser, tlyric, lyricUser } = body
+            setLyricData({
+              lrc: lrc.lyric,
+              transUser: transUser?.nickname,
+              tlyric: tlyric.lyric,
+              lyricUser: lyricUser?.nickname
+            })
+          }
+        })
+    },
+    [currentSong]
+  )
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -81,7 +120,7 @@ const Player = memo(() => {
       ref={playerRef}
       index={-1}
       snapPoints={snapPoints}
-      enablePanDownToClose
+      enablePanDownToClose={true}
       enableOverDrag={false}
       backdropComponent={renderBackdrop}
       handleComponent={renderHandle}
@@ -109,12 +148,8 @@ const Player = memo(() => {
         >
           {currentSong?.ar?.[0]?.name}
         </Text>
-        {/* 三行歌词滚动区域 */}
-        <View style={tw`flex-1 flex-col justify-between my-8`}>
-          <Text style={tw`text-base text-center`}>歌词行数1</Text>
-          <Text style={tw`text-lg font-bold text-center`}>歌词行数2歌词行数2歌词行数2</Text>
-          <Text style={tw`text-base text-center`}>歌词行数3</Text>
-        </View>
+
+        <Lyric lyricData={lyricData} />
 
         <View style={tw`flex-row items-center justify-between`}>
           <ButtonIcon
