@@ -67,8 +67,8 @@ const Player = memo(() => {
 
   const [lyricData, setLyricData] = useState<LyricData>()
 
-  const [songList, currentPlayIndex] = usePlayer(
-    (s) => [s.songList, s.currentPlayIndex],
+  const [songList, currentPlayIndex, setCurrentPlayIndex] = usePlayer(
+    (s) => [s.songList, s.currentPlayIndex, s.setCurrentPlayIndex],
     shallow
   )
   const [playerRef, playerState] = usePlayerState(
@@ -111,6 +111,27 @@ const Player = memo(() => {
     [playerState, currentPlayIndex]
   )
 
+  const onCoverSwitchFinish = useCallback(
+    (isNext: boolean) => {
+      const totalIndex = songList.length - 1
+
+      if (isNext) {
+        const nextIndex = currentPlayIndex === totalIndex
+          ? 0
+          : currentPlayIndex + 1
+        setCurrentPlayIndex(nextIndex)
+        TrackPlayer.skipToNext()
+      } else {
+        const prevIndex = currentPlayIndex === 0
+          ? totalIndex
+          : currentPlayIndex - 1
+        setCurrentPlayIndex(prevIndex)
+        TrackPlayer.skipToPrevious(prevIndex)
+      }
+    },
+    [songList, currentPlayIndex, setCurrentPlayIndex]
+  )
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -146,6 +167,7 @@ const Player = memo(() => {
           uri={`${currentSong?.al?.picUrl}?param=1000y1000`}
           size={coverWidth}
           windowWidth={width}
+          onFinish={onCoverSwitchFinish}
         />
         <Text
           numberOfLines={1}
