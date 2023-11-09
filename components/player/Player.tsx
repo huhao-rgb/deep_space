@@ -12,6 +12,7 @@ import {
   useWindowDimensions
 } from 'react-native'
 
+import TrackPlayer, { State } from 'react-native-track-player'
 import { RectButton } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type {
@@ -31,8 +32,12 @@ import Icon from '../svg-icon'
 import ProgressBar from './ProgressBar'
 import ButtonIcon from './ButtonIcon'
 import Lyric from './Lyric'
+import CoverSwitch from './CoverSwitch'
 
-import { usePlayerState, usePlayer } from '@/store'
+import {
+  usePlayerState,
+  usePlayer
+} from '@/store'
 import { tw } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
 
@@ -66,8 +71,8 @@ const Player = memo(() => {
     (s) => [s.songList, s.currentPlayIndex],
     shallow
   )
-  const [playerRef] = usePlayerState(
-    (s) => [s.playerRef],
+  const [playerRef, playerState] = usePlayerState(
+    (s) => [s.playerRef, s.playerState],
     shallow
   )
 
@@ -97,6 +102,15 @@ const Player = memo(() => {
     [currentSong]
   )
 
+  const onPlay2Pause = useCallback(
+    async () => {
+      playerState === State.Playing
+        ? TrackPlayer.pause()
+        : TrackPlayer.play()
+    },
+    [playerState, currentPlayIndex]
+  )
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -114,7 +128,6 @@ const Player = memo(() => {
     []
   )
 
-
   return (
     <BottomSheet
       ref={playerRef}
@@ -129,12 +142,10 @@ const Player = memo(() => {
         edges={['bottom']}
         style={tw`px-5 flex-1`}
       >
-        <Image
-          source={{ uri: `${currentSong?.al?.picUrl}?param=1000y1000` }}
-          style={[
-            { width: coverWidth, height: coverWidth },
-            tw`rounded-2xl`
-          ]}
+        <CoverSwitch
+          uri={`${currentSong?.al?.picUrl}?param=1000y1000`}
+          size={coverWidth}
+          windowWidth={width}
         />
         <Text
           numberOfLines={1}
@@ -194,9 +205,10 @@ const Player = memo(() => {
           <RectButton
             activeOpacity={0.8}
             style={tw`rounded-full w-14 h-14 bg-red-500 flex-row justify-center items-center`}
+            onPress={onPlay2Pause}
           >
             <Icon
-              name="SolidPlay"
+              name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
               width={20}
               height={20}
               fill={tw.color('white')}

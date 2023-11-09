@@ -1,8 +1,14 @@
 import type { FC } from 'react'
-import { useMemo, useCallback } from 'react'
+import {
+  useMemo,
+  useCallback,
+  useState
+} from 'react'
 
 import { View, Text } from 'react-native'
 import type { ListRenderItem } from 'react-native'
+import Animated from 'react-native-reanimated'
+import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 
 import type { LyricData } from './Player'
@@ -69,6 +75,8 @@ const parseLyric = (lyric: string) => {
 const Lyric: FC<LyricProps> = (props) => {
   const { lyricData } = props
 
+  const [curPlayRow, setCurPlayRow] = useState(0)
+
   const lyricListData = useMemo<LyricMemo>(
     () => {
       const { lrc, tlyric, transUser, lyricUser } = lyricData ?? {}
@@ -99,13 +107,21 @@ const Lyric: FC<LyricProps> = (props) => {
     [lyricData]
   )
 
+  const tap = Gesture.Tap()
+    .onStart(() => {})
+
   const renderItem: ListRenderItem<LyricLine> = useCallback(
     ({ item, index }) => {
       const tlyricLines = lyricListData.tlrcLines[index]
       const isTlyric = tlyricLines !== undefined
 
       return (
-        <View style={[tw`py-2`]}>
+        <View
+          style={[
+            tw`py-2`,
+            { transform: [{ scale: curPlayRow === index ? 1.2 : 1 }] }
+          ]}
+        >
           <Text style={[tw`text-center text-lg`]}>{item.txt}</Text>
           {isTlyric && (
             <Text style={[tw`text-center text-lg`]}>{tlyricLines.txt}</Text>
@@ -113,7 +129,7 @@ const Lyric: FC<LyricProps> = (props) => {
         </View>
       )
     },
-    [lyricListData.tlrcLines]
+    [lyricListData.tlrcLines, curPlayRow]
   )
 
   const { tlrcLines, contributor, translator, tags } = lyricListData
@@ -121,12 +137,15 @@ const Lyric: FC<LyricProps> = (props) => {
 
   return (
     <View style={tw`flex-1`}>
-      <BottomSheetFlatList
-        data={lyricListData.lrcLines}
-        keyExtractor={(_, i) => `lyric_row_${i}`}
-        extraData={extraData}
-        renderItem={renderItem}
-      />
+      <GestureDetector gesture={tap}>
+        <BottomSheetFlatList
+          data={lyricListData.lrcLines}
+          keyExtractor={(_, i) => `lyric_row_${i}`}
+          extraData={extraData}
+          renderItem={renderItem}
+          style={tw`flex-1`}
+        />
+      </GestureDetector>
     </View>
   )
 }
