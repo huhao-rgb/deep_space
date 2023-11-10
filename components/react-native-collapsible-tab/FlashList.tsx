@@ -137,6 +137,8 @@ function FlashListImpl<R>(
     [recyclerRef, ref]
   )
 
+  console.log(memoContentOffset)
+
   return (
     // @ts-expect-error typescript complains about `unknown` in the memo, it should be T
     <FlashListMemo

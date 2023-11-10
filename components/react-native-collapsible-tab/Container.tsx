@@ -204,15 +204,16 @@ export const Container = React.memo(
                 Extrapolate.CLAMP
               )
             })
-            .onEnd((event) => {
+            .onFinalize((event) => {
               if (!isSlidingTopContainer.value) return
 
               panGestureScrollYCtx.value = 0
               scrollYCurrent.value = withDecay(
                 {
                   velocity: -event.velocityY,
-                  clamp: [0, headerScrollDistance.value],
+                  clamp: [0, Number.MAX_VALUE],
                   deceleration: IS_IOS ? 0.998 : 0.99,
+                  rubberBandEffect: true
                 },
                 (finished) => {
                   isSlidingTopContainer.value = false
@@ -344,7 +345,7 @@ export const Container = React.memo(
         return {
           transform: [
             {
-              translateY: headerTranslateY.value,
+              translateY: headerTranslateY.value
             },
           ],
         }
@@ -465,11 +466,9 @@ export const Container = React.memo(
           <Animated.View
             style={[styles.container, { width }, containerStyle]}
             onLayout={onLayout}
-            pointerEvents="box-none"
           >
             <GestureDetector gesture={panGesture}>
               <Animated.View
-                pointerEvents="box-none"
                 style={[
                   styles.topContainer,
                   headerContainerStyle,
@@ -479,7 +478,6 @@ export const Container = React.memo(
                 <View
                   style={[styles.container, styles.headerContainer]}
                   onLayout={getHeaderHeight}
-                  pointerEvents="box-none"
                 >
                   {renderHeader &&
                     renderHeader({
@@ -495,7 +493,6 @@ export const Container = React.memo(
                 <View
                   style={[styles.container, styles.tabBarContainer]}
                   onLayout={getTabBarHeight}
-                  pointerEvents="box-none"
                 >
                   {renderTabBar &&
                     renderTabBar({

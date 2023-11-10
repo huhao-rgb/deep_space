@@ -120,13 +120,13 @@ const Player = memo(() => {
           ? 0
           : currentPlayIndex + 1
         setCurrentPlayIndex(nextIndex)
-        TrackPlayer.skipToNext()
+        TrackPlayer.skipToNext(0)
       } else {
         const prevIndex = currentPlayIndex === 0
           ? totalIndex
           : currentPlayIndex - 1
         setCurrentPlayIndex(prevIndex)
-        TrackPlayer.skipToPrevious(prevIndex)
+        TrackPlayer.skipToPrevious(0)
       }
     },
     [songList, currentPlayIndex, setCurrentPlayIndex]

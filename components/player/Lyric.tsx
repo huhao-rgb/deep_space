@@ -116,13 +116,8 @@ const Lyric: FC<LyricProps> = (props) => {
       const isTlyric = tlyricLines !== undefined
 
       return (
-        <View
-          style={[
-            tw`py-2`,
-            { transform: [{ scale: curPlayRow === index ? 1.2 : 1 }] }
-          ]}
-        >
-          <Text style={[tw`text-center text-lg`]}>{item.txt}</Text>
+        <View style={[tw`py-2 w-full`]}>
+          <Text style={[tw`text-center text-lg w-full`]}>{item.txt}</Text>
           {isTlyric && (
             <Text style={[tw`text-center text-lg`]}>{tlyricLines.txt}</Text>
           )}
