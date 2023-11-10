@@ -3,7 +3,8 @@ import {
   useMemo,
   useCallback,
   useEffect,
-  useState
+  useState,
+  useRef
 } from 'react'
 
 import {
@@ -21,8 +22,6 @@ import type {
 } from '@gorhom/bottom-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { Image } from 'expo-image'
-
 import { shallow } from 'zustand/shallow'
 
 import BottomSheetHandle from '../bottom-sheet-handle'
@@ -31,7 +30,7 @@ import Icon from '../svg-icon'
 
 import ProgressBar from './ProgressBar'
 import ButtonIcon from './ButtonIcon'
-import Lyric from './Lyric'
+import Lyric, { type LyricRef } from './Lyric'
 import CoverSwitch from './CoverSwitch'
 
 import {
@@ -66,6 +65,7 @@ const Player = memo(() => {
   const coverWidth = useMemo(() => width - gapWidth * 2, [width])
 
   const [lyricData, setLyricData] = useState<LyricData>()
+  const lyricRef = useRef<LyricRef>(null)
 
   const [songList, currentPlayIndex, setCurrentPlayIndex] = usePlayer(
     (s) => [s.songList, s.currentPlayIndex, s.setCurrentPlayIndex],
@@ -132,6 +132,13 @@ const Player = memo(() => {
     [songList, currentPlayIndex, setCurrentPlayIndex]
   )
 
+  const onCoverTap = useCallback(
+    () => {
+      lyricRef.current?.showLyricContainer()
+    },
+    []
+  )
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -168,6 +175,7 @@ const Player = memo(() => {
           size={coverWidth}
           windowWidth={width}
           onFinish={onCoverSwitchFinish}
+          onTap={onCoverTap}
         />
         <Text
           numberOfLines={1}
@@ -182,7 +190,8 @@ const Player = memo(() => {
           {currentSong?.ar?.[0]?.name}
         </Text>
 
-        <Lyric lyricData={lyricData} />
+        {/* 该区域后期放视频可视化效果 */}
+        <View style={tw`flex-1`}></View>
 
         <View style={tw`flex-row items-center justify-between`}>
           <ButtonIcon
@@ -251,6 +260,11 @@ const Player = memo(() => {
             onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
           />
         </View>
+
+        <Lyric
+          ref={lyricRef}
+          lyricData={lyricData}
+        />
       </SafeAreaView>
     </BottomSheet>
   )
