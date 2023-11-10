@@ -19,7 +19,7 @@ interface CoverSwitchProps {
   threshold?: number // 切换的阈值，手指滑动多远的距离触发onFinish事件
   onTap?: () => void
   onStart?: () => void // 滑动开始
-  onFinish?: (isNext: boolean) => void
+  onFinish?: (isPre: boolean) => void
 }
 
 const CoverSwitch = memo<CoverSwitchProps>((props) => {
@@ -54,8 +54,8 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     })
     .onFinalize(() => {
       if (Math.abs(panTranslatioinX.value) - startX.value > threshold) {
-        const isNext = panTranslatioinX.value > startX.value
-        if (onFinish) runOnJS<boolean[], void>(onFinish)(isNext)
+        const isPre = panTranslatioinX.value > startX.value
+        if (onFinish) runOnJS<boolean[], void>(onFinish)(isPre)
       }
       scale.value = withTiming(1)
       startX.value = 0

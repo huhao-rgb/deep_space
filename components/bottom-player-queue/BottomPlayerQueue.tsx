@@ -4,6 +4,7 @@ import {
   useMemo,
   useCallback,
   useState,
+  useRef,
   memo
 } from 'react'
 
@@ -45,8 +46,9 @@ const BottomPlayerQueue: FC = () => {
   const { bottom } = useSafeAreaInsets()
 
   const snapPoints = useMemo(() => ['60%'], [])
-
   const [firstOpen, setFirstOpen] = useState(false)
+
+  const flashRef = useRef<FlashList<any>>(null)
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -67,9 +69,23 @@ const BottomPlayerQueue: FC = () => {
 
   const onChange = useCallback(
     (index: number) => {
-      if (index === 0 && !firstOpen) setFirstOpen(true)
+      if (index === 0 && !firstOpen) {
+        setFirstOpen(true)
+        setTimeout(() => {
+          flashRef.current?.scrollToIndex({
+            animated: true,
+            index: currentPlayIndex
+          })
+        }, 500)
+      }
+      if (index === 0) {
+        flashRef.current?.scrollToIndex({
+          animated: true,
+          index: currentPlayIndex
+        })
+      }
     },
-    [firstOpen]
+    [firstOpen, currentPlayIndex]
   )
 
   const renderItem = useCallback<ListRenderItem<CostomTrack>>(
@@ -172,6 +188,7 @@ const BottomPlayerQueue: FC = () => {
       </View>
       {firstOpen && (
         <FlashList
+          ref={flashRef}
           data={songList}
           keyExtractor={(item) => String(item.id)}
           estimatedItemSize={80}

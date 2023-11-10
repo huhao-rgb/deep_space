@@ -71,8 +71,8 @@ const Player = memo(() => {
     (s) => [s.songList, s.currentPlayIndex, s.setCurrentPlayIndex],
     shallow
   )
-  const [playerRef, playerState] = usePlayerState(
-    (s) => [s.playerRef, s.playerState],
+  const [playerRef, playerState, bottomPlayerQueueRef] = usePlayerState(
+    (s) => [s.playerRef, s.playerState, s.bottomPlayerQueueRef],
     shallow
   )
 
@@ -112,21 +112,21 @@ const Player = memo(() => {
   )
 
   const onCoverSwitchFinish = useCallback(
-    (isNext: boolean) => {
+    (isPre: boolean) => {
       const totalIndex = songList.length - 1
 
-      if (isNext) {
-        const nextIndex = currentPlayIndex === totalIndex
-          ? 0
-          : currentPlayIndex + 1
-        setCurrentPlayIndex(nextIndex)
-        TrackPlayer.skipToNext(0)
-      } else {
+      if (isPre) {
         const prevIndex = currentPlayIndex === 0
           ? totalIndex
           : currentPlayIndex - 1
         setCurrentPlayIndex(prevIndex)
         TrackPlayer.skipToPrevious(0)
+      } else {
+        const nextIndex = currentPlayIndex === totalIndex
+          ? 0
+          : currentPlayIndex + 1
+        setCurrentPlayIndex(nextIndex)
+        TrackPlayer.skipToNext(0)
       }
     },
     [songList, currentPlayIndex, setCurrentPlayIndex]
@@ -223,6 +223,7 @@ const Player = memo(() => {
             name="SolidPrevious"
             size={BOTTOM_ICON_SIZE}
             fill={ICON_COLOR}
+            onPress={() => { onCoverSwitchFinish(true) }}
           />
           <RectButton
             activeOpacity={0.8}
@@ -241,11 +242,13 @@ const Player = memo(() => {
             name="SolidNext"
             size={BOTTOM_ICON_SIZE}
             fill={ICON_COLOR}
+            onPress={() => { onCoverSwitchFinish(false) }}
           />
           <ButtonIcon
             name="MusicList"
             size={BOTTOM_ICON_SIZE}
             fill={ICON_COLOR}
+            onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
           />
         </View>
       </SafeAreaView>
