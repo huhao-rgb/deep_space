@@ -84,6 +84,11 @@ const InitRntp: FC = () => {
     switch (event.type) {
       case Event.PlaybackState:
         setPlayerState(event.state)
+
+        if (event.state === State.Error) {
+          console.log('音频播放错误')
+        }
+
         break
       case Event.PlaybackActiveTrackChanged:
         const { index = 0, lastIndex = 0 } = event

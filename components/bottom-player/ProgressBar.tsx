@@ -2,29 +2,33 @@ import type { FC } from 'react'
 import { useEffect } from 'react'
 
 import { View, useWindowDimensions } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming
+} from 'react-native-reanimated'
+import { useProgress } from 'react-native-track-player'
 
 import { tw } from '@/utils'
 
 const ProgressBar: FC = () => {
   const { width } = useWindowDimensions()
 
+  const { position, duration } = useProgress()
+
   const widthValue = useSharedValue(0)
   const stylez = useAnimatedStyle(() => ({
-    width: withTiming(`${widthValue.value}%`)
+    width: withTiming(widthValue.value)
   }))
 
   useEffect(
     () => {
-      let i = 0
-      // setInterval(() => {
-      //   i += 1
-      //   widthValue.value = i
-
-      //   if (i === 100) i = 0
-      // }, 1000)
+      if (duration > 0) {
+        const per = position / duration
+        widthValue.value = per * width
+      }
     },
-    []
+    [position, duration, width]
   )
 
   return (

@@ -82,8 +82,6 @@ const BottomPlayerQueue: FC = () => {
 
       const { playIndex } = extraData
 
-      console.log('当前播放的索引', playIndex)
-
       return (
         <RectButton
           style={tw`flex-row items-center py-2`}

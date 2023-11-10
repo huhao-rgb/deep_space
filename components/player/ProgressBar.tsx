@@ -23,8 +23,6 @@ const ProgressBar = memo<ProgressBarProps>((props) => {
 
   const { position, buffered, duration } = useProgress()
 
-  console.log('进度', position, duration)
-
   const progress = useSharedValue(0)
   const min = useSharedValue(0)
   const max = useSharedValue(0)

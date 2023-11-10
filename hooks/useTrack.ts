@@ -15,7 +15,7 @@ import type {
 export type CostomTrack = Track & SongUrl 
 
 export const useTrack = () => {
-  const songUrlApi = useWyCloudApi<SongUrlV1Res>('songUrlV1', 1000 * 60 * 60 * 2)
+  const songUrlApi = useWyCloudApi<SongUrlV1Res>('songUrlV1', 1000 * 60 * 2)
 
   const trackFn = useCallback(
     (tracks: Track[], level?: SongUrlV1Level) => {
