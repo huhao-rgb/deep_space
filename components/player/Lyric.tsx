@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+// https://github.com/ustbhuangyi/lyric-parser/blob/master/src/index.js
 import {
   useMemo,
   useCallback,
@@ -21,13 +21,17 @@ import Animated, {
   withSpring,
   runOnJS
 } from 'react-native-reanimated'
-import { useProgress } from 'react-native-track-player'
+import TrackPlayer, { State as TPState } from 'react-native-track-player'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import type { BottomSheetFlatListMethods } from '@gorhom/bottom-sheet'
 
+import { shallow } from 'zustand/shallow'
+
 import type { LyricData } from './Player'
+
 import { tw } from '@/utils'
+import { usePlayerState } from '@/store'
 
 interface LyricProps {
   lyricData?: LyricData
@@ -35,6 +39,13 @@ interface LyricProps {
 
 export interface LyricRef {
   showLyricContainer: () => void
+  seek: (offset: number) => void
+  togglePlay: () => void
+}
+
+enum State {
+  PAUSED = 0,
+  PLAYING = 1
 }
 
 const timeExp = /\[(\d{2,}):(\d{2})(?:\.(\d{2,3}))?]/g
@@ -57,6 +68,17 @@ interface LyricMemo {
   tags: Tags
   lrcLines: LyricLine[]
   tlrcLines: LyricLine[] // 翻译的歌词，可能没有
+}
+
+const getLryicTextStyle = (selected: boolean) => {
+  return [
+    tw.style(
+      selected
+        ? 'text-base text-slate-700/100'
+        : 'text-sm text-slate-700/60'
+    ),
+    tw`text-center`
+  ]
 }
 
 const parseLyric = (lyric: string) => {
@@ -91,10 +113,17 @@ const parseLyric = (lyric: string) => {
   }
 }
 
+let state: State
+let startStamp: number
+let pauseStamp: number
+
 const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const { lyricData } = props
 
-  const { position } = useProgress()
+  const [playerState] = usePlayerState(
+    (s) => [s.playerState],
+    shallow
+  )
 
   const flatListRef = useRef<BottomSheetFlatListMethods>(null)
 
@@ -134,31 +163,101 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     [lyricData]
   )
 
-  useEffect(
+  const stop = useCallback(
     () => {
+      state = State.PAUSED
+      clearTimeout(timer.current)
+    },
+    []
+  )
+
+  // startTime - 秒
+  const play = useCallback(
+    (startTime: number, skipLast?: boolean) => {
       const { lrcLines } = lyricListData
 
-      let currentNum = 0
+      if (lrcLines.length === 0) return
+      if (state === State.PLAYING) return
 
+      state = State.PLAYING
+      startStamp = +new Date() - startTime
+
+      let curNum = lrcLines.length - 1
       for (let i = 0; i < lrcLines.length; i++) {
         const lrc = lrcLines[i]
-        if (position * 1000 <= lrc.time) {
-          currentNum = i
+        if (startTime * 1000 <= lrc.time) {
+          curNum = i
           break
         }
       }
 
-      setCurPlayRow(currentNum)
+      if (!skipLast) setCurPlayRow(curNum - 1)
+
+      const _playRest = () => {
+        const line = lyricListData.lrcLines[curNum]
+        const delay = line.time - (+new Date() - startStamp)
+
+        console.log(`当前歌词的间隔时间`, delay, line.time)
+
+        timer.current = setTimeout(() => {
+          setCurPlayRow(curNum++)
+          if (curNum < lrcLines.length && state === State.PLAYING) {
+            _playRest()
+          }
+        }, delay)
+      }
+
+      if (curNum < lrcLines.length) {
+        clearTimeout(timer.current)
+        _playRest()
+      }
     },
-    [position, lyricListData.lrcLines]
+    [lyricListData.lrcLines]
+  )
+
+  const togglePlay = useCallback(
+    () => {
+      const now = +new Date()
+      if (state === State.PLAYING) {
+        stop()
+        pauseStamp = now
+      } else {
+        state = State.PLAYING
+        play((pauseStamp ?? now) - (startStamp ?? now), true)
+        pauseStamp = 0
+      }
+    },
+    [stop]
+  )
+
+  const seek = useCallback(
+    (offset: number) => {
+      play(offset)
+    },
+    [play]
   )
 
   useEffect(
     () => {
-      console.log('歌词行数变了', curPlayRow)
+      if (playerState === TPState.Playing) {
+        TrackPlayer.getProgress()
+          .then(response => {
+            const { position } = response
+            console.log(position)
+            play(position)
+          })
+      } else {
+        stop()
+      }
+    },
+    [playerState, play, stop]
+  )
+
+  useEffect(
+    () => {
       if (lyricListData.lrcLines.length === 0) return
 
-      if (!beging.current) {
+      if (!beging.current && curPlayRow > -1) {
         flatListRef.current?.scrollToIndex({
           animated: true,
           index: curPlayRow,
@@ -202,15 +301,14 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
       }
 
       const selected = curPlayRow === index
-      const textStyle = tw.style(selected ? 'text-base text-slate-700/100' : 'text-sm text-slate-700/60')
 
       return (
         <View style={[tw`py-2`]}>
-          <Animated.Text style={[tw`text-center`, textStyle]}>
+          <Animated.Text style={getLryicTextStyle(selected)}>
             {item.txt}
           </Animated.Text>
           {tlyricLines !== undefined && (
-            <Text style={[tw`text-center`, textStyle]}>
+            <Text style={getLryicTextStyle(selected)}>
               {tlyricLines.txt}
             </Text>
           )}
@@ -218,6 +316,62 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
       )
     },
     [lyricListData.lrcLines, lyricListData.tlrcLines, curPlayRow]
+  )
+
+  const renderHeader = useCallback(
+    () => {
+      const keys = Object.keys(lyricListData.tags)
+
+      if (keys.length === 0) return null
+
+      return (
+        <>
+          {keys.map((key, i) => {
+            const content = lyricListData.tags[key as TagKey]
+
+            if (key === 'offset') return null
+
+            return (
+              <Text style={[...getLryicTextStyle(false), tw`py-2`]}>
+                {`${key}：${content}`}
+              </Text>
+            )
+          })}
+        </>
+      )
+    },
+    [lyricListData.tags]
+  )
+
+  const renderFooter = useCallback(
+    () => {
+      return (
+        <>
+          {lyricData?.lyricUser && (
+            <Text style={[...getLryicTextStyle(false), tw`py-2`]}>
+              歌词制作者：{lyricData.lyricUser}
+            </Text>
+          )}
+          {lyricData?.transUser && (
+            <Text style={[...getLryicTextStyle(false), tw`py-2`]}>
+              歌词翻译者：{lyricData.transUser}
+            </Text>
+          )}
+        </>
+      )
+    },
+    [lyricData]
+  )
+
+  const renderEmpty = useCallback(
+    () => {
+      return (
+        <View style={tw`py-20`}>
+          <Text style={getLryicTextStyle(false)}>当前歌曲暂无歌词</Text>
+        </View>
+      )
+    },
+    []
   )
 
   const { tlrcLines, contributor, translator, tags } = lyricListData
@@ -245,7 +399,9 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   )
 
   useImperativeHandle(ref, () => ({
-    showLyricContainer
+    showLyricContainer,
+    seek,
+    togglePlay
   }))
 
   return (
@@ -263,7 +419,9 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
           keyExtractor={(_, i) => `lyric_row_${i}`}
           extraData={extraData}
           renderItem={renderItem}
-          style={tw`flex-1`}
+          ListHeaderComponent={renderHeader}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={renderEmpty}
           onScrollBeginDrag={onScrollBegin}
           onScrollEndDrag={onScrollEnd}
         />

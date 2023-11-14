@@ -93,7 +93,7 @@ const Player = memo(() => {
             setLyricData({
               lrc: lrc.lyric,
               transUser: transUser?.nickname,
-              tlyric: tlyric.lyric,
+              tlyric: tlyric?.lyric ?? '',
               lyricUser: lyricUser?.nickname
             })
           }
