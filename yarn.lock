@@ -2018,6 +2018,16 @@
     recyclerlistview "4.2.0"
     tslib "2.4.0"
 
+"@showtime-xyz/tab-view@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.npmmirror.com/@showtime-xyz/tab-view/-/tab-view-0.1.7.tgz#eff5f0d35b3400557b604ddbbf7a13e6cc475833"
+  integrity sha512-U/jfee3+/UjMu4Nw7hVaWFf0VSQVlPdZjIovBDRUWP2efh/8/FbVCDjCb9OUU5+/LsKIxU+2eFycxWkBxJBgzw==
+  dependencies:
+    react-native-gesture-handler "2.10.0"
+    react-native-pager-view "6.2.0"
+    react-native-reanimated "3.1.0"
+    react-native-tab-view "^3.5.1"
+
 "@sideway/address@^4.1.3":
   version "4.1.4"
   resolved "https://registry.npmmirror.com/@sideway/address/-/address-4.1.4.tgz#03dccebc6ea47fdc226f7d3d1ad512955d4783f0"
@@ -6272,6 +6282,17 @@ react-native-awesome-slider@^2.4.5:
   resolved "https://registry.npmmirror.com/react-native-awesome-slider/-/react-native-awesome-slider-2.4.5.tgz#fabf3aab3de9b41183aea3913bbfd92c8105444b"
   integrity sha512-PA+8YfOi/QXpkKqDaagYZtTiEmvYKwl+jTTIPA53b2K2AjWHy2EUPZn1Jy/2isPTbBSJzNuBnx5j8R/axme0rA==
 
+react-native-gesture-handler@2.10.0:
+  version "2.10.0"
+  resolved "https://registry.npmmirror.com/react-native-gesture-handler/-/react-native-gesture-handler-2.10.0.tgz#54a1840cccac1dc4d5a48b8dc703eac30f077b3d"
+  integrity sha512-vuNupfa8+6MAUMgbZMk5jSxrmqWyNnR/gR77/iuhdx6cPg1z2MJeeJNmqEtKQcF0InvHp45dOoyRK62peqTJ3Q==
+  dependencies:
+    "@egjs/hammerjs" "^2.0.17"
+    hoist-non-react-statics "^3.3.0"
+    invariant "^2.2.4"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
+
 react-native-gesture-handler@~2.12.0:
   version "2.12.1"
   resolved "https://registry.npmmirror.com/react-native-gesture-handler/-/react-native-gesture-handler-2.12.1.tgz#f11a99fb95169810c6886fad5efa01a17fd81660"
@@ -6322,6 +6343,16 @@ react-native-reanimated-carousel@^3.5.1:
   version "3.5.1"
   resolved "https://registry.npmmirror.com/react-native-reanimated-carousel/-/react-native-reanimated-carousel-3.5.1.tgz#3605b9959ffc0aa1c6b8b8736d98f91f46e36b17"
   integrity sha512-9BBQV6JAYSQm2lV7MFtT4mzapXmW4IZO6s38gfiJL84Jg23ivGB1UykcNQauKgtHyhtW2NuZJzItb1s42lM+hA==
+
+react-native-reanimated@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmmirror.com/react-native-reanimated/-/react-native-reanimated-3.1.0.tgz#6fe757dadf06a59b365c1c0339e992751ab03792"
+  integrity sha512-8YJR7yHnrqK6yKWzkGLVEawi1WZqJ9bGIehKEnE8zG58yLrSwUZe1T220XTbftpkA3r37Sy0kJJ/HOOiaIU+HQ==
+  dependencies:
+    "@babel/plugin-transform-object-assign" "^7.16.7"
+    "@babel/preset-typescript" "^7.16.7"
+    convert-source-map "^2.0.0"
+    invariant "^2.2.4"
 
 react-native-reanimated@~3.3.0:
   version "3.3.0"
@@ -6376,6 +6407,13 @@ react-native-svg@13.9.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+
+react-native-tab-view@^3.5.1:
+  version "3.5.2"
+  resolved "https://registry.npmmirror.com/react-native-tab-view/-/react-native-tab-view-3.5.2.tgz#2789b8af6148b16835869566bf13dc3b0e6c1b46"
+  integrity sha512-nE5WqjbeEPsWQx4mtz81QGVvgHRhujTNIIZiMCx3Bj6CBFDafbk7XZp9ocmtzXUQaZ4bhtVS43R4FIiR4LboJw==
+  dependencies:
+    use-latest-callback "^0.1.5"
 
 react-native-track-player@^4.0.1:
   version "4.0.1"
