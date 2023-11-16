@@ -72,8 +72,10 @@ const InitRntp: FC = () => {
             nextIcon: require('@/assets/rntp/next.png')
           })
 
-          const tracks = await track(songList)
-          initRntpQuene(tracks)
+          if (songList.length > 0) {
+            const tracks = await track(songList)
+            initRntpQuene(tracks)
+          }
         } catch (error) {}
       })()
     },
