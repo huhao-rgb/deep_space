@@ -6,7 +6,7 @@ import {
   forwardRef,
   memo,
   useImperativeHandle,
-  useEffect,
+  useLayoutEffect,
   useCallback
 } from 'react'
 
@@ -36,6 +36,7 @@ import { usePlayer, usePlayerState } from '@/store'
 import type { BottomPlayerProps } from './types'
 
 const ptValue = tw`pt-2`.paddingTop as number
+const DEFAULT_HEIGHT = 100
 
 const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   const {
@@ -78,20 +79,20 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
 
   const currentSong = songList[currentPlayIndex] ?? {}
 
-  const bottomValue = useSharedValue(0)
+  const bottomValue = useSharedValue(DEFAULT_HEIGHT)
   const playerStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: bottomValue.value }]
   }))
 
   const setBottomValue = useCallback(
     (show: boolean) => {
-      const value = show ? 0 : miniPlayerHeight
+      const value = show ? 0 : (miniPlayerHeight || DEFAULT_HEIGHT)
       bottomValue.value = withTiming(value, { duration, easing })
     },
     [easing, duration, miniPlayerHeight]
   )
 
-  useEffect(
+  useLayoutEffect(
     () => {
       const show = songList.length > 0 && !isShowFullPlayer
       setBottomValue(show)
