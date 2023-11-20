@@ -81,7 +81,7 @@ export default function RootLayout () {
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-      <View style={[tw`flex-1`]}>
+      <View style={[tw`flex-1 bg-white`]}>
         <Stack screenOptions={{ header: () => null }} />
         {/* 占位块，用于弹出mini播放器后撑开页面 */}
         <PlaceholderBlock />

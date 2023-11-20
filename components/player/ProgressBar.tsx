@@ -14,6 +14,7 @@ import { tw, formatTime } from '@/utils'
 
 interface ProgressBarProps {
   style?: StyleProp<ViewStyle>
+  onChange?: () => void
 }
 
 const timeTextStyle = tw`text-2xs text-gray-400 w-12`
@@ -59,7 +60,9 @@ const ProgressBar = memo<ProgressBarProps>((props) => {
   const onSlidingComplete = useCallback(
     (value: number) => {
       TrackPlayer.seekTo(value)
-        .finally(() => { isSlidering.value = false })
+        .finally(() => {
+          isSlidering.value = false
+        })
     },
     []
   )

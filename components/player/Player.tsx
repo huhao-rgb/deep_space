@@ -81,23 +81,24 @@ const Player = memo(() => {
   useEffect(
     () => {
       const { id } = currentSong
-
-      lyricApi({
-        data: { id },
-        recordUniqueId: String(id)
-      })
-        .then(response => {
-          const { status, body } = response
-          if (status === 200 && body.code === 200) {
-            const { lrc, transUser, tlyric, lyricUser } = body
-            setLyricData({
-              lrc: lrc.lyric,
-              transUser: transUser?.nickname,
-              tlyric: tlyric?.lyric ?? '',
-              lyricUser: lyricUser?.nickname
-            })
-          }
+      if (id) {
+        lyricApi({
+          data: { id },
+          recordUniqueId: String(id)
         })
+          .then(response => {
+            const { status, body } = response
+            if (status === 200 && body.code === 200) {
+              const { lrc, transUser, tlyric, lyricUser } = body
+              setLyricData({
+                lrc: lrc.lyric,
+                transUser: transUser?.nickname,
+                tlyric: tlyric?.lyric ?? '',
+                lyricUser: lyricUser?.nickname
+              })
+            }
+          })
+      }
     },
     [currentSong]
   )

@@ -16,6 +16,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import Lottie from 'lottie-react-native'
 import { useMMKVString } from 'react-native-mmkv'
 
+import { router } from 'expo-router'
+
 import SearchBox from './SearchBox'
 import Navs from './Navs'
 import Card from './Card'
@@ -119,6 +121,7 @@ const Home: FC = () => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={tw`justify-center items-center w-12 h-12 rounded-full bg-red-100`}
+          onPress={() => { router.push('/personal-homepage/12') }}
         >
           <Lottie
             autoPlay

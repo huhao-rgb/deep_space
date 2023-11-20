@@ -103,6 +103,7 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           playIndex = 0
         } else {
           const tracks = quene.map(item => createRntpTrack(item))
+          console.log(tracks)
           await TrackPlayer.setQueue(tracks)
           TrackPlayer.skip(playIndex, 0)
         }

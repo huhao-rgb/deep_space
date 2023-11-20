@@ -5,8 +5,9 @@ import {
   useImperativeHandle,
   useRef,
   useEffect,
+  useState,
   forwardRef,
-  useState
+  memo
 } from 'react'
 
 import {
@@ -14,7 +15,7 @@ import {
   Text,
   StyleSheet
 } from 'react-native'
-import type { ListRenderItem } from 'react-native'
+import type { LayoutChangeEvent, ListRenderItem } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -74,8 +75,8 @@ const getLryicTextStyle = (selected: boolean) => {
   return [
     tw.style(
       selected
-        ? 'text-base text-slate-700/100'
-        : 'text-sm text-slate-700/60'
+        ? 'text-lg text-slate-700/100'
+        : 'text-base text-slate-700/60'
     ),
     tw`text-center`
   ]
@@ -131,7 +132,13 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const timer = useRef<NodeJS.Timeout>()
 
   const opacity = useSharedValue(0)
+  const placeholderHeight = useSharedValue(0)
+
   const [curPlayRow, setCurPlayRow] = useState(0)
+
+  const placeholderStyle = useAnimatedStyle(() => ({
+    height: placeholderHeight.value
+  }))
 
   const lyricListData = useMemo<LyricMemo>(
     () => {
@@ -176,8 +183,9 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     (startTime: number, skipLast?: boolean) => {
       const { lrcLines } = lyricListData
 
+      console.log('当前位置', startTime)
+
       if (lrcLines.length === 0) return
-      if (state === State.PLAYING) return
 
       state = State.PLAYING
       startStamp = +new Date() - startTime
@@ -197,7 +205,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         const line = lyricListData.lrcLines[curNum]
         const delay = line.time - (+new Date() - startStamp)
 
-        console.log(`当前歌词的间隔时间`, delay, line.time)
+        console.log('歌词间隔：', delay, line.time, +new Date() - startStamp)
 
         timer.current = setTimeout(() => {
           setCurPlayRow(curNum++)
@@ -243,11 +251,10 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         TrackPlayer.getProgress()
           .then(response => {
             const { position } = response
-            console.log(position)
-            play(position)
+            seek(position)
           })
-      } else {
-        stop()
+      } else if (playerState === TPState.Buffering || playerState === TPState.Paused) {
+        togglePlay()
       }
     },
     [playerState, play, stop]
@@ -261,7 +268,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         flatListRef.current?.scrollToIndex({
           animated: true,
           index: curPlayRow,
-          viewOffset: 100
+          viewOffset: placeholderHeight.value
         })
       }
     },
@@ -322,10 +329,10 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     () => {
       const keys = Object.keys(lyricListData.tags)
 
-      if (keys.length === 0) return null
-
       return (
         <>
+          <Animated.View style={placeholderStyle} />
+
           {keys.map((key, i) => {
             const content = lyricListData.tags[key as TagKey]
 
@@ -340,7 +347,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         </>
       )
     },
-    [lyricListData.tags]
+    [lyricListData.tags, placeholderStyle]
   )
 
   const renderFooter = useCallback(
@@ -357,6 +364,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
               歌词翻译者：{lyricData.transUser}
             </Text>
           )}
+          <Animated.View style={placeholderStyle} />
         </>
       )
     },
@@ -398,6 +406,19 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     []
   )
 
+  const onContentSizeChange = useCallback(
+    () => {},
+    []
+  )
+
+  const onContainerLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const { height } = event.nativeEvent.layout
+      placeholderHeight.value = height / 4
+    },
+    []
+  )
+
   useImperativeHandle(ref, () => ({
     showLyricContainer,
     seek,
@@ -411,6 +432,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         tw`z-10 py-4 bg-white`,
         stylez
       ]}
+      onLayout={onContainerLayout}
     >
       <GestureDetector gesture={tap}>
         <BottomSheetFlatList
@@ -424,10 +446,11 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
           ListEmptyComponent={renderEmpty}
           onScrollBeginDrag={onScrollBegin}
           onScrollEndDrag={onScrollEnd}
+          onContentSizeChange={onContentSizeChange}
         />
       </GestureDetector>
     </Animated.View>
   )
 })
 
-export default Lyric
+export default memo(Lyric)
