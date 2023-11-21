@@ -1,4 +1,8 @@
 import type { FC } from 'react'
+import {
+  useEffect,
+  useState
+} from 'react'
 
 import { router } from 'expo-router'
 
@@ -6,9 +10,38 @@ import { View, Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Shadow } from 'react-native-shadow-2'
 
+import { shallow } from 'zustand/shallow'
+
 import { tw } from '@/utils'
+import { useWyCloudApi } from '@/hooks'
+import { useSystem } from '@/store'
+
+import type { SearchDefaultKeyRes } from '@/api/types'
 
 const SearchBox: FC = () => {
+  const [cacheDuration] = useSystem(
+    (s) => [s.cacheDuration],
+    shallow
+  )
+
+  const defaultKeyApi = useWyCloudApi<SearchDefaultKeyRes>('searchDefaultKey', cacheDuration)
+
+  const [defaultKey, setDefaultKey] = useState('输入您想要查找的关键词...')
+
+  useEffect(
+    () => {
+      defaultKeyApi()
+        .then(response => {
+          const { status, body } = response
+          if (status === 200) {
+            const { code, data } = body
+            code === 200 && setDefaultKey(data.showKeyword)
+          }
+        })
+    },
+    []
+  )
+
   return (
     <View style={tw`px-5 my-6`}>
       <Shadow
@@ -23,7 +56,7 @@ const SearchBox: FC = () => {
           onPress={() => { router.push('/test-head-tabview/') }}
         >
           <View style={tw`px-4 py-3 flex-row items-center`}>
-            <Text style={tw`text-sm text-gray-400/80`}>输入您想要查找的关键词...</Text>
+            <Text style={tw`text-sm text-gray-400/80`}>{defaultKey}</Text>
           </View>
         </TouchableOpacity>
       </Shadow>
