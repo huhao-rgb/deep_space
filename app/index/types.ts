@@ -8,7 +8,7 @@ export interface CardProps {
   style?: StyleProp<ViewStyle>
   headStyle?: StyleProp<ViewStyle>
   containerStyle?: StyleProp<ViewStyle>
-  renderHeadLeftTextEle?: () => ReactElement // 头部文字后面的内容，可以放一个小的icon
+  renderHeadLeftTextEle?: () => ReactElement | null // 头部文字后面的内容，可以放一个小的icon
   children?: ReactNode
   onPress?: () => void
 }

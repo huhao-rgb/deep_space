@@ -11,8 +11,10 @@ import PageScrollView from '@/components/page-scrollview'
 import type { RenderScreenProps } from '@/components/page-scrollview'
 
 import { tw } from '@/utils'
-import { usePlayer } from '@/store'
-import { useTrack } from '@/hooks'
+import { usePlayer, useSystem } from '@/store'
+import { useTrack, useWyCloudApi } from '@/hooks'
+
+import type { PlaylistTrackAllRes } from '@/api/types'
 
 interface Props {
   data: any[]
@@ -23,10 +25,15 @@ const offset = tw.style('w-5').width as number
 const TrackPager: FC<Props> = (props) => {
   const { data } = props
 
-  const [songList, setPlayerList] = usePlayer(
-    (s) => [s.songList, s.setPlayerList],
+  const [cacheDuration] = useSystem(
+    (s) => [s.cacheDuration]
+  )
+  const [setPlayerList] = usePlayer(
+    (s) => [s.setPlayerList],
     shallow
   )
+
+  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheDuration)
   const track = useTrack()
 
   const routes = useMemo(
@@ -44,11 +51,19 @@ const TrackPager: FC<Props> = (props) => {
       const { route } = rsProps
       const { meta } = route
 
-      const playSong = (item) => {
-        track([item])
-          .then(response => {
-            setPlayerList(response, false)
+      const playSong = async (item: any) => {
+        try {
+          const { resourceId } = item
+          const { status, body } = await songDefaultApi({
+            data: { ids: [resourceId] },
+            recordUniqueId: resourceId as string
           })
+
+          if (status === 200 && body.code === 200) {
+            const songTracks = await track(body.songs)
+            setPlayerList(songTracks, false)
+          }
+        } catch (err) {}
       }
 
       return (

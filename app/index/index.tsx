@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity, RectButton } from 'react-native-gesture-handler'
 import Lottie from 'lottie-react-native'
 import { useMMKVString } from 'react-native-mmkv'
 
@@ -26,6 +26,8 @@ import Reommend from './Reommend'
 import TrackPager from './TrackPager'
 import RadarSongList from './RadarSongList'
 import StarpickComments from './StarpickComments'
+
+import Icon from '@/components/svg-icon'
 
 import { useWyCloudApi } from '@/hooks'
 import { tw } from '@/utils'
@@ -51,6 +53,8 @@ const showPageType = [
   'HOMEPAGE_BLOCK_MGC_PLAYLIST',
   'HOMEPAGE_BLOCK_TOPLIST'
 ]
+const showMoreTexts = ['HOMEPAGE_BLOCK_PLAYLIST_RCMD', 'HOMEPAGE_BLOCK_MGC_PLAYLIST']
+const showPlayBtn = ['HOMEPAGE_BLOCK_STYLE_RCMD', 'HOMEPAGE_BLOCK_TOPLIST']
 
 const Home: FC = () => {
   const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
@@ -86,19 +90,59 @@ const Home: FC = () => {
 
   const renderPageContent = useCallback(
     (item: HomepageBlockPageBlocks, i: number) => {
-      const { blockCode } = item
+      const { blockCode, creatives } = item
 
       switch (blockCode) {
         case 'HOMEPAGE_BLOCK_PLAYLIST_RCMD':
-          return <Reommend data={item.creatives} />
+          return <Reommend data={creatives} />
         case 'HOMEPAGE_BLOCK_STYLE_RCMD':
         case 'HOMEPAGE_BLOCK_TOPLIST':
-          return <TrackPager data={item.creatives} />
+          return <TrackPager data={creatives} />
         case 'HOMEPAGE_BLOCK_MGC_PLAYLIST':
-          return <RadarSongList data={item.creatives} />
+          return <RadarSongList data={creatives} />
         default:
           return null
       }
+    },
+    []
+  )
+
+  const onRightTextPress = useCallback(
+    (block: HomepageBlockPageBlocks) => {
+      const { blockCode } = block
+      if (showMoreTexts.indexOf(blockCode) !== -1) {
+      }
+    },
+    []
+  )
+
+  // 播放全部的按钮
+  const renderHeadLeftTextEle = useCallback(
+    (block: HomepageBlockPageBlocks) => {
+      const { blockCode } = block
+
+      const onPlaySong = () => {}
+
+      if (showPlayBtn.indexOf(blockCode) !== -1) {
+        return (
+          <RectButton
+            rippleColor={tw.color('red-200')}
+            activeOpacity={0.8}
+            style={tw`p-1.5 bg-red-500 rounded-full`}
+            onPress={onPlaySong}
+          >
+            <Icon
+              name="SolidPlay"
+              fill={tw.color('white')}
+              width={8}
+              height={8}
+              style={{ transform: [{ translateX: 0.5 }] }}
+            />
+          </RectButton>
+        )
+      }
+
+      return null
     },
     []
   )
@@ -140,8 +184,11 @@ const Home: FC = () => {
           return (
             <Card
               text={block.uiElement.subTitle.title}
-              style={tw`mt-8`}
               key={`page_card_${i}`}
+              showMoreText={showMoreTexts.indexOf(block.blockCode) !== -1}
+              renderHeadLeftTextEle={() => renderHeadLeftTextEle(block)}
+              style={tw`mt-8`}
+              onPress={() => { onRightTextPress(block) }}
             >
               {renderPageContent(block, i)}
             </Card>

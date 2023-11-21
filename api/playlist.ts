@@ -28,14 +28,14 @@ export const playlistDetail = (data?: PlaylistDetailData): WyCloudOptions => {
  */
 export const playlistTrackAll = (data?: PlaylistTrackAllData): WyCloudOptions => {
   const {
-    ids
+    ids = []
   } = data ?? {}
 
   return {
     method: 'POST',
     url: 'https://music.163.com/api/v3/song/detail',
     crypto: 'weapi',
-    data: ids && { c: `[${ids}]` },
+    data: ids && { c: `[${ids.map(id => `{"id":${id}}`).join(',')}]` },
     cookie: {}
   }
 }

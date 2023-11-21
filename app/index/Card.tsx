@@ -30,7 +30,7 @@ const Card: FC<CardProps> = (props) => {
       >
         <View style={tw`flex-1 flex-row items-center mr-4`}>
           <Text style={[tw`text-lg text-zinc-800 font-bold`]}>{text}</Text>
-          {renderHeadLeftTextEle !== null && (
+          {renderHeadLeftTextEle && (
             <View style={tw`ml-3`}>{renderHeadLeftTextEle?.()}</View>
           )}
         </View>

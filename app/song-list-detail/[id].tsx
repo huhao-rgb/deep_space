@@ -112,9 +112,8 @@ const SongListDetail: FC = () => {
 
           const allSongRes = await allSongApi({
             data: {
-              ids: trackIds
-                .map((item: TrackId) => '{"id":' + item.id + '}')
-                .join(',')
+              ids: trackIds.map((item: TrackId) => item.id)
+                // .map((item: TrackId) => '{"id":' + item.id + '}')
             },
             recordUniqueId: id as string
           })

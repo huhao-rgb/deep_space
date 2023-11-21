@@ -91,8 +91,7 @@ const BottomPlayerQueue: FC = () => {
   const renderItem = useCallback<ListRenderItem<CostomTrack>>(
     ({ item, index, extraData }) => {
       const onPlaySong = () => {
-        const findIndex = songList.findIndex(sItem => sItem.id === item.id)
-        TrackPlayer.skip(findIndex < 0 ? index : findIndex)
+        TrackPlayer.skip(index, 0)
         TrackPlayer.play()
       }
 

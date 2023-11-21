@@ -6,7 +6,7 @@ export interface PlaylistDetailData {
 }
 
 export interface PlaylistTrackAllData {
-  ids: string // 逗号分隔的字符串
+  ids: string[] // 逗号分隔的字符串
 }
 
 export interface PlaylistDetailPrivileges {
