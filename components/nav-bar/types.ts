@@ -11,7 +11,9 @@ export interface NavBarProps {
   bgTransparent?: boolean
   style?: StyleProp<ViewStyle>
   titleStyle?: StyleProp<TextStyle>
+  contentStyle?: StyleProp<ViewStyle>
   backIconColor?: string
   renderTitle?: () => ReactNode
+  renderRight?: () => ReactNode
   onPress?: () => void
 }

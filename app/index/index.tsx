@@ -165,7 +165,7 @@ const Home: FC = () => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={tw`justify-center items-center w-12 h-12 rounded-full bg-red-100`}
-          onPress={() => { router.push('/personal-homepage/12') }}
+          onPress={() => { router.push('/my/') }}
         >
           <Lottie
             autoPlay

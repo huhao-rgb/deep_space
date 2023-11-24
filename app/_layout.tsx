@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 
 import { shallow } from 'zustand/shallow'
 
-import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import NetInfo from '@react-native-community/netinfo'
 
@@ -25,7 +24,6 @@ import { ANONYMOUS_TOKEN } from '@/constants'
 
 import { useWyCloudApi } from '@/hooks'
 import { useNetInfo } from '@/store'
-
 
 export default function RootLayout () {
   const [setNetInfoState, setIp] = useNetInfo(
@@ -81,11 +79,14 @@ export default function RootLayout () {
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-      <View style={[tw`flex-1 bg-white`]}>
-        <Stack screenOptions={{ header: () => null }} />
-        {/* 占位块，用于弹出mini播放器后撑开页面 */}
-        <PlaceholderBlock />
-      </View>
+      <Stack
+        screenOptions={{
+          header: () => null,
+          contentStyle: tw`bg-white`
+        }}
+      />
+      {/* 占位块，用于弹出mini播放器后撑开页面 */}
+      <PlaceholderBlock />
       <BottomPlayer />
       <Player />
       <BottomPlayerQueue />

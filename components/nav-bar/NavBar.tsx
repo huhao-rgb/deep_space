@@ -16,8 +16,10 @@ const NavBar: FC<NavBarProps> = (props) => {
     bgTransparent = false,
     style,
     titleStyle,
+    contentStyle,
     backIconColor = tw.color('slate-800'),
     renderTitle,
+    renderRight,
     onPress
   } = props
 
@@ -32,7 +34,12 @@ const NavBar: FC<NavBarProps> = (props) => {
         style
       ]}
     >
-      <View style={tw`pt-1 flex-row items-center justify-between`}>
+      <View
+        style={[
+          tw`pt-1 flex-row items-center justify-between`,
+          contentStyle
+        ]}
+      >
         <BorderlessButton onPress={onPress}>
           <Icon
             name="LeftArrow"
@@ -41,8 +48,8 @@ const NavBar: FC<NavBarProps> = (props) => {
             fill={backIconColor}
           />
         </BorderlessButton>
-        {isTitle && (<View style={tw`ml-3 flex-1`}>
-          {renderTitle?.() || (
+        {isTitle && (renderTitle?.() || (
+          <View style={tw`my-3 flex-1`}>
             <Text
               numberOfLines={1}
               style={[
@@ -52,8 +59,9 @@ const NavBar: FC<NavBarProps> = (props) => {
             >
               {title}
             </Text>
-          )}
-        </View>)}
+          </View>
+        ))}
+        {renderRight?.()}
       </View>
     </SafeAreaView>
   )
