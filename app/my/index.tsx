@@ -25,6 +25,7 @@ import { Image } from 'expo-image'
 import TabFlashList from '@/components/tab-flash-list'
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
+import TabsBar from '@/components/tabs-bar'
 
 import Header from './Header'
 
@@ -175,6 +176,15 @@ const My: FC = () => {
     []
   )
 
+  const renderTabBar = useCallback(
+    () => {
+      return (
+        <TabsBar />
+      )
+    },
+    []
+  )
+
   return (
     <>
       <Animated.View
@@ -200,6 +210,7 @@ const My: FC = () => {
         animationHeaderHeight={animationHeaderHeight}
         renderScrollHeader={renderScrollHeader}
         renderScene={renderScene}
+        renderTabBar={renderTabBar}
         onIndexChange={setIndex}
       />
     </>
