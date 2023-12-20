@@ -23,8 +23,6 @@ const TabsBar: FC<TabsBarProps> = (props) => {
 
   const { routes } = navigationState
 
-  routes
-
   return (
     <View style={[tw`w-full`, style]}>
       <Animated.ScrollView

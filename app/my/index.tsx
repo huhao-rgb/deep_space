@@ -25,13 +25,14 @@ import { Image } from 'expo-image'
 import TabFlashList from '@/components/tab-flash-list'
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
-import TabsBar from '@/components/tabs-bar'
+import TabsBar, { type TabsBarProps } from '@/components/tabs-bar'
 
 import Header from './Header'
 
 import { tw } from '@/utils'
 
 type RenderScene = (props: SceneRendererProps & { route: Route }) => ReactNode
+type RenderTabBar = (props: TabsBarProps) => ReactNode
 
 const NAV_BAR_TITLE_TRANSLATE_Y = -10
 
@@ -176,10 +177,10 @@ const My: FC = () => {
     []
   )
 
-  const renderTabBar = useCallback(
-    () => {
+  const renderTabBar = useCallback<RenderTabBar>(
+    (tabBarProps) => {
       return (
-        <TabsBar />
+        <TabsBar {...tabBarProps} />
       )
     },
     []

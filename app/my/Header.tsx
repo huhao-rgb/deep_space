@@ -8,6 +8,7 @@ import {
 import { RectButton } from 'react-native-gesture-handler'
 
 import { Image } from 'expo-image'
+import { router } from 'expo-router'
 
 import Icon from '@/components/svg-icon'
 
@@ -28,6 +29,13 @@ const prefixSuffixStyle = [
 const briefStyle = tw`text-xs text-slate-800`
 
 const Header: FC = () => {
+  const onLocalSong = useCallback(
+    () => {
+      router.push('/local-song/')
+    },
+    []
+  )
+
   return (
     <View style={tw`bg-white`}>
       <Image
@@ -90,7 +98,9 @@ const Header: FC = () => {
         </View>
 
         <View>
-
+          <RectButton onPress={onLocalSong}>
+            <Text style={tw`text-lg text-gray-500`}>本地音乐</Text>
+          </RectButton>
         </View>
       </View>
     </View>

@@ -41,6 +41,26 @@ interface RequestInstance <D extends AnyObject> extends Partial<WyCloudOptions<D
   recordUniqueId?: string // 同表结构中字段
 }
 
+interface SqliteRequestDataItem {
+  responseJson: string
+  cookieHeaderJson: string
+  status: number
+}
+
+const getSqliteRequestData = (arr: SqliteRequestDataItem[]) => {
+  const {
+    responseJson,
+    cookieHeaderJson,
+    status
+  } = arr[0]
+
+  return {
+    status,
+    body: JSON.parse(responseJson),
+    cookie: JSON.parse(cookieHeaderJson)
+  }
+}
+
 /**
  * 网易云音乐请求接口
  * @param method string @/api 文件夹中导出的请求方法
@@ -144,6 +164,9 @@ export function useWyCloudApi <T = any, D extends AnyObject = {}> (
                   rows.length === 0 ||
                   currentTimestamp - rows._array[0].saveTimestamp > duration
 
+                // 确保在有数据的情况下，即使接口过期也会输出数据
+                // if (rows.length > 0) resolve(getSqliteRequestData(rows._array))
+
                 if (invalid) {
                   axios({
                     ...wyCloudRequestOption,
@@ -207,17 +230,7 @@ export function useWyCloudApi <T = any, D extends AnyObject = {}> (
                       reject(err)
                     })
                 } else {
-                  const {
-                    responseJson,
-                    cookieHeaderJson,
-                    status
-                  } = rows._array[0]
-
-                  resolve({
-                    status,
-                    body: JSON.parse(responseJson),
-                    cookie: JSON.parse(cookieHeaderJson)
-                  })
+                  resolve(getSqliteRequestData(rows._array))
                 }
               },
               (_, err) => {
