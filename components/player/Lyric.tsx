@@ -180,7 +180,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const stop = useCallback(
     () => {
       state = State.PAUSED
-      setCurPlayRow(0)
       clearTimeout(timer.current)
     },
     []
