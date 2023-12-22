@@ -32,7 +32,10 @@ import { shallow } from 'zustand/shallow'
 import type { LyricData } from './Player'
 
 import { tw } from '@/utils'
-import { usePlayerState } from '@/store'
+import {
+  usePlayerState,
+  usePlayer
+} from '@/store'
 
 interface LyricProps {
   lyricData?: LyricData
@@ -125,6 +128,10 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     (s) => [s.playerState],
     shallow
   )
+  const [currentPlayIndex] = usePlayer(
+    (s) => [s.currentPlayIndex],
+    shallow
+  )
 
   const flatListRef = useRef<BottomSheetFlatListMethods>(null)
 
@@ -173,6 +180,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const stop = useCallback(
     () => {
       state = State.PAUSED
+      setCurPlayRow(0)
       clearTimeout(timer.current)
     },
     []
@@ -182,8 +190,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const play = useCallback(
     (startTime: number, skipLast?: boolean) => {
       const { lrcLines } = lyricListData
-
-      console.log('当前位置', startTime)
 
       if (lrcLines.length === 0) return
 
@@ -204,8 +210,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
       const _playRest = () => {
         const line = lyricListData.lrcLines[curNum]
         const delay = line.time - (+new Date() - startStamp)
-
-        console.log('歌词间隔：', delay, line.time, +new Date() - startStamp)
 
         timer.current = setTimeout(() => {
           setCurPlayRow(curNum++)
@@ -273,6 +277,13 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
       }
     },
     [curPlayRow, lyricListData.lrcLines]
+  )
+
+  useEffect(
+    () => {
+      if (currentPlayIndex !== -1) setCurPlayRow(0)
+    },
+    [currentPlayIndex]
   )
 
   const stylez = useAnimatedStyle(() => ({
@@ -406,11 +417,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     []
   )
 
-  const onContentSizeChange = useCallback(
-    () => {},
-    []
-  )
-
   const onContainerLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { height } = event.nativeEvent.layout
@@ -446,7 +452,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
           ListEmptyComponent={renderEmpty}
           onScrollBeginDrag={onScrollBegin}
           onScrollEndDrag={onScrollEnd}
-          onContentSizeChange={onContentSizeChange}
         />
       </GestureDetector>
     </Animated.View>

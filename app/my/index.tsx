@@ -50,7 +50,7 @@ const TabScene = ({ route }: any) => {
               backgroundColor: '#fff',
               marginBottom: 8,
               justifyContent: 'center',
-              alignItems: 'center',
+              alignItems: 'center'
             }}
           >
             <Text>{`${route.title}-Item-${index}`}</Text>
@@ -180,7 +180,10 @@ const My: FC = () => {
   const renderTabBar = useCallback<RenderTabBar>(
     (tabBarProps) => {
       return (
-        <TabsBar {...tabBarProps} />
+        <TabsBar
+          scrollEnabled={false}
+          {...tabBarProps}
+        />
       )
     },
     []

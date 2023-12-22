@@ -1,4 +1,4 @@
-import TrackPlayer from 'react-native-track-player'
+import TrackPlayer, { RepeatMode } from 'react-native-track-player'
 import type { Track } from 'react-native-track-player'
 
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -7,10 +7,18 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { zutandMmkvStorage } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
+enum PlayerRepeatMode {
+  Single = 0, // 单曲循环
+  Sequential = 1, // 顺序循环
+  Random = 2 // 随机循环
+}
+
 interface PlayerState {
   currentPlayIndex: number
+  repeatMode: PlayerRepeatMode
   songList: CostomTrack[]
   setCurrentPlayIndex: (i: PlayerState['currentPlayIndex']) => void
+  setRepeatMode: (mode: PlayerRepeatMode) => void
   /**
    * 设置播放器队列
    * @param songData 带url的歌曲数据
@@ -38,7 +46,8 @@ const createRntpTrack = (data: CostomTrack): Track => {
     contentType: data.type,
     title: data.name,
     artist: data.ar?.[0].name,
-    album: data.al?.name
+    album: data.al?.name,
+    artwork: data.al?.picUrl
   }
 }
 
@@ -46,8 +55,17 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
   persist(
     (set, get) => ({
       currentPlayIndex: 0,
+      repeatMode: PlayerRepeatMode.Sequential,
       songList: [],
       setCurrentPlayIndex: (i) => { set({ currentPlayIndex: i }) },
+      setRepeatMode: (mode) => {
+        set({ repeatMode: mode })
+
+        let tpRepeatMode = RepeatMode.Queue
+        if (mode === PlayerRepeatMode.Single) tpRepeatMode = RepeatMode.Track
+
+        TrackPlayer.setRepeatMode(tpRepeatMode)
+      },
       setPlayerList: async (songData, replaceQueue = false, playNow = true) => {
         try {
           const { songList, currentPlayIndex } = get()
@@ -94,7 +112,11 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
         } catch (error) {}
       },
       initRntpQuene: async (quene) => {
-        const { currentPlayIndex } = get()
+        const {
+          currentPlayIndex,
+          repeatMode,
+          setRepeatMode
+        } = get()
 
         let playIndex = currentPlayIndex
         if (quene[playIndex] === undefined) playIndex = 0
@@ -104,6 +126,8 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
         } else {
           const tracks = quene.map(item => createRntpTrack(item))
           await TrackPlayer.setQueue(tracks)
+          // TrackPlayer.setRepeatMode(RepeatMode.Queue)
+          setRepeatMode(repeatMode)
           TrackPlayer.skip(playIndex, 0)
         }
 

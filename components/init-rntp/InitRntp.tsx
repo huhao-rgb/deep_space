@@ -83,12 +83,15 @@ const InitRntp: FC = () => {
   )
 
   useTrackPlayerEvents(events, (event) => {
+    const totalIndex = songList.length - 1
+
     switch (event.type) {
       case Event.PlaybackState:
         setPlayerState(event.state)
 
         if (event.state === State.Error) {
           console.log('音频播放错误')
+          // 大部分的错误是网易云音频链接过期，重新刷新的链接
         }
 
         break
@@ -104,10 +107,10 @@ const InitRntp: FC = () => {
         setPlayerState(State.Playing)
         break
       case Event.RemoteNext:
-        setCurrentPlayIndex(currentPlayIndex + 1)
+        setCurrentPlayIndex(currentPlayIndex === totalIndex ? 0 : currentPlayIndex + 1)
         break
       case Event.RemotePrevious:
-        setCurrentPlayIndex(currentPlayIndex === 0 ? 0 : currentPlayIndex - 1)
+        setCurrentPlayIndex(currentPlayIndex === 0 ? totalIndex : currentPlayIndex - 1)
         break
       default:
         break

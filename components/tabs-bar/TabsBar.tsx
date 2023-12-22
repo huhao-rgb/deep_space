@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { memo } from 'react'
 
 import {
   View,
@@ -23,18 +24,23 @@ const TabsBar: FC<TabsBarProps> = (props) => {
 
   const { routes } = navigationState
 
+  console.log('路由', routes)
+
   return (
     <View style={[tw`w-full`, style]}>
       <Animated.ScrollView
         horizontal
+        keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
         scrollsToTop={false}
         scrollEnabled={scrollEnabled}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={tw`flex-row flex-nowrap overflow-hidden`}
+        style={tw`bg-gray-200`}
       >
         {routes.map((route, i) => (
           renderTabsBarItem({
+            scrollEnabled,
             route,
             index: i,
             keyExtractor: `tabs_bar_item_${i}`,
@@ -46,4 +52,4 @@ const TabsBar: FC<TabsBarProps> = (props) => {
   )
 }
 
-export default TabsBar
+export default memo(TabsBar)

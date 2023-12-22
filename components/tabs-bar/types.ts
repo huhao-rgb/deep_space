@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import type {
+  LayoutChangeEvent,
   StyleProp,
-  ViewStyle
+  ViewStyle,
+  TextStyle
 } from 'react-native'
 import type {
   SceneRendererProps,
@@ -15,7 +17,12 @@ export interface RenderTabsBarItemProps <T extends Route = any> {
   route: T
   index: number
   keyExtractor: string
+  scrollEnabled: boolean
   style?: StyleProp<ViewStyle>
+  labelStyle?: StyleProp<TextStyle>
+  onLayout?: (event: LayoutChangeEvent) => void
+  onTabBarItemPress?: () => void
+  onTabsBarItemLongPress?: () => void
 }
 
 export interface TabsBarProps <T extends Route = any> extends RenderTabBarProps<T> {
