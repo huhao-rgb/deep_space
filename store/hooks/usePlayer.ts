@@ -4,10 +4,10 @@ import type { Track } from 'react-native-track-player'
 import { createWithEqualityFn } from 'zustand/traditional'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-import { zutandMmkvStorage } from '@/utils'
+import { zutandMmkvStorage, fyShuffle } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
-enum PlayerRepeatMode {
+export enum PlayerRepeatMode {
   Single = 0, // 单曲循环
   Sequential = 1, // 顺序循环
   Random = 2 // 随机循环
@@ -58,11 +58,35 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
       repeatMode: PlayerRepeatMode.Sequential,
       songList: [],
       setCurrentPlayIndex: (i) => { set({ currentPlayIndex: i }) },
-      setRepeatMode: (mode) => {
+      setRepeatMode: async (mode) => {
         set({ repeatMode: mode })
 
         let tpRepeatMode = RepeatMode.Queue
         if (mode === PlayerRepeatMode.Single) tpRepeatMode = RepeatMode.Track
+
+        // 随机播放算法
+        if (mode === PlayerRepeatMode.Random) {
+          const {
+            songList,
+            currentPlayIndex
+          } = get()
+          const currentPlaySong = songList[currentPlayIndex]
+          const copySongList = [...songList]
+          copySongList.splice(currentPlayIndex, 1)
+
+          const shuffleList = fyShuffle<CostomTrack>(copySongList)
+          const newList = [currentPlaySong, ...shuffleList]
+          const tpQuene = shuffleList.map(item => createRntpTrack(item))
+
+          await TrackPlayer.removeUpcomingTracks()
+          await TrackPlayer.move(currentPlayIndex, 0)
+          await TrackPlayer.add(tpQuene)
+
+          set({
+            currentPlayIndex: 0,
+            songList: newList
+          })
+        }
 
         TrackPlayer.setRepeatMode(tpRepeatMode)
       },
@@ -127,7 +151,7 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           const tracks = quene.map(item => createRntpTrack(item))
           await TrackPlayer.setQueue(tracks)
           // TrackPlayer.setRepeatMode(RepeatMode.Queue)
-          setRepeatMode(repeatMode)
+          // setRepeatMode(repeatMode)
           TrackPlayer.skip(playIndex, 0)
         }
 

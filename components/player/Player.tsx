@@ -31,6 +31,7 @@ import VipLabel from '../vip-label'
 
 import ProgressBar from './ProgressBar'
 import ButtonIcon from './ButtonIcon'
+import RepeatModeBtn from './RepeatModeBtn'
 import Lyric, { type LyricRef } from './Lyric'
 import CoverSwitch from './CoverSwitch'
 
@@ -228,10 +229,9 @@ const Player = memo(() => {
         <ProgressBar style={tw`my-8`} />
 
         <View style={tw`flex-row items-center justify-between pb-5`}>
-          <ButtonIcon
-            name="OutlineShuffle"
+          <RepeatModeBtn
             size={BOTTOM_ICON_SIZE}
-            fill={ICON_COLOR}
+            color={ICON_COLOR}
           />
           <ButtonIcon
             name="SolidPrevious"

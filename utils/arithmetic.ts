@@ -10,3 +10,8 @@ export const fyShuffle = <T = any> (arr: T[]) => {
   }
   return arr
 }
+
+// 某段范围内的随机数
+export const rangeRandomNumber = (min: number, max: number) => {
+  return Math.ceil(Math.random() * (max - min)) + min
+}
