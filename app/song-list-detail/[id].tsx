@@ -32,6 +32,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
+import VipLabel from '@/components/vip-label'
 
 import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
@@ -345,11 +346,7 @@ const SongListDetail: FC = () => {
                 {item.name}
               </Text>
               <View style={tw`w-full flex-row items-center mt-1`}>
-                {item.fee === 1 && (
-                  <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
-                    <Text style={tw`text-white text-2xs`}>vip</Text>
-                  </View>
-                )}
+                {item.fee === 1 && <VipLabel />}
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"

@@ -20,6 +20,7 @@ import { BorderlessButton, RectButton } from 'react-native-gesture-handler'
 import { FlashList } from '@shopify/flash-list'
 import type { ListRenderItem } from '@shopify/flash-list'
 
+import VipLabel from '../vip-label'
 import Icon from '../svg-icon'
 import BottomSheetHandle from '../bottom-sheet-handle'
 
@@ -104,11 +105,7 @@ const BottomPlayerQueue: FC = () => {
         >
           <View style={tw`flex-1 flex-row items-center`}>
             <Text style={tw`text-sm text-slate-700 mr-3`}>{index + 1}</Text>
-            {item.fee === 1 && (
-              <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
-                <Text style={tw`text-white text-2xs`}>vip</Text>
-              </View>
-            )}
+            {item.fee === 1 && <VipLabel />}
             <Text
               numberOfLines={1}
               style={tw`text-base text-slate-700 flex-1`}

@@ -27,7 +27,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Image } from 'expo-image'
 
-import Icon from '@/components/svg-icon'
+import Icon from '../svg-icon'
+import VipLabel from '../vip-label'
 import ProgressBar from './ProgressBar'
 
 import { tw } from '@/utils'
@@ -172,11 +173,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
                 {currentSong?.name}
               </Text>
               <View style={tw`w-full flex-row items-center mt-1`}>
-                {currentSong?.fee === 1 && (
-                  <View style={[tw`mr-2 px-1 rounded bg-red-500`, { paddingVertical: 1 }]}>
-                    <Text style={tw`text-white text-2xs`}>vip</Text>
-                  </View>
-                )}
+                {currentSong?.fee === 1 && <VipLabel />}
                 <Text
                   numberOfLines={1}
                   style={tw`text-slate-500 text-xs`}

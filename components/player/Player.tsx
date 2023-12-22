@@ -27,6 +27,7 @@ import { shallow } from 'zustand/shallow'
 import BottomSheetHandle from '../bottom-sheet-handle'
 import SafeAreaView from '../safe-area-view'
 import Icon from '../svg-icon'
+import VipLabel from '../vip-label'
 
 import ProgressBar from './ProgressBar'
 import ButtonIcon from './ButtonIcon'
@@ -184,12 +185,15 @@ const Player = memo(() => {
         >
           {currentSong?.name}
         </Text>
-        <Text
-          numberOfLines={1}
-          style={tw`mt-1 text-sm text-center text-slate-400`}
-        >
-          {currentSong?.ar?.[0]?.name}
-        </Text>
+        <View style={tw`mt-1 flex-row items-center justify-center`}>
+          <VipLabel />
+          <Text
+            numberOfLines={1}
+            style={tw`text-sm text-center text-slate-400`}
+          >
+            {currentSong?.ar?.[0]?.name}
+          </Text>
+        </View>
 
         {/* 该区域后期放视频可视化效果 */}
         <View style={tw`flex-1`}></View>
