@@ -61,7 +61,7 @@ const TrackPager: FC<Props> = (props) => {
 
           if (status === 200 && body.code === 200) {
             const songTracks = await track(body.songs)
-            setPlayerList(songTracks, false)
+            setPlayerList(songTracks[0], true)
           }
         } catch (err) {}
       }
