@@ -319,7 +319,7 @@ const SongListDetail: FC = () => {
       const playSong = () => {
         track([item])
           .then(response => {
-            setPlayerList(response, false)
+            setPlayerList(response[0], false)
           })
       }
 
