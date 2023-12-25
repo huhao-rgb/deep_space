@@ -187,7 +187,7 @@ const Player = memo(() => {
           {currentSong?.name}
         </Text>
         <View style={tw`mt-1 flex-row items-center justify-center`}>
-          <VipLabel />
+          {currentSong?.fee === 1 && <VipLabel />}
           <Text
             numberOfLines={1}
             style={tw`text-sm text-center text-slate-400`}
