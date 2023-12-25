@@ -109,6 +109,14 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
               await TrackPlayer.removeUpcomingTracks()
               await TrackPlayer.add(playList.map(item => createRntpTrack(item)))
               await TrackPlayer.move(0, findIndex)
+
+              playList.splice(findIndex, 0, songList[currentPlayIndex])
+
+              set({
+                songList: playList,
+                metaSongList,
+                currentPlayIndex: findIndex
+              })
             }
           }
         }
