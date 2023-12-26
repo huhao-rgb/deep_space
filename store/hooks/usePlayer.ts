@@ -33,7 +33,7 @@ interface PlayerState {
    * @returns void
    */
   setPlayerList: (songData: CostomTrack | CostomTrack[], playNow?: boolean) => void
-  initRntpQuene: (quene: CostomTrack[]) => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
+  initRntpQuene: (quene: CostomTrack[], playNow?: boolean) => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
 }
 
 // 合并去重歌曲数据
@@ -196,7 +196,7 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           })
         } catch (error) {}
       },
-      initRntpQuene: async (quene) => {
+      initRntpQuene: async (quene, playNow) => {
         const { currentPlayIndex, repeatMode } = get()
 
         let playIndex = currentPlayIndex
@@ -213,6 +213,9 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
               ? RepeatMode.Track
               : RepeatMode.Queue
           )
+          if (playNow) {
+            TrackPlayer.play()
+          }
         }
 
         set({

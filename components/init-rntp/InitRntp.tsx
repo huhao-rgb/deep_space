@@ -96,8 +96,12 @@ const InitRntp: FC = () => {
         setPlayerState(event.state)
 
         if (event.state === State.Error) {
-          console.log('音频播放错误')
           // 大部分的错误是网易云音频链接过期，重新刷新的链接
+          track(songList)
+            .then(tracks => {
+              initRntpQuene(tracks, true)
+            })
+          console.log('音频播放错误')
         }
 
         break

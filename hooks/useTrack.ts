@@ -15,14 +15,13 @@ import type {
 export type CostomTrack = Track & SongUrl 
 
 export const useTrack = () => {
-  const songUrlApi = useWyCloudApi<SongUrlV1Res>('songUrlV1', 1000 * 60 * 2)
+  const songUrlApi = useWyCloudApi<SongUrlV1Res>('songUrlV1', 1000 * 60)
 
   const trackFn = useCallback(
     (tracks: Track[], level?: SongUrlV1Level) => {
       return new Promise<CostomTrack[]>(async (resolve, reject) => {
         try {
           const ids = tracks.map(item => Number(item.id)).join(',')
-
           const songUrlsRes = await songUrlApi({
             data: { ids, level },
             recordUniqueId: ids
