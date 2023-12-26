@@ -207,15 +207,12 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
         } else {
           const tracks = quene.map(item => createRntpTrack(item))
           await TrackPlayer.setQueue(tracks)
-          console.log(tag, repeatMode === PlayerRepeatMode.Single)
           TrackPlayer.skip(playIndex, 0)
           await TrackPlayer.setRepeatMode(
             repeatMode === PlayerRepeatMode.Single
               ? RepeatMode.Track
               : RepeatMode.Queue
           )
-
-          console.log(tag, await TrackPlayer.getRepeatMode(), RepeatMode.Track)
         }
 
         set({

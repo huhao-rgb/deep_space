@@ -10,8 +10,7 @@ import Icon from '@/components/svg-icon/Icon'
 import { getSvgProps } from '@/utils'
 
 interface RepeatModeBtnProps {
-  size: number
-  color?: string
+  mode: PlayerRepeatMode
 }
 
 const modeOrder = [
@@ -22,31 +21,31 @@ const modeOrder = [
 const modeOrderLen = modeOrder.length
 
 const RepeatModeBtn: FC<RepeatModeBtnProps> = (props) => {
-  const { size, color } = props
+  const { mode } = props
 
-  const [repeatMode, setRepeatMode] = usePlayer(
-    (s) => [s.repeatMode, s.setRepeatMode],
+  const [setRepeatMode] = usePlayer(
+    (s) => [s.setRepeatMode],
     shallow
   )
 
   const iconName = useMemo(
     () => {
-      if (repeatMode === PlayerRepeatMode.Sequential) {
+      if (mode === PlayerRepeatMode.Sequential) {
         return 'OutlineRepeateMusic'
-      } else if (repeatMode === PlayerRepeatMode.Random) {
+      } else if (mode === PlayerRepeatMode.Random) {
         return 'OutlineShuffle'
-      } else if (repeatMode === PlayerRepeatMode.Single) {
+      } else if (mode === PlayerRepeatMode.Single) {
         return 'OutlineRepeateOne'
       } else {
         return ''
       }
     },
-    [repeatMode]
+    [mode]
   )
 
   const changeMode = useCallback(
     () => {
-      const findModeIndex = modeOrder.findIndex(item => item === repeatMode)
+      const findModeIndex = modeOrder.findIndex(item => item === mode)
       if (findModeIndex !== -1) {
         const orderIndex = findModeIndex === modeOrderLen - 1
           ? 0
@@ -54,7 +53,7 @@ const RepeatModeBtn: FC<RepeatModeBtnProps> = (props) => {
         setRepeatMode(modeOrder[orderIndex])
       }
     },
-    [repeatMode]
+    [mode]
   )
 
   return (

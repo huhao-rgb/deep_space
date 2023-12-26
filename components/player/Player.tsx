@@ -44,7 +44,8 @@ import CoverSwitch from './CoverSwitch'
 
 import {
   usePlayerState,
-  usePlayer
+  usePlayer,
+  PlayerRepeatMode
 } from '@/store'
 import { tw, getSvgProps } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
@@ -60,9 +61,6 @@ export interface LyricData {
 
 const gapWidth = tw`w-5`.width as number
 
-const BOTTOM_ICON_SIZE = 22
-const ICON_COLOR = tw.color('slate-800')
-
 const Player = memo(() => {
   const { height, width } = useWindowDimensions()
   const { bottom } = useSafeAreaInsets()
@@ -75,8 +73,18 @@ const Player = memo(() => {
   const [lyricData, setLyricData] = useState<LyricData>()
   const lyricRef = useRef<LyricRef>(null)
 
-  const [songList, currentPlayIndex, setCurrentPlayIndex] = usePlayer(
-    (s) => [s.songList, s.currentPlayIndex, s.setCurrentPlayIndex],
+  const [
+    songList,
+    currentPlayIndex,
+    repeatMode,
+    setCurrentPlayIndex
+  ] = usePlayer(
+    (s) => [
+      s.songList,
+      s.currentPlayIndex,
+      s.repeatMode,
+      s.setCurrentPlayIndex
+    ],
     shallow
   )
   const [playerRef, playerState, bottomPlayerQueueRef] = usePlayerState(
@@ -122,23 +130,32 @@ const Player = memo(() => {
 
   const onCoverSwitchFinish = useCallback(
     (isPre: boolean) => {
-      const totalIndex = songList.length - 1
-
-      if (isPre) {
-        const prevIndex = currentPlayIndex === 0
-          ? totalIndex
-          : currentPlayIndex - 1
-        setCurrentPlayIndex(prevIndex)
-        TrackPlayer.skipToPrevious(0)
+      if (repeatMode === PlayerRepeatMode.Single) {
+        TrackPlayer.seekTo(0)
       } else {
-        const nextIndex = currentPlayIndex === totalIndex
-          ? 0
-          : currentPlayIndex + 1
-        setCurrentPlayIndex(nextIndex)
-        TrackPlayer.skipToNext(0)
+        const totalIndex = songList.length - 1
+
+        if (isPre) {
+          const prevIndex = currentPlayIndex === 0
+            ? totalIndex
+            : currentPlayIndex - 1
+          setCurrentPlayIndex(prevIndex)
+          TrackPlayer.skipToPrevious(0)
+        } else {
+          const nextIndex = currentPlayIndex === totalIndex
+            ? 0
+            : currentPlayIndex + 1
+          setCurrentPlayIndex(nextIndex)
+          TrackPlayer.skipToNext(0)
+        }
       }
     },
-    [songList, currentPlayIndex, setCurrentPlayIndex]
+    [
+      songList,
+      currentPlayIndex,
+      repeatMode,
+      setCurrentPlayIndex
+    ]
   )
 
   const onCoverTap = useCallback(
@@ -231,10 +248,7 @@ const Player = memo(() => {
         <ProgressBar style={tw`my-8`} />
 
         <View style={tw`flex-row items-center justify-between pb-5`}>
-          <RepeatModeBtn
-            size={BOTTOM_ICON_SIZE}
-            color={ICON_COLOR}
-          />
+          <RepeatModeBtn mode={repeatMode} />
           <BorderlessButton
             style={tw`p-1`}
             onPress={() => { onCoverSwitchFinish(false) }}
