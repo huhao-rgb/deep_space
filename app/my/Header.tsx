@@ -66,8 +66,7 @@ const Header: FC = () => {
           <Text style={briefStyle}>IP:未知 ·</Text>
           <Icon
             name="Man"
-            width={10}
-            height={10}
+            size={10}
             fill={tw.color('blue-500')}
             style={tw`mx-1.5`}
           />

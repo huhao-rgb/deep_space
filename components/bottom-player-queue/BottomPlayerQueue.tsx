@@ -40,8 +40,16 @@ import { tw, getSvgProps } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
 const BottomPlayerQueue: FC = () => {
-  const [songList, currentPlayIndex] = usePlayer(
-    (s) => [s.songList, s.currentPlayIndex],
+  const [
+    songList,
+    currentPlayIndex,
+    setCurrentPlayIndex
+  ] = usePlayer(
+    (s) => [
+      s.songList,
+      s.currentPlayIndex,
+      s.setCurrentPlayIndex
+    ],
     shallow
   )
   const [bottomPlayerQueueRef] = usePlayerState(
@@ -98,7 +106,10 @@ const BottomPlayerQueue: FC = () => {
     ({ item, index, extraData }) => {
       const onPlaySong = () => {
         TrackPlayer.skip(index, 0)
-        TrackPlayer.play()
+          .then(() => {
+            TrackPlayer.play()
+            setCurrentPlayIndex(index)
+          })
       }
 
       const { playIndex } = extraData
@@ -143,7 +154,7 @@ const BottomPlayerQueue: FC = () => {
         </RectButton>
       )
     },
-    [songList]
+    [songList, setCurrentPlayIndex]
   )
 
   return (

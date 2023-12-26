@@ -12,6 +12,7 @@ import {
   Text,
   useWindowDimensions
 } from 'react-native'
+import { router } from 'expo-router'
 
 import TrackPlayer, { State } from 'react-native-track-player'
 import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
@@ -165,6 +166,17 @@ const Player = memo(() => {
     []
   )
 
+  const toCommentPage = useCallback(
+    () => {
+      const id = songList[currentPlayIndex]?.id
+      if (id) {
+        playerRef.current?.close()
+        router.push(`/comment/?type=song&id=${id}`)
+      }
+    },
+    [songList, currentPlayIndex]
+  )
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -236,7 +248,7 @@ const Player = memo(() => {
           <ButtonIcon
             icon={ChatBubbleBottomCenterTextIcon}
             {...getSvgProps({ theme: 'light', size: 'lg' })}
-            onPress={() => { console.log('测试按钮') }}
+            onPress={toCommentPage}
           />
           <ButtonIcon
             icon={EllipsisVerticalIcon}

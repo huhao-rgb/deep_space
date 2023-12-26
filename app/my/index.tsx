@@ -145,8 +145,7 @@ const My: FC = () => {
         <BorderlessButton onPress={onPress}>
           <Icon
             name="Setting"
-            width={26}
-            height={26}
+            size={26}
             fill={tw.color('white')}
           />
         </BorderlessButton>
