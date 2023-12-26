@@ -14,13 +14,20 @@ import {
 } from 'react-native'
 
 import TrackPlayer, { State } from 'react-native-track-player'
-import { RectButton } from 'react-native-gesture-handler'
+import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type {
   BottomSheetBackdropProps,
   BottomSheetHandleProps
 } from '@gorhom/bottom-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  HeartIcon,
+  ArrowDownTrayIcon,
+  ChatBubbleBottomCenterTextIcon,
+  EllipsisVerticalIcon
+} from 'react-native-heroicons/outline'
+import { PlayIcon, PauseIcon } from 'react-native-heroicons/solid'
 
 import { shallow } from 'zustand/shallow'
 
@@ -39,7 +46,7 @@ import {
   usePlayerState,
   usePlayer
 } from '@/store'
-import { tw } from '@/utils'
+import { tw, getSvgProps } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
 
 import type { LyricParams, LyricResponse } from '@/api/types'
@@ -53,7 +60,6 @@ export interface LyricData {
 
 const gapWidth = tw`w-5`.width as number
 
-const TOP_ICON_SIZE = 21
 const BOTTOM_ICON_SIZE = 22
 const ICON_COLOR = tw.color('slate-800')
 
@@ -201,27 +207,23 @@ const Player = memo(() => {
 
         <View style={tw`flex-row items-center justify-between`}>
           <ButtonIcon
-            name="OutlineHeart"
-            size={TOP_ICON_SIZE}
-            fill={ICON_COLOR}
+            icon={HeartIcon}
+            {...getSvgProps({ theme: 'light', size: 'lg' })}
             onPress={() => { console.log('测试按钮') }}
           />
           <ButtonIcon
-            name="Download"
-            size={TOP_ICON_SIZE}
-            fill={ICON_COLOR}
+            icon={ArrowDownTrayIcon}
+            {...getSvgProps({ theme: 'light', size: 'lg' })}
             onPress={() => { console.log('测试按钮') }}
           />
           <ButtonIcon
-            name="Comment"
-            size={TOP_ICON_SIZE}
-            fill={ICON_COLOR}
+            icon={ChatBubbleBottomCenterTextIcon}
+            {...getSvgProps({ theme: 'light', size: 'lg' })}
             onPress={() => { console.log('测试按钮') }}
           />
           <ButtonIcon
-            name="VerticalMore"
-            size={TOP_ICON_SIZE}
-            fill={ICON_COLOR}
+            icon={EllipsisVerticalIcon}
+            {...getSvgProps({ theme: 'light', size: 'lg' })}
             onPress={() => { console.log('测试按钮') }}
           />
         </View>
@@ -233,37 +235,45 @@ const Player = memo(() => {
             size={BOTTOM_ICON_SIZE}
             color={ICON_COLOR}
           />
-          <ButtonIcon
-            name="SolidPrevious"
-            size={BOTTOM_ICON_SIZE}
-            fill={ICON_COLOR}
-            onPress={() => { onCoverSwitchFinish(true) }}
-          />
+          <BorderlessButton
+            style={tw`p-1`}
+            onPress={() => { onCoverSwitchFinish(false) }}
+          >
+            <Icon
+              name="SolidPrevious"
+              {...getSvgProps({ size: 'lg', theme: 'light', isOutline: false })}
+            />
+          </BorderlessButton>
           <RectButton
             activeOpacity={0.8}
             style={tw`rounded-full w-14 h-14 bg-red-500 flex-row justify-center items-center`}
             onPress={onPlay2Pause}
           >
-            <Icon
-              name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
-              width={20}
-              height={20}
-              fill={tw.color('white')}
-              style={{ transform: [{ translateX: 1 }] }}
-            />
+            {playerState === State.Playing
+              ? <PauseIcon {...getSvgProps({ fill: tw.color('white'), size: 'lg' })} />
+              : <PlayIcon
+                  {...getSvgProps({ fill: tw.color('white'), size: 'lg' })}
+                  style={tw`ml-1`}
+                />}
           </RectButton>
-          <ButtonIcon
-            name="SolidNext"
-            size={BOTTOM_ICON_SIZE}
-            fill={ICON_COLOR}
-            onPress={() => { onCoverSwitchFinish(false) }}
-          />
-          <ButtonIcon
-            name="MusicList"
-            size={BOTTOM_ICON_SIZE}
-            fill={ICON_COLOR}
+          <BorderlessButton
+            style={tw`p-1`}
+            onPress={() => { onCoverSwitchFinish(true) }}
+          >
+            <Icon
+              name="SolidNext"
+              {...getSvgProps({ size: 'lg', theme: 'light', isOutline: false })}
+            />
+          </BorderlessButton>
+          <BorderlessButton
+            style={tw`p-1`}
             onPress={() => { bottomPlayerQueueRef.current?.snapToIndex(0) }}
-          />
+          >
+            <Icon
+              name="MusicList"
+              {...getSvgProps({ size: 'lg', theme: 'light', isOutline: false })}
+            />
+          </BorderlessButton>
         </View>
 
         <Lyric

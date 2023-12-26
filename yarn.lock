@@ -6309,6 +6309,11 @@ react-native-gesture-handler@~2.12.0:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
+react-native-heroicons@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.npmmirror.com/react-native-heroicons/-/react-native-heroicons-3.2.1.tgz#cf599290b2774a458214ac45a15528ebd4095c3f"
+  integrity sha512-BPDEX9QTckzK0qTZB7Adfi0An1tu+hqwLf/WPoU0vwxvIv4YkyM6+LVq1cHAMIKRfwl9YlAuIcaaUvjYTcyVIA==
+
 react-native-linear-gradient@^2.8.3:
   version "2.8.3"
   resolved "https://registry.npmmirror.com/react-native-linear-gradient/-/react-native-linear-gradient-2.8.3.tgz#9a116649f86d74747304ee13db325e20b21e564f"

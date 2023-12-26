@@ -1,10 +1,13 @@
 import type { FC } from 'react'
 import { useMemo, useCallback } from 'react'
 
+import { BorderlessButton } from 'react-native-gesture-handler'
 import { shallow } from 'zustand/shallow'
 import { usePlayer, PlayerRepeatMode } from '@/store'
 
-import ButtonIcon from './ButtonIcon'
+import Icon from '@/components/svg-icon/Icon'
+
+import { getSvgProps } from '@/utils'
 
 interface RepeatModeBtnProps {
   size: number
@@ -55,12 +58,12 @@ const RepeatModeBtn: FC<RepeatModeBtnProps> = (props) => {
   )
 
   return (
-    <ButtonIcon
-      name={iconName}
-      size={size}
-      fill={color}
-      onPress={changeMode}
-    />
+    <BorderlessButton onPress={changeMode}>
+      <Icon
+        name={iconName}
+        {...getSvgProps({ size: 'lg', theme: 'light', isOutline: false })}
+      />
+    </BorderlessButton>
   )
 }
 

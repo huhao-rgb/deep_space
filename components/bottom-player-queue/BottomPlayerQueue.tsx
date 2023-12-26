@@ -20,8 +20,13 @@ import { BorderlessButton, RectButton } from 'react-native-gesture-handler'
 import { FlashList } from '@shopify/flash-list'
 import type { ListRenderItem } from '@shopify/flash-list'
 
+import {
+  ArrowDownTrayIcon,
+  TrashIcon,
+  XMarkIcon
+} from 'react-native-heroicons/outline'
+
 import VipLabel from '../vip-label'
-import Icon from '../svg-icon'
 import BottomSheetHandle from '../bottom-sheet-handle'
 
 import LottieIcon from './LottieIcon'
@@ -30,7 +35,7 @@ import {
   usePlayer,
   usePlayerState
 } from '@/store'
-import { tw } from '@/utils'
+import { tw, getSvgProps } from '@/utils'
 
 import type { CostomTrack } from '@/hooks'
 
@@ -97,6 +102,7 @@ const BottomPlayerQueue: FC = () => {
       }
 
       const { playIndex } = extraData
+      const focus = playIndex === index
 
       return (
         <RectButton
@@ -108,17 +114,20 @@ const BottomPlayerQueue: FC = () => {
             {item.fee === 1 && <VipLabel />}
             <Text
               numberOfLines={1}
-              style={tw`text-base text-slate-700 flex-1`}
+              style={[
+                tw`text-base flex-1`,
+                tw.style(focus ? 'text-red-600' : 'text-slate-600')
+              ]}
             >
               {item.name} - 
 
-              <Text style={tw`ml-3 text-sm text-slate-600`}>{item.ar?.[0]?.name}</Text>
+              <Text style={tw`ml-3 text-sm`}>{item.ar?.[0]?.name}</Text>
             </Text>
           </View>
           <View
             style={[
               tw`ml-4 w-8 h-8`,
-              { opacity: playIndex === index ? 1 : 0 }
+              { opacity: focus ? 1 : 0 }
             ]}
           >
             <LottieIcon />
@@ -129,12 +138,7 @@ const BottomPlayerQueue: FC = () => {
               { transform: [{ translateX: 2 }] }
             ]}
           >
-            <Icon
-              name="Close"
-              width={16}
-              height={16}
-              fill={tw.color('slate-400')}
-            />
+            <XMarkIcon {...getSvgProps({ theme: 'light', size: 'sm' })} />
           </BorderlessButton>
         </RectButton>
       )
@@ -162,23 +166,13 @@ const BottomPlayerQueue: FC = () => {
             activeOpacity={0.8}
             style={tw`p-1`}
           >
-            <Icon
-              name="Download"
-              fill={tw.color('slate-500')}
-              width={22}
-              height={22}
-            />
+            <ArrowDownTrayIcon {...getSvgProps({ theme: 'light', size: 'base' })} />
           </BorderlessButton>
           <BorderlessButton
             activeOpacity={0.8}
             style={tw`p-1 ml-5`}
           >
-            <Icon
-              name="Delete"
-              fill={tw.color('slate-500')}
-              width={18}
-              height={18}
-            />
+            <TrashIcon {...getSvgProps({ theme: 'light', size: 'base' })} />
           </BorderlessButton>
         </View>
       </View>

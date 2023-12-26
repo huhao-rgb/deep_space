@@ -25,13 +25,18 @@ import TrackPlayer, { State } from 'react-native-track-player'
 import { Shadow } from 'react-native-shadow-2'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
+import {
+  PlayIcon,
+  PauseIcon
+} from 'react-native-heroicons/solid'
+
 import { Image } from 'expo-image'
 
 import Icon from '../svg-icon'
 import VipLabel from '../vip-label'
 import ProgressBar from './ProgressBar'
 
-import { tw } from '@/utils'
+import { tw, getSvgProps } from '@/utils'
 import { usePlayer, usePlayerState } from '@/store'
 
 import type { BottomPlayerProps } from './types'
@@ -188,12 +193,21 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
               style={tw`p-1.5`}
               onPress={onPlay2Pause}
             >
-              <Icon
-                name={playerState === State.Playing ? 'Pause' : 'SolidPlay'}
-                width={15}
-                height={15}
-                fill={tw.color('slate-700')}
-              />
+              {playerState === State.Playing
+                ? <PauseIcon
+                    {...getSvgProps({
+                      theme: 'light',
+                      size: 'base',
+                      isOutline: false
+                    })}
+                  />
+                : <PlayIcon
+                    {...getSvgProps({
+                      theme: 'light',
+                      size: 'base',
+                      isOutline: false
+                    })}
+                  />}
             </BorderlessButton>
             <BorderlessButton
               style={tw`ml-4 p-1`}
@@ -201,8 +215,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
             >
               <Icon
                 name="MusicList"
-                width={22}
-                height={22}
+                size={20}
                 fill={tw.color('slate-700')}
               />
             </BorderlessButton>

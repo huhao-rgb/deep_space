@@ -11,7 +11,7 @@ import {
 } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
-// const tag = 'usePlayer'
+const tag = 'usePlayer'
 
 export enum PlayerRepeatMode {
   Single = 0, // 单曲循环
@@ -207,12 +207,15 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
         } else {
           const tracks = quene.map(item => createRntpTrack(item))
           await TrackPlayer.setQueue(tracks)
+          console.log(tag, repeatMode === PlayerRepeatMode.Single)
           TrackPlayer.skip(playIndex, 0)
-          TrackPlayer.setRepeatMode(
+          await TrackPlayer.setRepeatMode(
             repeatMode === PlayerRepeatMode.Single
               ? RepeatMode.Track
               : RepeatMode.Queue
           )
+
+          console.log(tag, await TrackPlayer.getRepeatMode(), RepeatMode.Track)
         }
 
         set({

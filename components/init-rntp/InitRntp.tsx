@@ -10,7 +10,11 @@ import TrackPlayer, {
   Capability
 } from 'react-native-track-player'
 
-import { usePlayer, usePlayerState } from '@/store'
+import {
+  usePlayer,
+  usePlayerState,
+  PlayerRepeatMode
+} from '@/store'
 import { useTrack } from '@/hooks'
 
 TrackPlayer.registerPlaybackService(() => require('../../service'))
@@ -28,12 +32,14 @@ const InitRntp: FC = () => {
   const track = useTrack()
 
   const [
+    repeatMode,
     songList,
     initRntpQuene,
     currentPlayIndex,
     setCurrentPlayIndex
   ] = usePlayer(
     (s) => [
+      s.repeatMode,
       s.songList,
       s.initRntpQuene,
       s.currentPlayIndex,
@@ -107,10 +113,14 @@ const InitRntp: FC = () => {
         setPlayerState(State.Playing)
         break
       case Event.RemoteNext:
-        setCurrentPlayIndex(currentPlayIndex === totalIndex ? 0 : currentPlayIndex + 1)
+        if (repeatMode !== PlayerRepeatMode.Single) {
+          setCurrentPlayIndex(currentPlayIndex === totalIndex ? 0 : currentPlayIndex + 1)
+        }
         break
       case Event.RemotePrevious:
-        setCurrentPlayIndex(currentPlayIndex === 0 ? totalIndex : currentPlayIndex - 1)
+        if (repeatMode !== PlayerRepeatMode.Single) {
+          setCurrentPlayIndex(currentPlayIndex === 0 ? totalIndex : currentPlayIndex - 1)
+        }
         break
       default:
         break

@@ -61,7 +61,7 @@ export default function RootLayout () {
             }
           }
         })
-      
+
       const unsubscribeNetInfo = NetInfo.addEventListener(state => {
         const { type, isConnected } = state
         setNetInfoState(type)
