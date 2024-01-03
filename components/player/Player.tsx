@@ -33,7 +33,7 @@ import { PlayIcon, PauseIcon } from 'react-native-heroicons/solid'
 
 import { shallow } from 'zustand/shallow'
 
-import { PlayerContextProvider } from './Context'
+import { PlayerContextProvider, GestureState } from './Context'
 import { useGestureEventsHandlers } from './useGestureEventsHandlers'
 
 import BottomSheetHandle from '../bottom-sheet-handle'
@@ -67,7 +67,7 @@ export interface LyricData {
 const gapWidth = tw`w-5`.width as number
 
 const Player = memo(() => {
-  const startTranslationX = useSharedValue(0)
+  const gestureState = useSharedValue<GestureState>(GestureState.BEIGIN)
   const translationX = useSharedValue(0)
 
   const { height, width } = useWindowDimensions()
@@ -204,7 +204,7 @@ const Player = memo(() => {
   return (
     <PlayerContextProvider
       value={{
-        startTranslationX,
+        gestureState,
         translationX
       }}
     >

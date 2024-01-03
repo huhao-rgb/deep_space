@@ -24,7 +24,7 @@ import type {
   GestureEventHandlerCallbackType
 } from '@gorhom/bottom-sheet'
 
-import { usePlayerContext } from './Context'
+import { usePlayerContext, GestureState } from './Context'
 
 type GestureEventContextType = {
   initialPosition: number
@@ -62,13 +62,13 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
 
     const {
       translationX: playerTranslationX,
-      startTranslationX
+      gestureState
     } = usePlayerContext()
 
     //#region gesture methods
     const handleOnStart: GestureEventHandlerCallbackType<GestureEventContextType> =
       useWorkletCallback(
-        function handleOnStart(__, { x, y, translationX }, context) {
+        function handleOnStart(__, { x, y }, context) {
           // cancel current animation
           stopAnimation()
 
@@ -79,7 +79,7 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
           context.startX = x
           context.startY = y
           context.horizontals = []
-          startTranslationX.value = translationX
+          gestureState.value = GestureState.BEIGIN
 
           /**
            * if the scrollable content is scrolled, then
@@ -99,6 +99,8 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
     const handleOnActive: GestureEventHandlerCallbackType<GestureEventContextType> =
       useWorkletCallback(
         function handleOnActive(source, { translationY, translationX, x, y }, context) {
+          gestureState.value = GestureState.ACTIVATE
+
           const { startX, startY, horizontals } = context
           const horizontal = Math.abs(x - startX) > Math.abs(y - startY)
 
@@ -276,11 +278,11 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
           { translationY, absoluteY, velocityY },
           context
         ) {
+          gestureState.value = GestureState.ENDED
+
           const highestSnapPoint = animatedHighestSnapPoint.value
           const isSheetAtHighestSnapPoint =
             animatedPosition.value === highestSnapPoint
-
-          startTranslationX.value = 0
           
           /**
            * if scrollable is refreshable and sheet position at the highest

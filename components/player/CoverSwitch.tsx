@@ -4,13 +4,15 @@ import Animated, {
   withTiming,
   runOnJS,
   useSharedValue,
-  useAnimatedStyle
+  useAnimatedStyle,
+  useAnimatedReaction
 } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 
 import { Image } from 'expo-image'
 
 import { tw } from '@/utils'
+import { usePlayerContext, GestureState } from './Context'
 
 interface CoverSwitchProps {
   uri?: string
@@ -29,45 +31,47 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     windowWidth,
     threshold = 30,
     onTap,
-    onStart,
     onFinish
   } = props
 
+  const {
+    gestureState,
+    translationX
+  } = usePlayerContext()
+
   const scale = useSharedValue(1)
-  const startX = useSharedValue(0)
   const panTranslatioinX = useSharedValue(0)
 
   const stylez = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }]
   }))
 
-  const pan = Gesture.Pan()
-    .onBegin((event) => {
-      const { translationX } = event
-      startX.value = translationX
-      if (onStart) runOnJS(onStart)()
-    })
-    .onChange((event) => {
-      const { translationX } = event
-      panTranslatioinX.value = translationX
-      scale.value = (windowWidth - Math.abs(translationX)) / windowWidth
-    })
-    .onFinalize(() => {
-      if (Math.abs(panTranslatioinX.value) - startX.value > threshold) {
-        const isPre = panTranslatioinX.value > startX.value
-        if (onFinish) runOnJS<boolean[], void>(onFinish)(isPre)
+  useAnimatedReaction(
+    () => translationX.value,
+    (currentValue, _) => {
+      panTranslatioinX.value = currentValue
+      scale.value = (windowWidth - Math.abs(currentValue)) / windowWidth
+    }
+  )
+
+  useAnimatedReaction(
+    () => gestureState.value,
+    (currentState) => {
+      if (currentState === GestureState.ENDED) {
+        if (Math.abs(panTranslatioinX.value) > threshold) {
+          const isPre = panTranslatioinX.value > 0
+          if (onFinish) runOnJS<boolean[], void>(onFinish)(isPre)
+        }
+        scale.value = withTiming(1)
+        panTranslatioinX.value = 0
       }
-      scale.value = withTiming(1)
-      startX.value = 0
-      panTranslatioinX.value = 0
-    })
+    }
+  )
 
   const tap = Gesture.Tap()
     .onEnd(() => {
       if (onTap) runOnJS(onTap)()
     })
-
-  const composed = Gesture.Race(pan, tap)
 
   return (
     <GestureDetector gesture={tap}>
