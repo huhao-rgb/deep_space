@@ -70,7 +70,7 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
   const composed = Gesture.Race(pan, tap)
 
   return (
-    <GestureDetector gesture={composed}>
+    <GestureDetector gesture={tap}>
       <Animated.View style={stylez}>
         <Image
           source={{ uri }}
