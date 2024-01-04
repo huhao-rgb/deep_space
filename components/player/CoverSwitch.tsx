@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 
 import Animated, {
   withTiming,
@@ -33,6 +33,8 @@ interface Cover {
   uri: string
 }
 
+const halfBackGauge = (tw`px-5`.paddingLeft as number) / 2
+
 const getThreeCoverUrl = (list: CostomTrack[], index: number): Cover[] => {
   const length = list.length
 
@@ -43,8 +45,8 @@ const getThreeCoverUrl = (list: CostomTrack[], index: number): Cover[] => {
   const indexs = [preIndex, index, nextIndex]
 
   return indexs.map(i => ({
-    id: list[i].id,
-    uri: `${list[i].al?.picUrl}?param=1000y1000`
+    id: list[i]?.id ?? '',
+    uri: `${list[i]?.al?.picUrl}?param=1000y1000`
   }))
 }
 
@@ -85,21 +87,48 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     }
   )
 
+  const setCoverList = useCallback(
+    (isPre: boolean) => {
+      let index: number = 0
+
+      if (isPre) {
+        index = currentIndex === 0 ? songList.length - 1 : currentIndex - 1
+      } else {
+        index = currentIndex === songList.length - 1 ? 0 : currentIndex + 1
+      }
+
+      const list = getThreeCoverUrl(songList, index)
+      setCovers(list)
+      console.log(list)
+      // setCovers(list)
+    },
+    [songList, currentIndex]
+  )
+
   useAnimatedReaction(
     () => gestureState.value,
     (currentState) => {
       if (currentState === GestureState.ENDED) {
         if (Math.abs(panTranslatioinX.value) > threshold) {
           const isPre = panTranslatioinX.value > 0
+          console.log(panTranslatioinX.value)
           if (onFinish) {
             // runOnJS<boolean[], void>(onFinish)(isPre)
+            panTranslatioinX.value = withTiming(
+              (size + halfBackGauge * 2) * (isPre ? 1 : -1),
+              undefined,
+              () => {
+                runOnJS(setCoverList)(isPre)
+                panTranslatioinX.value = 0
+              }
+            )
           }
         } else {
           panTranslatioinX.value = 0
         }
       }
     },
-    []
+    [setCoverList]
   )
 
   const tap = Gesture.Tap()
@@ -118,20 +147,24 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
         <Animated.View
           style={[
             stylez,
-            tw`flex-row items-center`
+            tw`flex-row`,
+            { paddingHorizontal: halfBackGauge }
           ]}
         >
-          {/* {covers.map((cover, i) => (
+          {covers.map((cover, i) => (
             <Image
               source={{ uri: cover.uri }}
               key={`cover_image-${cover.id}`}
               style={[
-                { width: size, height: size },
-                tw`rounded-2xl`,
-                i === 1 && tw`mx-5`
+                {
+                  width: size,
+                  height: size,
+                  marginHorizontal: halfBackGauge
+                },
+                tw`rounded-2xl`
               ]}
             />
-          ))} */}
+          ))}
         </Animated.View>
       </Animated.View>
     </GestureDetector>
