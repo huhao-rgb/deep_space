@@ -80,8 +80,6 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
   useAnimatedReaction(
     () => translationX.value,
     (currentValue, _) => {
-      console.log('当前x值', currentValue)
-
       panTranslatioinX.value = currentValue
       scale.value = (windowWidth - Math.abs(currentValue)) / windowWidth
     }
@@ -90,8 +88,6 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
   useAnimatedReaction(
     () => gestureState.value,
     (currentState) => {
-      console.log(currentState)
-
       if (currentState === GestureState.ENDED) {
         if (Math.abs(panTranslatioinX.value) > threshold) {
           const isPre = panTranslatioinX.value > 0

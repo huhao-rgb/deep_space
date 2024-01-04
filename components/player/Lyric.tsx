@@ -443,6 +443,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         <BottomSheetFlatList
           ref={flatListRef}
           data={lyricListData.lrcLines}
+          contentContainerStyle={tw`px-5`}
           keyExtractor={(_, i) => `lyric_row_${i}`}
           extraData={extraData}
           renderItem={renderItem}

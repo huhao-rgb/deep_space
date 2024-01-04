@@ -68,7 +68,6 @@ const PersonalHomepage: FC = () => {
   const onStartRefresh = async () => {
     setIsRefreshing(true)
     setTimeout(() => {
-      console.log('onStartRefresh')
       setIsRefreshing(false)
     }, 300)
   }
