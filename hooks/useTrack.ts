@@ -30,10 +30,23 @@ export const useTrack = () => {
           const { status, body } = songUrlsRes
           if (status === 200 && body.code === 200) {
             const { data } = body
-            const songTracks = tracks.map<CostomTrack>((item, i) => ({
-              ...item,
-              ...data[i]
-            }))
+            const songTracks: CostomTrack[] = []
+
+            for (let i = 0; i < tracks.length; i++) {
+              const track = tracks[i]
+
+              for (let j = 0; j < data.length; j++) {
+                const resource = data[j]
+
+                if (Number(track.id) === resource.id) {
+                  songTracks.push({
+                    ...track,
+                    ...resource
+                  })
+                }
+              }
+            }
+
             resolve(songTracks)
           }
         } catch (err) { reject(err) }
