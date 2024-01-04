@@ -33,6 +33,7 @@ type GestureEventContextType = {
   startX: number
   startY: number
   horizontals: boolean[]
+  canEnd: boolean
 }
 
 const dismissKeyboard = Keyboard.dismiss
@@ -79,6 +80,7 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
           context.startX = x
           context.startY = y
           context.horizontals = []
+          context.canEnd = false
           gestureState.value = GestureState.BEIGIN
 
           /**
@@ -99,8 +101,6 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
     const handleOnActive: GestureEventHandlerCallbackType<GestureEventContextType> =
       useWorkletCallback(
         function handleOnActive(source, { translationY, translationX, x, y }, context) {
-          gestureState.value = GestureState.ACTIVATE
-
           const { startX, startY, horizontals } = context
           const horizontal = Math.abs(x - startX) > Math.abs(y - startY)
 
@@ -115,6 +115,8 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
 
             if (isHorizontal) {
               playerTranslationX.value = translationX
+              context.canEnd = true
+              gestureState.value = GestureState.ACTIVATE
               return
             }
 
@@ -278,7 +280,7 @@ export const useGestureEventsHandlers: GestureEventsHandlersHookType =
           { translationY, absoluteY, velocityY },
           context
         ) {
-          gestureState.value = GestureState.ENDED
+          if (context.canEnd) gestureState.value = GestureState.ENDED
 
           const highestSnapPoint = animatedHighestSnapPoint.value
           const isSheetAtHighestSnapPoint =
