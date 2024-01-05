@@ -1,4 +1,10 @@
 import { useState, useEffect } from 'react'
+import type {
+  ViewStyle,
+  RegisteredStyle,
+  Falsy,
+  RecursiveArray
+} from 'react-native'
 
 import type { Toast, DefaultToastOptions } from './types'
 
@@ -159,6 +165,20 @@ export const dispatch = (action: Action) => {
 
 export const defaultTimeout = 4000
 
+type RNArrayStyle = RecursiveArray<ViewStyle | RegisteredStyle<ViewStyle> | Falsy>
+
+const converToArrayStyle = (style: Toast['style']): RNArrayStyle => {
+  const arrayStyle: RNArrayStyle = []
+
+  if (style instanceof Array) {
+    arrayStyle.push(...style)
+  } else if (style instanceof Object) {
+    arrayStyle.push(style)
+  }
+
+  return arrayStyle
+}
+
 export const useStore = (toastOptions: DefaultToastOptions = {}): State => {
   const [state, setState] = useState<State>(memoryState)
 
@@ -186,9 +206,9 @@ export const useStore = (toastOptions: DefaultToastOptions = {}): State => {
       toastOptions.duration ||
       defaultTimeout,
     style: [
-      ...toastOptions.style,
-      ...toastOptions[t.type]?.style,
-      ...t.style
+      ...converToArrayStyle(toastOptions.style),
+      ...converToArrayStyle(toastOptions[t.type]?.style),
+      ...converToArrayStyle(t.style)
     ]
   }))
 
