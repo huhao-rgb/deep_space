@@ -28,6 +28,7 @@ import RadarSongList from './RadarSongList'
 import StarpickComments from './StarpickComments'
 
 import Icon from '@/components/svg-icon'
+import toast from '@/components/toast'
 
 import { useWyCloudApi } from '@/hooks'
 import { tw } from '@/utils'
@@ -121,7 +122,9 @@ const Home: FC = () => {
     (block: HomepageBlockPageBlocks) => {
       const { blockCode } = block
 
-      const onPlaySong = () => {}
+      const onPlaySong = () => {
+        toast.success('主动测试toast')
+      }
 
       if (showPlayBtn.indexOf(blockCode) !== -1) {
         return (
@@ -134,8 +137,7 @@ const Home: FC = () => {
             <Icon
               name="SolidPlay"
               fill={tw.color('white')}
-              width={8}
-              height={8}
+              size={8}
               style={{ transform: [{ translateX: 0.5 }] }}
             />
           </RectButton>

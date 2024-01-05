@@ -15,6 +15,7 @@ import Player from '@/components/player'
 import PlaceholderBlock from '@/components/placeholder-block'
 import BottomPlayerQueue from '@/components/bottom-player-queue'
 import InitRntp from '@/components/init-rntp'
+import { Toaster } from '@/components/toast'
 
 import {
   tw,
@@ -91,6 +92,7 @@ export default function RootLayout () {
       <Player />
       <BottomPlayerQueue />
       <InitRntp />
+      <Toaster />
     </GestureHandlerRootView>
   )
 }
