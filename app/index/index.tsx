@@ -18,6 +18,8 @@ import { useMMKVString } from 'react-native-mmkv'
 
 import { router } from 'expo-router'
 
+import { shallow } from 'zustand/shallow'
+
 import SearchBox from './SearchBox'
 import Navs from './Navs'
 import Card from './Card'
@@ -28,15 +30,16 @@ import RadarSongList from './RadarSongList'
 import StarpickComments from './StarpickComments'
 
 import Icon from '@/components/svg-icon'
-import toast from '@/components/toast'
 
-import { useWyCloudApi } from '@/hooks'
+import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
 import { ANONYMOUS_TOKEN } from '@/constants'
+import { useSystem, usePlayer } from '@/store'
 
 import type {
   HomepageBlockPageRes,
-  HomepageBlockPageBlocks
+  HomepageBlockPageBlocks,
+  PlaylistTrackAllRes
 } from '@/api/types'
 
 interface PageState {
@@ -60,7 +63,19 @@ const showPlayBtn = ['HOMEPAGE_BLOCK_STYLE_RCMD', 'HOMEPAGE_BLOCK_TOPLIST']
 const Home: FC = () => {
   const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
 
-  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', 1000 * 60 * 60 * 2)
+  const [cacheDuration] = useSystem(
+    (s) => [s.cacheDuration],
+    shallow
+  )
+  const [setPlayerList] = usePlayer(
+    (s) => [s.setPlayerList],
+    shallow
+  )
+
+  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', cacheDuration)
+  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheDuration)
+
+  const track = useTrack()
 
   const [pageState, setPageState] = useState<PageState>({
     blocks: [],
@@ -120,10 +135,24 @@ const Home: FC = () => {
   // 播放全部的按钮
   const renderHeadLeftTextEle = useCallback(
     (block: HomepageBlockPageBlocks) => {
-      const { blockCode } = block
+      const { blockCode, creatives } = block
 
-      const onPlaySong = () => {
-        toast.success('主动测试toast')
+      const onPlaySong = async () => {
+        try {
+          const songs: any[] = []
+          creatives.forEach(item => { songs.push(...item.resources) })
+          const ids = songs.map(item => item.resourceId)
+
+          const { status, body } = await songDefaultApi({
+            data: { ids: ids },
+            recordUniqueId: ids.join()
+          })
+
+          if (status === 200 && body.code === 200) {
+            const songTracks = await track(body.songs)
+            setPlayerList(songTracks, true)
+          }
+        } catch (err) {}
       }
 
       if (showPlayBtn.indexOf(blockCode) !== -1) {
@@ -146,7 +175,7 @@ const Home: FC = () => {
 
       return null
     },
-    []
+    [songDefaultApi]
   )
 
   return (
