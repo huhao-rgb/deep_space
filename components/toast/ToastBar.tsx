@@ -40,7 +40,7 @@ const ToastBar = memo<ToastBarProps>((props) => {
     <View style={styles.message}>
       {typeof toastResolveValue === 'string'
         ? (
-            <Text>{toastResolveValue}</Text>
+            <Text style={styles.messageText}>{toastResolveValue}</Text>
           )
         : toastResolveValue}
     </View>
@@ -48,8 +48,8 @@ const ToastBar = memo<ToastBarProps>((props) => {
 
   return (
     <Shadow
-      startColor="#00000012"
-      distance={20}
+      startColor="#00000009"
+      distance={16}
       style={{ width: '100%' }}
     >
       <View
@@ -90,5 +90,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     marginVertical: 10,
     flex: 1
-  }
+  },
+  messageText: {}
 })

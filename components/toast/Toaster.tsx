@@ -1,9 +1,8 @@
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { View } from 'react-native'
 import type { LayoutChangeEvent, ViewStyle } from 'react-native'
 
-import Animated, { FadeInUp, FadeOut, FadeOutUp } from 'react-native-reanimated'
+import Animated, { SequencedTransition, EntryExitTransition } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -14,6 +13,7 @@ import type {
   ToastPosition
 } from './types'
 import { resolveValue } from './types'
+import { AmplifiedInUp, AmplifiedOutUp } from './layout-animations'
 
 import ToastBar from './ToastBar'
 
@@ -40,8 +40,9 @@ const ToastWrapper: FC<ToastWrapperProps> = (props) => {
       <Animated.View
         style={style}
         pointerEvents="auto"
-        entering={FadeInUp}
-        exiting={FadeOutUp}
+        entering={AmplifiedInUp as any}
+        exiting={AmplifiedOutUp as any}
+        layout={EntryExitTransition.delay(230)}
         onLayout={onContainerLayout}
       >
         {children}
@@ -55,14 +56,15 @@ const getPositionStyle = (
   offset: number
 ): ViewStyle => {
   const isTop = position === 'top'
-  const offsetY = offset * (isTop ? 1 : -1)
-  const verticalStyle = isTop ? { top: offsetY } : { bottom: offsetY }
+  const translateY = offset * (isTop ? 1 : -1)
+  const verticalStyle = isTop ? { top: 0 } : { bottom: 0 }
 
   return {
     position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 9999,
+    transform: [{ translateY }],
     ...verticalStyle
   }
 }
@@ -85,8 +87,8 @@ const Toast: FC<ToasterProps> = (props) => {
   const { top, bottom } = useSafeAreaInsets()
 
   return (
-    <View
-      pointerEvents="none"
+    <Animated.View
+      pointerEvents="box-none"
       style={[
         {
           position: 'absolute',
@@ -124,7 +126,7 @@ const Toast: FC<ToasterProps> = (props) => {
           </ToastWrapper>
         )
       })}
-    </View>
+    </Animated.View>
   )
 }
 
