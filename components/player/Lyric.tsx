@@ -19,6 +19,7 @@ import type { LayoutChangeEvent, ListRenderItem } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedReaction,
   withSpring,
   runOnJS
 } from 'react-native-reanimated'
@@ -29,22 +30,29 @@ import type { BottomSheetFlatListMethods } from '@gorhom/bottom-sheet'
 
 import { shallow } from 'zustand/shallow'
 
-import type { LyricData } from './Player'
-
 import { tw } from '@/utils'
-import {
-  usePlayerState,
-  usePlayer
-} from '@/store'
+import { usePlayerState } from '@/store'
+
+import type { CostomTrack } from '@/hooks'
+import { useWyCloudApi } from '@/hooks'
+
+import type { LyricParams, LyricResponse } from '@/api/types'
 
 interface LyricProps {
-  lyricData?: LyricData
+  currentSong: CostomTrack
 }
 
 export interface LyricRef {
   showLyricContainer: () => void
   seek: (offset: number) => void
   togglePlay: () => void
+}
+
+interface LyricData {
+  lrc: string
+  tlyric: string
+  transUser?: string
+  lyricUser?: string
 }
 
 enum State {
@@ -117,19 +125,21 @@ const parseLyric = (lyric: string) => {
   }
 }
 
+let preSongId: number
+
 let state: State
 let startStamp: number
 let pauseStamp: number
 
 const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
-  const { lyricData } = props
+  const { currentSong } = props
+
+  const lyricApi = useWyCloudApi<LyricResponse, LyricParams>('lyric', 1000 * 60 * 60 * 2)
+
+  const [lyricData, setLyricData] = useState<LyricData>()
 
   const [playerState] = usePlayerState(
     (s) => [s.playerState],
-    shallow
-  )
-  const [currentPlayIndex] = usePlayer(
-    (s) => [s.currentPlayIndex],
     shallow
   )
 
@@ -146,6 +156,46 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const placeholderStyle = useAnimatedStyle(() => ({
     height: placeholderHeight.value
   }))
+
+  const getLyricData = useCallback(
+    () => {
+      const { id } = currentSong
+      if (id) {
+        lyricApi({
+          data: { id },
+          recordUniqueId: String(id)
+        })
+          .then(response => {
+            const { status, body } = response
+            if (status === 200 && body.code === 200) {
+              const { lrc, transUser, tlyric, lyricUser } = body
+              setLyricData({
+                lrc: lrc.lyric,
+                transUser: transUser?.nickname,
+                tlyric: tlyric?.lyric ?? '',
+                lyricUser: lyricUser?.nickname
+              })
+            }
+          })
+      }
+    },
+    [currentSong]
+  )
+
+  useAnimatedReaction(
+    () => opacity.value,
+    (currentValue, previousValue) => {
+      if (
+        currentValue !== previousValue &&
+        preSongId !== currentSong?.id &&
+        !lyricData?.lrc &&
+        currentValue === 1
+      ) {
+        if (currentSong?.id) preSongId = currentSong.id
+        runOnJS(getLyricData)()
+      }
+    }
+  )
 
   const lyricListData = useMemo<LyricMemo>(
     () => {
@@ -280,9 +330,12 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
 
   useEffect(
     () => {
-      if (currentPlayIndex !== -1) setCurPlayRow(0)
+      if (currentSong) {
+        setCurPlayRow(0)
+        setLyricData(undefined)
+      }
     },
-    [currentPlayIndex]
+    [currentSong]
   )
 
   const stylez = useAnimatedStyle(() => ({

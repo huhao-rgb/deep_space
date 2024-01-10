@@ -1,23 +1,17 @@
 import type { FC } from 'react'
-import {
-  memo,
-  useMemo
-} from 'react'
+import { memo, useMemo } from 'react'
 
 import Animated, {
   withTiming,
   runOnJS,
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedReaction,
-  useDerivedValue
+  useAnimatedReaction
 } from 'react-native-reanimated'
 import type { SharedValue } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 
-import { usePlayer } from '@/store'
 import type { CostomTrack } from '@/hooks'
-import { shallow } from 'zustand/shallow'
 
 import { Image } from 'expo-image'
 
@@ -25,6 +19,7 @@ import { tw } from '@/utils'
 import { usePlayerContext, GestureState } from './Context'
 
 interface CoverSwitchProps {
+  songList: CostomTrack[]
   currentIndex: number
   size: number
   windowWidth: number
@@ -40,11 +35,6 @@ interface ConcealCoverProps {
   translationX: SharedValue<number>
   songList: CostomTrack[]
   currentIndex: number
-}
-
-interface Cover {
-  id: number
-  uri: string
 }
 
 const getPicUrl = (list: CostomTrack[], index: number) => {
@@ -111,6 +101,7 @@ const ConcealCover: FC<ConcealCoverProps> = (props) => {
 
 const CoverSwitch = memo<CoverSwitchProps>((props) => {
   const {
+    songList,
     currentIndex,
     size,
     windowWidth,
@@ -118,11 +109,6 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     onTap,
     onFinish
   } = props
-
-  const [songList] = usePlayer(
-    (s) => [s.songList],
-    shallow
-  )
 
   const {
     gestureState,

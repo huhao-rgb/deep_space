@@ -2,8 +2,6 @@ import {
   memo,
   useMemo,
   useCallback,
-  useEffect,
-  useState,
   useRef
 } from 'react'
 
@@ -14,9 +12,9 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 
-import TrackPlayer, { State } from 'react-native-track-player'
+import TrackPlayer from 'react-native-track-player'
 import { useSharedValue } from 'react-native-reanimated'
-import { RectButton, BorderlessButton } from 'react-native-gesture-handler'
+import { BorderlessButton } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type {
   BottomSheetBackdropProps,
@@ -29,9 +27,8 @@ import {
   ChatBubbleBottomCenterTextIcon,
   EllipsisVerticalIcon
 } from 'react-native-heroicons/outline'
-import { PlayIcon, PauseIcon } from 'react-native-heroicons/solid'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import { PlayerContextProvider, GestureState } from './Context'
 import { useGestureEventsHandlers } from './useGestureEventsHandlers'
@@ -46,6 +43,7 @@ import ButtonIcon from './ButtonIcon'
 import RepeatModeBtn from './RepeatModeBtn'
 import Lyric, { type LyricRef } from './Lyric'
 import CoverSwitch from './CoverSwitch'
+import PlayPuaseBtn from './PlayPuaseBtn'
 
 import {
   usePlayerState,
@@ -53,16 +51,6 @@ import {
   PlayerRepeatMode
 } from '@/store'
 import { tw, getSvgProps } from '@/utils'
-import { useWyCloudApi } from '@/hooks'
-
-import type { LyricParams, LyricResponse } from '@/api/types'
-
-export interface LyricData {
-  lrc: string
-  tlyric: string
-  transUser?: string
-  lyricUser?: string
-}
 
 const gapWidth = tw`w-5`.width as number
 
@@ -73,12 +61,9 @@ const Player = memo(() => {
   const { height, width } = useWindowDimensions()
   const { bottom } = useSafeAreaInsets()
 
-  const lyricApi = useWyCloudApi<LyricResponse, LyricParams>('lyric', 1000 * 60 * 60 * 2)
-
   const snapPoints = useMemo(() => [height + bottom], [height, bottom])
   const coverWidth = useMemo(() => width - gapWidth * 2, [width])
 
-  const [lyricData, setLyricData] = useState<LyricData>()
   const lyricRef = useRef<LyricRef>(null)
 
   const [
@@ -87,54 +72,25 @@ const Player = memo(() => {
     repeatMode,
     setCurrentPlayIndex
   ] = usePlayer(
-    (s) => [
-      s.songList,
-      s.currentPlayIndex,
-      s.repeatMode,
-      s.setCurrentPlayIndex
-    ],
-    shallow
+    useShallow((state) => [
+      state.songList,
+      state.currentPlayIndex,
+      state.repeatMode,
+      state.setCurrentPlayIndex
+    ])
   )
-  const [playerRef, playerState, bottomPlayerQueueRef] = usePlayerState(
-    (s) => [s.playerRef, s.playerState, s.bottomPlayerQueueRef],
-    shallow
+
+  const [
+    playerRef,
+    bottomPlayerQueueRef
+  ] = usePlayerState(
+    useShallow((state) => [
+      state.playerRef,
+      state.bottomPlayerQueueRef
+    ])
   )
 
   const currentSong = songList[currentPlayIndex] ?? {}
-
-  useEffect(
-    () => {
-      const { id } = currentSong
-      if (id) {
-        lyricApi({
-          data: { id },
-          recordUniqueId: String(id)
-        })
-          .then(response => {
-            const { status, body } = response
-            if (status === 200 && body.code === 200) {
-              const { lrc, transUser, tlyric, lyricUser } = body
-              setLyricData({
-                lrc: lrc.lyric,
-                transUser: transUser?.nickname,
-                tlyric: tlyric?.lyric ?? '',
-                lyricUser: lyricUser?.nickname
-              })
-            }
-          })
-      }
-    },
-    [currentSong]
-  )
-
-  const onPlay2Pause = useCallback(
-    async () => {
-      playerState === State.Playing
-        ? TrackPlayer.pause()
-        : TrackPlayer.play()
-    },
-    [playerState, currentPlayIndex]
-  )
 
   const onCoverSwitchFinish = useCallback(
     (isPre: boolean) => {
@@ -201,6 +157,8 @@ const Player = memo(() => {
     []
   )
 
+  console.log(`列表长度：${songList.length}，当前索引：${currentPlayIndex}，当前模式：${repeatMode}`)
+
   return (
     <PlayerContextProvider
       value={{
@@ -223,7 +181,7 @@ const Player = memo(() => {
           style={tw`flex-1`}
         >
           <CoverSwitch
-            // uri={`${currentSong?.al?.picUrl}?param=1000y1000`}
+            songList={songList}
             currentIndex={currentPlayIndex}
             size={coverWidth}
             windowWidth={width}
@@ -286,18 +244,9 @@ const Player = memo(() => {
                   {...getSvgProps({ size: 'lg', theme: 'light', isOutline: false })}
                 />
               </BorderlessButton>
-              <RectButton
-                activeOpacity={0.8}
-                style={tw`rounded-full w-14 h-14 bg-red-500 flex-row justify-center items-center`}
-                onPress={onPlay2Pause}
-              >
-                {playerState === State.Playing
-                  ? <PauseIcon {...getSvgProps({ fill: tw.color('white'), size: 'lg' })} />
-                  : <PlayIcon
-                      {...getSvgProps({ fill: tw.color('white'), size: 'lg' })}
-                      style={tw`ml-1`}
-                    />}
-              </RectButton>
+
+              <PlayPuaseBtn />
+              
               <BorderlessButton
                 style={tw`p-1`}
                 onPress={() => { onCoverSwitchFinish(false) }}
@@ -321,7 +270,7 @@ const Player = memo(() => {
 
           <Lyric
             ref={lyricRef}
-            lyricData={lyricData}
+            currentSong={currentSong}
           />
         </SafeAreaView>
       </BottomSheet>
