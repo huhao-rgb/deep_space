@@ -1,12 +1,18 @@
-import { memo, useCallback, useState } from 'react'
+import type { FC } from 'react'
+import {
+  memo,
+  useMemo
+} from 'react'
 
 import Animated, {
   withTiming,
   runOnJS,
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedReaction
+  useAnimatedReaction,
+  useDerivedValue
 } from 'react-native-reanimated'
+import type { SharedValue } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 
 import { usePlayer } from '@/store'
@@ -28,26 +34,79 @@ interface CoverSwitchProps {
   onFinish?: (isPre: boolean) => void
 }
 
+interface ConcealCoverProps {
+  isLeft?: boolean
+  size: number
+  translationX: SharedValue<number>
+  songList: CostomTrack[]
+  currentIndex: number
+}
+
 interface Cover {
   id: number
   uri: string
 }
 
-const halfBackGauge = (tw`px-5`.paddingLeft as number) / 2
+const getPicUrl = (list: CostomTrack[], index: number) => {
+  const picPrefix = list?.[index]?.al?.picUrl
+  if (picPrefix) return `${picPrefix}?param=800y800`
+  return ''
+}
 
-const getThreeCoverUrl = (list: CostomTrack[], index: number): Cover[] => {
-  const length = list.length
+const ConcealCover: FC<ConcealCoverProps> = (props) => {
+  const {
+    isLeft,
+    size,
+    translationX,
+    songList,
+    currentIndex
+  } = props
 
-  if (length === 0) return []
+  const stylez = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        translateX: translationX.value
+      }]
+    }
+  })
 
-  const nextIndex = index === length - 1 ? 0 : index + 1
-  const preIndex = index === 0 ? length - 1 : index - 1
-  const indexs = [preIndex, index, nextIndex]
+  const calculateCoverUri = useMemo(
+    () => {
+      const len = songList.length
+      switch (len) {
+        case 0:
+          return undefined
+        case 1:
+          return getPicUrl(songList, currentIndex)
+        case 2:
+          return getPicUrl(songList, 1)
+        default:
+          const preIndex = currentIndex === 0 ? len - 1 : currentIndex - 1
+          const nextIndex = currentIndex === len - 1 ? 0 : currentIndex + 1
+          const index = isLeft ? preIndex : nextIndex
+          return getPicUrl(songList, index)
+      }
+    },
+    [songList, currentIndex, isLeft]
+  )
 
-  return indexs.map(i => ({
-    id: list[i]?.id ?? '',
-    uri: `${list[i]?.al?.picUrl}?param=1000y1000`
-  }))
+  return (
+    <Animated.View
+      style={[
+        tw`absolute top-0 right-0 z-10`,
+        isLeft ? { left: -size } : { right: -size },
+        stylez
+      ]}
+    >
+      <Image
+        source={{ uri: calculateCoverUri }}
+        style={[
+          { width: size, height: size },
+          tw`rounded-2xl`
+        ]}
+      />
+    </Animated.View>
+  )
 }
 
 const CoverSwitch = memo<CoverSwitchProps>((props) => {
@@ -65,8 +124,6 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     shallow
   )
 
-  const [covers, setCovers] = useState<Cover[]>(getThreeCoverUrl(songList, currentIndex))
-
   const {
     gestureState,
     translationX
@@ -76,33 +133,15 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
   const panTranslatioinX = useSharedValue(0)
 
   const stylez = useAnimatedStyle(() => ({
-    transform: [{ translateX: panTranslatioinX.value }]
+    transform: [{ scale: scale.value }]
   }))
 
   useAnimatedReaction(
     () => translationX.value,
     (currentValue, _) => {
       panTranslatioinX.value = currentValue
-      scale.value = (windowWidth - Math.abs(currentValue)) / windowWidth
+      scale.value = (windowWidth - Math.abs(currentValue) / 3) / windowWidth
     }
-  )
-
-  const setCoverList = useCallback(
-    (isPre: boolean) => {
-      let index: number = 0
-
-      if (isPre) {
-        index = currentIndex === 0 ? songList.length - 1 : currentIndex - 1
-      } else {
-        index = currentIndex === songList.length - 1 ? 0 : currentIndex + 1
-      }
-
-      const list = getThreeCoverUrl(songList, index)
-      setCovers(list)
-      console.log(list)
-      // setCovers(list)
-    },
-    [songList, currentIndex]
   )
 
   useAnimatedReaction(
@@ -111,24 +150,16 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
       if (currentState === GestureState.ENDED) {
         if (Math.abs(panTranslatioinX.value) > threshold) {
           const isPre = panTranslatioinX.value > 0
-          console.log(panTranslatioinX.value)
           if (onFinish) {
-            // runOnJS<boolean[], void>(onFinish)(isPre)
-            panTranslatioinX.value = withTiming(
-              (size + halfBackGauge * 2) * (isPre ? 1 : -1),
-              undefined,
-              () => {
-                runOnJS(setCoverList)(isPre)
-                panTranslatioinX.value = 0
-              }
-            )
+            runOnJS<boolean[], void>(onFinish)(isPre)
           }
-        } else {
-          panTranslatioinX.value = 0
         }
+
+        panTranslatioinX.value = 0
+        scale.value = withTiming(1)
       }
     },
-    [setCoverList]
+    []
   )
 
   const tap = Gesture.Tap()
@@ -140,32 +171,39 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     <GestureDetector gesture={tap}>
       <Animated.View
         style={[
-          tw`w-full overflow-hidden flex-row justify-center`,
-          { height: size }
+          { height: size, position: 'relative' }
         ]}
       >
         <Animated.View
           style={[
-            stylez,
-            tw`flex-row`,
-            { paddingHorizontal: halfBackGauge }
+            tw`w-full overflow-hidden flex-row justify-center`,
+            stylez
           ]}
         >
-          {covers.map((cover, i) => (
-            <Image
-              source={{ uri: cover.uri }}
-              key={`cover_image-${cover.id}`}
-              style={[
-                {
-                  width: size,
-                  height: size,
-                  marginHorizontal: halfBackGauge
-                },
-                tw`rounded-2xl`
-              ]}
-            />
-          ))}
+          <Image
+            source={{ uri: getPicUrl(songList, currentIndex) }}
+            style={[
+              { width: size, height: size },
+              tw`rounded-2xl`
+            ]}
+          />
         </Animated.View>
+
+        <ConcealCover
+          isLeft={true}
+          translationX={panTranslatioinX}
+          size={size}
+          songList={songList}
+          currentIndex={currentIndex}
+        />
+
+        <ConcealCover
+          isLeft={false}
+          translationX={panTranslatioinX}
+          size={size}
+          songList={songList}
+          currentIndex={currentIndex}
+        />
       </Animated.View>
     </GestureDetector>
   )
