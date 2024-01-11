@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import NetInfo from '@react-native-community/netinfo'
@@ -28,11 +28,10 @@ import { useNetInfo } from '@/store'
 
 export default function RootLayout () {
   const [setNetInfoState, setIp] = useNetInfo(
-    (s) => [s.setNetInfoState, s.setIp],
-    shallow
+    useShallow((s) => [s.setNetInfoState, s.setIp])
   )
 
-  const wyCloud = useWyCloudApi('registerAnonimous', 1000 * 60 * 60 * 24)
+  const wyCloud = useWyCloudApi('registerAnonimous')
 
   useEffect(
     () => {

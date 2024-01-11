@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import { useMemo, useCallback } from 'react'
 
 import { BorderlessButton } from 'react-native-gesture-handler'
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 import { usePlayer, PlayerRepeatMode } from '@/store'
 
 import Icon from '@/components/svg-icon/Icon'
@@ -23,10 +23,7 @@ const modeOrderLen = modeOrder.length
 const RepeatModeBtn: FC<RepeatModeBtnProps> = (props) => {
   const { mode } = props
 
-  const [setRepeatMode] = usePlayer(
-    (s) => [s.setRepeatMode],
-    shallow
-  )
+  const [setRepeatMode] = usePlayer(useShallow((s) => [s.setRepeatMode]))
 
   const iconName = useMemo(
     () => {

@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useCallback, useMemo } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import { View, Text } from 'react-native'
 import { Image } from 'expo-image'
@@ -11,7 +11,7 @@ import PageScrollView from '@/components/page-scrollview'
 import type { RenderScreenProps } from '@/components/page-scrollview'
 
 import { tw } from '@/utils'
-import { usePlayer, useSystem } from '@/store'
+import { usePlayer } from '@/store'
 import { useTrack, useWyCloudApi } from '@/hooks'
 
 import type { PlaylistTrackAllRes } from '@/api/types'
@@ -25,15 +25,9 @@ const offset = tw.style('w-5').width as number
 const TrackPager: FC<Props> = (props) => {
   const { data } = props
 
-  const [cacheDuration] = useSystem(
-    (s) => [s.cacheDuration]
-  )
-  const [setPlayerList] = usePlayer(
-    (s) => [s.setPlayerList],
-    shallow
-  )
+  const [setPlayerList] = usePlayer(useShallow((s) => [s.setPlayerList]))
 
-  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheDuration)
+  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll')
   const track = useTrack()
 
   const routes = useMemo(

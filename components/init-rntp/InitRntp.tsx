@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import TrackPlayer, {
   useTrackPlayerEvents,
@@ -38,25 +38,23 @@ const InitRntp: FC = () => {
     currentPlayIndex,
     setCurrentPlayIndex
   ] = usePlayer(
-    (s) => [
+    useShallow((s) => [
       s.repeatMode,
       s.songList,
       s.initRntpQuene,
       s.currentPlayIndex,
       s.setCurrentPlayIndex
-    ],
-    shallow
+    ])
   )
-  const [setPlayerState] = usePlayerState(
-    (s) => [s.setPlayerState],
-    shallow
-  )
+  const [setPlayerState] = usePlayerState(useShallow((s) => [s.setPlayerState]))
 
   useEffect(
     () => {
       ;(async () => {
         try {
-          await TrackPlayer.setupPlayer()
+          await TrackPlayer.setupPlayer({
+            autoHandleInterruptions: true
+          })
 
           TrackPlayer.updateOptions({
             capabilities: [

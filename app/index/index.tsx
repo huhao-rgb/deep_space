@@ -14,11 +14,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TouchableOpacity, RectButton } from 'react-native-gesture-handler'
 import Lottie from 'lottie-react-native'
-import { useMMKVString } from 'react-native-mmkv'
 
 import { router } from 'expo-router'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import SearchBox from './SearchBox'
 import Navs from './Navs'
@@ -33,8 +32,8 @@ import Icon from '@/components/svg-icon'
 
 import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
-import { ANONYMOUS_TOKEN } from '@/constants'
-import { useSystem, usePlayer } from '@/store'
+import type { WyCloudDecodeAnswer } from '@/utils'
+import { usePlayer } from '@/store'
 
 import type {
   HomepageBlockPageRes,
@@ -61,19 +60,10 @@ const showMoreTexts = ['HOMEPAGE_BLOCK_PLAYLIST_RCMD', 'HOMEPAGE_BLOCK_MGC_PLAYL
 const showPlayBtn = ['HOMEPAGE_BLOCK_STYLE_RCMD', 'HOMEPAGE_BLOCK_TOPLIST']
 
 const Home: FC = () => {
-  const [anonymousToken] = useMMKVString(ANONYMOUS_TOKEN)
+  const [setPlayerList] = usePlayer(useShallow((state) => [state.setPlayerList]))
 
-  const [cacheDuration] = useSystem(
-    (s) => [s.cacheDuration],
-    shallow
-  )
-  const [setPlayerList] = usePlayer(
-    (s) => [s.setPlayerList],
-    shallow
-  )
-
-  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage', cacheDuration)
-  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheDuration)
+  const wyCloud = useWyCloudApi<HomepageBlockPageRes>('homepageBlockPage')
+  const songDefaultApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll')
 
   const track = useTrack()
 
@@ -87,19 +77,28 @@ const Home: FC = () => {
 
   useEffect(
     () => {
-      wyCloud({
-        data: {
-          refresh: false,
-          cursor: undefined
+      const setPageData = (data: WyCloudDecodeAnswer<HomepageBlockPageRes>) => {
+        const { status, body } = data
+        if (status === 200 && body.code === 200) {
+          const { blocks, cursor } = body.data
+          setPageState({ blocks, cursor })
         }
-      })
-        .then(response => {
-          const { status, body } = response
-          if (status === 200 && body.code === 200) {
-            const { blocks, cursor } = body.data
-            setPageState({ blocks, cursor })
-          }
-        })
+      }
+
+      wyCloud(
+        { data: { refresh: false, cursor: undefined } },
+        (data) => { setPageData(data) }
+      )
+        .then(response => { setPageData(response) })
+    },
+    []
+  )
+
+  const onRightTextPress = useCallback(
+    (block: HomepageBlockPageBlocks) => {
+      const { blockCode } = block
+      if (showMoreTexts.indexOf(blockCode) !== -1) {
+      }
     },
     []
   )
@@ -118,15 +117,6 @@ const Home: FC = () => {
           return <RadarSongList data={creatives} />
         default:
           return null
-      }
-    },
-    []
-  )
-
-  const onRightTextPress = useCallback(
-    (block: HomepageBlockPageBlocks) => {
-      const { blockCode } = block
-      if (showMoreTexts.indexOf(blockCode) !== -1) {
       }
     },
     []

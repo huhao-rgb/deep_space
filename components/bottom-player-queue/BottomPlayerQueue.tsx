@@ -8,7 +8,7 @@ import {
   memo
 } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import { View, Text } from 'react-native'
 
@@ -45,17 +45,13 @@ const BottomPlayerQueue: FC = () => {
     currentPlayIndex,
     setCurrentPlayIndex
   ] = usePlayer(
-    (s) => [
+    useShallow((s) => [
       s.songList,
       s.currentPlayIndex,
       s.setCurrentPlayIndex
-    ],
-    shallow
+    ])
   )
-  const [bottomPlayerQueueRef] = usePlayerState(
-    (s) => [s.bottomPlayerQueueRef],
-    shallow
-  )
+  const [bottomPlayerQueueRef] = usePlayerState(useShallow((s) => [s.bottomPlayerQueueRef]))
 
   const { bottom } = useSafeAreaInsets()
 

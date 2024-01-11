@@ -10,21 +10,13 @@ import { View, Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Shadow } from 'react-native-shadow-2'
 
-import { shallow } from 'zustand/shallow'
-
 import { tw } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
-import { useSystem } from '@/store'
 
 import type { SearchDefaultKeyRes } from '@/api/types'
 
 const SearchBox: FC = () => {
-  const [cacheDuration] = useSystem(
-    (s) => [s.cacheDuration],
-    shallow
-  )
-
-  const defaultKeyApi = useWyCloudApi<SearchDefaultKeyRes>('searchDefaultKey', cacheDuration)
+  const defaultKeyApi = useWyCloudApi<SearchDefaultKeyRes>('searchDefaultKey')
 
   const [defaultKey, setDefaultKey] = useState('输入您想要查找的关键词...')
 

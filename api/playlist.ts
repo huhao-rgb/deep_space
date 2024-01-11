@@ -39,3 +39,12 @@ export const playlistTrackAll = (data?: PlaylistTrackAllData): WyCloudOptions =>
     cookie: {}
   }
 }
+
+// 全部歌单分类
+export const playlistCatlist = (): WyCloudOptions => {
+  return {
+    method: 'POST',
+    url: 'https://music.163.com/weapi/playlist/catalogue',
+    crypto: 'weapi'
+  }
+}

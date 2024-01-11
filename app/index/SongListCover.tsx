@@ -32,8 +32,7 @@ const SongListCover: FC<SongListCoverProps> = (props) => {
         <Icon
           name="SolidPlay"
           fill={tw.color('slate-800')}
-          width={10}
-          height={10}
+          size={10}
           style={{ transform: [{ translateX: 1 }] }}
         />
       </RectButton>

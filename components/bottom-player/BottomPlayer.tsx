@@ -10,7 +10,7 @@ import {
   useCallback
 } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import { View, Text } from 'react-native'
 import type { LayoutChangeEvent } from 'react-native'
@@ -56,11 +56,10 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     songList,
     currentPlayIndex
   ] = usePlayer(
-    (s) => [
+    useShallow((s) => [
       s.songList,
       s.currentPlayIndex
-    ],
-    shallow
+    ])
   )
   const [
     playerState,
@@ -71,7 +70,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     bottomPlayerQueueRef,
     playerRef
   ] = usePlayerState(
-    (s) => [
+    useShallow((s) => [
       s.playerState,
       s.miniPlayerHeight,
       s.setMniPlayerHeight,
@@ -79,8 +78,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
       s.setIsShowMiniPlayer,
       s.bottomPlayerQueueRef,
       s.playerRef
-    ],
-    shallow
+    ])
   )
 
   const currentSong = songList[currentPlayIndex] ?? {}

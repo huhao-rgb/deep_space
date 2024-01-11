@@ -46,7 +46,7 @@ const horizontalGap = (tw`w-5`.width as number) * 2
 const StarpickComments = memo(() => {
   const { width } = useWindowDimensions()
 
-  const starpickCommentsApi = useWyCloudApi<StarpickCommentsSummaryRes>('starpickCommentsSummary', 1000 * 60 * 60 * 2)
+  const starpickCommentsApi = useWyCloudApi<StarpickCommentsSummaryRes>('starpickCommentsSummary')
 
   const [comments, setComments] = useState<any[]>([])
   const randomLinearIndexs = useMemo(() => fyShuffle(linearColors.map((_, i) => i)), [])
@@ -102,8 +102,7 @@ const StarpickComments = memo(() => {
               >
                 <Icon
                   name="SolidPlay"
-                  width={14}
-                  height={14}
+                  size={14}
                   fill={tw.color('white')}
                 />
               </BorderlessButton>

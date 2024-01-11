@@ -218,10 +218,10 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           }
         }
 
-        set({
-          currentPlayIndex: playIndex,
-          songList: quene
-        })
+        // set({
+        //   currentPlayIndex: playIndex,
+        //   songList: quene
+        // })
       }
     }),
     {

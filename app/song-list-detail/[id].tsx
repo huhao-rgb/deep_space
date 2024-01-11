@@ -6,7 +6,7 @@ import {
   useCallback
 } from 'react'
 
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
   View,
@@ -58,16 +58,12 @@ interface PageState {
 const AnimatedFlashList = Animated.createAnimatedComponent<FlashListProps<Track>>(FlashList)
 
 const SongListDetail: FC = () => {
-  const cacheMill = 1000 * 60 * 60 * 2
+  const [setPlayerList] = usePlayer(useShallow((s) => [s.setPlayerList]))
 
-  const detailApi = useWyCloudApi<PlaylistDetailRes>('playlistDetail', cacheMill)
-  const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll', cacheMill)
+  const detailApi = useWyCloudApi<PlaylistDetailRes>('playlistDetail')
+  const allSongApi = useWyCloudApi<PlaylistTrackAllRes>('playlistTrackAll')
 
   const track = useTrack()
-  const [setPlayerList] = usePlayer(
-    (s) => [s.setPlayerList],
-    shallow
-  )
 
   const { bottom } = useSafeAreaInsets()
 
@@ -237,8 +233,7 @@ const SongListDetail: FC = () => {
                 >
                   <Icon
                     name="Comment"
-                    width={18}
-                    height={18}
+                    size={18}
                     fill={tw.color('white')}
                   />
                   <Text style={tw`ml-2 text-white text-xs font-bold`}>{pageState.commentCount}</Text>
@@ -250,8 +245,7 @@ const SongListDetail: FC = () => {
                 >
                   <Icon
                     name="Add"
-                    width={20}
-                    height={20}
+                    size={20}
                     fill={tw.color('white')}
                   />
                   <Text style={tw`ml-2 text-white text-xs font-bold`}>{pageState.subscribedCount}</Text>
@@ -278,8 +272,7 @@ const SongListDetail: FC = () => {
                       <Icon
                         name="SolidPlay"
                         fill={tw.color('white')}
-                        width={10}
-                        height={10}
+                        size={10}
                         style={{ transform: [{ translateX: 1 }] }}
                       />
                     </View>
@@ -302,8 +295,7 @@ const SongListDetail: FC = () => {
                 <Icon
                   name="Download"
                   fill={tw.color('slate-500')}
-                  width={22}
-                  height={22}
+                  size={22}
                 />
               </BorderlessButton>
             </Animated.View>
@@ -365,8 +357,7 @@ const SongListDetail: FC = () => {
                 <View style={tw`p-1`}>
                   <Icon
                     name="MvVideo"
-                    width={22}
-                    height={22}
+                    size={22}
                     fill={tw.color('slate-600')}
                   />
                 </View>
@@ -378,8 +369,7 @@ const SongListDetail: FC = () => {
               <View style={tw`p-1`}>
                 <Icon
                   name="VerticalMore"
-                  width={18}
-                  height={18}
+                  size={18}
                   fill={tw.color('slate-600')}
                 />
               </View>

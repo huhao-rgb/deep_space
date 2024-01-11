@@ -75,13 +75,13 @@ const TabBarIndicator: FC<TabBarIndicatorProps> = (props) => {
               }
             )
           }
-        ] 
+        ]
       }
 
-    return {
-      opacity: withTiming(opacity.value),
-      transform
-    }
+      return {
+        opacity: withTiming(opacity.value),
+        transform
+      }
     },
     [itemsLayout]
   )

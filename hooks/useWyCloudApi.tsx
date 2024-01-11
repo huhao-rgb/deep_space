@@ -17,7 +17,7 @@ import uuid from 'react-native-uuid'
 
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { shallow } from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 
 import * as apiMethods from '@/api'
 
@@ -31,8 +31,7 @@ import type {
   WyCloudOptions,
   WyCloudDecodeAnswer
 } from '@/utils'
-
-// import { useNetInfo } from '@/store'
+import { useSystem } from '@/store'
 
 type AnyObject = Record<string, any>
 
@@ -70,12 +69,13 @@ const getSqliteRequestData = (arr: SqliteRequestDataItem[]) => {
 export function useWyCloudApi <T = any, D extends AnyObject = {}> (
   method: keyof typeof apiMethods,
   cacheDuration?: number
-): (options?: RequestInstance<D>) => Promise<WyCloudDecodeAnswer<T>> {
+): (options?: RequestInstance<D>, cb?: (data: WyCloudDecodeAnswer<T>) => void) => Promise<WyCloudDecodeAnswer<T>> {
   if (apiMethods[method] === undefined) {
     throw console.error(`请求方法 - ${method} 不存在`)
   }
 
   // const [ip] = useNetInfo((s) => [s.ip], shallow)
+  const [cDuration] = useSystem(useShallow((state) => [state.cacheDuration]))
 
   const db = useRef<SQLiteDatabase>()
 
@@ -116,7 +116,7 @@ export function useWyCloudApi <T = any, D extends AnyObject = {}> (
 
   // 请求对象，返回一个promise
   const requestInstance = useCallback(
-    async (instanceOptions?: RequestInstance<D>) => {
+    async (instanceOptions?: RequestInstance<D>, queryRowCb?: (data: any) => void) => {
       const customOptions = instanceOptions ?? {}
       const {
         requestCacheDuration,
@@ -125,7 +125,7 @@ export function useWyCloudApi <T = any, D extends AnyObject = {}> (
         ...options
       } = customOptions
 
-      const duration = cacheDuration ?? requestCacheDuration ?? 0
+      const duration = cacheDuration ?? requestCacheDuration ?? cDuration
       const {
         data: defaultData,
         ...defaultOptions
@@ -158,14 +158,16 @@ export function useWyCloudApi <T = any, D extends AnyObject = {}> (
               `select * from ${API_CACHE_TABLE} where apiMethodName = ?${isMultipleRecord ? recordUniqueIdSql : ''}`,
               queryParmas,
               (_, { rows }) => {
+                if (rows.length > 0) {
+                  // 确保在有数据的情况下，直接通过回调返回
+                  queryRowCb?.(getSqliteRequestData(rows._array))
+                }
+
                 const currentTimestamp = dayjs().valueOf()
                 const invalid =
                   duration === 0 ||
                   rows.length === 0 ||
                   currentTimestamp - rows._array[0].saveTimestamp > duration
-
-                // 确保在有数据的情况下，即使接口过期也会输出数据
-                // if (rows.length > 0) resolve(getSqliteRequestData(rows._array))
 
                 if (invalid) {
                   axios({

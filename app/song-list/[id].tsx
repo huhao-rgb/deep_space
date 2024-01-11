@@ -1,15 +1,18 @@
 import type { FC } from 'react'
-import { useMemo, useCallback } from 'react'
+import {
+  useMemo,
+  useCallback
+} from 'react'
 
 import { Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import Crypto from 'react-native-quick-crypto'
 
 import SafeAreaView from '@/components/safe-area-view'
 import TabsView from '@/components/tabs-view'
 import type { Route, RenderSceneProps } from '@/components/tabs-view'
 
 import { tw } from '@/utils'
+import { useWyCloudApi } from '@/hooks'
 
 const SongList: FC = () => {
   const routes = useMemo<Route[]>(
