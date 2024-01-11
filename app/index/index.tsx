@@ -96,8 +96,10 @@ const Home: FC = () => {
 
   const onRightTextPress = useCallback(
     (block: HomepageBlockPageBlocks) => {
-      const { blockCode } = block
+      const { blockCode, uiElement } = block
       if (showMoreTexts.indexOf(blockCode) !== -1) {
+        const { title } = uiElement.subTitle
+        router.push(`/song-list/${title}`)
       }
     },
     []
