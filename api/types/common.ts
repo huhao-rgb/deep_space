@@ -1,3 +1,8 @@
+export type PagingData = {
+  offset: number
+  limit: number
+}
+
 export interface ToneQuality {
   br: number
   fid: number

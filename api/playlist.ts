@@ -1,7 +1,8 @@
 import type { WyCloudOptions } from '@/utils'
 import type {
   PlaylistDetailData,
-  PlaylistTrackAllData
+  PlaylistTrackAllData,
+  TopPlaylistData
 } from './types/playlist'
 
 export const playlistDetail = (data?: PlaylistDetailData): WyCloudOptions => {
@@ -46,5 +47,27 @@ export const playlistCatlist = (): WyCloudOptions => {
     method: 'POST',
     url: 'https://music.163.com/weapi/playlist/catalogue',
     crypto: 'weapi'
+  }
+}
+
+// 歌单 ( 网友精选碟 )
+export const topPlaylist = (data?: TopPlaylistData): WyCloudOptions => {
+  const DEFAULT_CAT = '全部'
+
+  const {
+    order = 'hot',
+    cat = DEFAULT_CAT,
+    ...params
+  } = data ?? {}
+
+  return {
+    method: 'POST',
+    url: 'https://music.163.com/weapi/playlist/list',
+    crypto: 'weapi',
+    data: {
+      order,
+      cat: cat.indexOf(DEFAULT_CAT) !== -1 ? DEFAULT_CAT : cat,
+      ...params
+    }
   }
 }

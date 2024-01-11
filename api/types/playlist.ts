@@ -1,4 +1,4 @@
-import type { Track } from './common'
+import type { Track, PagingData } from './common'
 
 export interface PlaylistDetailData {
   id: string
@@ -69,4 +69,29 @@ export interface PlaylistTrackAllRes {
   code: number
   privileges: any[]
   songs: Track[]
+}
+
+export interface CatlistItem {
+  activity: boolean
+  category: number
+  hot: boolean
+  imgId: number
+  imgUrl: string | null
+  name: string
+  resourceCount: number
+  resourceType: number
+  type: number
+}
+
+export interface PlaylistCatlistRes {
+  all: CatlistItem
+  categories: Record<number, string>
+  code: number
+  sub: CatlistItem[]
+}
+
+export interface TopPlaylistData extends PagingData {
+  order: 'hot' | 'new'
+  total?: boolean
+  cat?: string
 }

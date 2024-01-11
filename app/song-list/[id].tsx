@@ -1,7 +1,9 @@
 import type { FC } from 'react'
 import {
   useMemo,
-  useCallback
+  useCallback,
+  useState,
+  useEffect
 } from 'react'
 
 import { Text } from 'react-native'
@@ -13,36 +15,72 @@ import type { Route, RenderSceneProps } from '@/components/tabs-view'
 
 import { tw } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
+import type {
+  PlaylistCatlistRes,
+  CatlistItem
+} from '@/api/types'
+
+interface State {
+  catListData: {
+    categories: Record<number, string>
+    sub: CatlistItem[]
+  } | undefined,
+  loading: boolean
+}
+
+const RenderScene = (props: RenderSceneProps<Route>) => {
+  const [toNumber] = useState(1)
+
+  console.log(toNumber)
+
+  return <></>
+}
 
 const SongList: FC = () => {
-  const routes = useMemo<Route[]>(
+  const catListApi = useWyCloudApi<PlaylistCatlistRes>('playlistCatlist')
+
+  const [state, setState] = useState<State>({
+    catListData: undefined,
+    loading: false
+  })
+
+  useEffect(
     () => {
-      return new Array(10)
-        .fill('')
-        .map((_, index) => ({
-          key: `route_${index}`,
-          title: `标签${index + 1}`,
-          testID: `route_test_${index}`
-        }))
+      catListApi()
+        .then(response => {
+          const { status, body } = response
+          if (status === 200 && body.code === 200) {
+            const { all, sub, categories } = body
+            const subs = [all, ...sub]
+            setState({
+              catListData: { sub: subs, categories },
+              loading: false
+            })
+          }
+        })
     },
     []
   )
 
-  const renderScene = useCallback(
-    (props: RenderSceneProps<Route>) => {
-
-      const testCrypto = () => {
+  const routes = useMemo<Route[]>(
+    () => {
+      if (state?.catListData?.sub?.length) {
+        return state.catListData.sub
+          .filter(item => item.hot)
+          .map((cat, i) => ({
+            key: `route_${i}`,
+            title: cat.name,
+            testID: `route_test_${i}`
+          }))
       }
 
-      return (
-        <TouchableOpacity
-          onPress={testCrypto}
-          style={tw`mt-4 ml-5`}
-        >
-          <Text>123123</Text>
-        </TouchableOpacity>
-      )
+      return []
     },
+    [state]
+  )
+
+  const renderScene = useCallback(
+    (props: RenderSceneProps<Route>) => <RenderScene {...props} />,
     []
   )
 
@@ -54,6 +92,7 @@ const SongList: FC = () => {
       <TabsView
         routes={routes}
         initialPage={0}
+        lazy
         tabsBarScrollEnabled={true}
         renderScene={renderScene}
       />
