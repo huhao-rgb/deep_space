@@ -17,7 +17,11 @@ import SongListCover from './SongListCover'
 import { tw } from '@/utils'
 import { useWyCloudApi, useTrack } from '@/hooks'
 import { useSystem, usePlayer } from '@/store'
-import type { PlaylistDetailRes, PlaylistTrackAllRes } from '@/api/types'
+import type {
+  PlaylistDetailRes,
+  PlaylistTrackAllRes,
+  TrackId
+} from '@/api/types'
 
 interface Props {
   data: any[]
@@ -41,7 +45,7 @@ const Reommend: FC<Props> = (props) => {
       contentContainerStyle={tw`px-5`}
     >
       {data.map((item, i) => {
-        const openSongListDetailPage = (item: any) => {
+        const openSongListDetailPage = () => {
           if (item.creativeId) {
             router.push(`/song-list-detail/${item.creativeId}`)
           }
@@ -59,8 +63,8 @@ const Reommend: FC<Props> = (props) => {
             const { trackIds } = body.playlist
 
             const { status: songStatus, body: songBody } = await songDefaultApi({
-              data: { ids: trackIds },
-              recordUniqueId: trackIds.join()
+              data: { ids: trackIds.map((item: TrackId) => item.id) },
+              recordUniqueId: creativeId as string
             })
   
             if (songStatus === 200 && songBody.code === 200) {
