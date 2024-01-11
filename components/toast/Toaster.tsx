@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import { useCallback } from 'react'
 import type { LayoutChangeEvent, ViewStyle } from 'react-native'
 
-import Animated, { SequencedTransition, EntryExitTransition } from 'react-native-reanimated'
+import Animated, { SequencedTransition } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -42,7 +42,7 @@ const ToastWrapper: FC<ToastWrapperProps> = (props) => {
         pointerEvents="auto"
         entering={AmplifiedInUp as any}
         exiting={AmplifiedOutUp as any}
-        layout={EntryExitTransition.delay(230)}
+        layout={SequencedTransition.delay(230)}
         onLayout={onContainerLayout}
       >
         {children}
@@ -63,7 +63,6 @@ const getPositionStyle = (
     position: 'absolute',
     left: 0,
     right: 0,
-    zIndex: 9999,
     transform: [{ translateY }],
     ...verticalStyle
   }
@@ -82,7 +81,6 @@ const Toast: FC<ToasterProps> = (props) => {
   } = props
 
   const { toasts, handlers } = useToaster(toastOptions)
-  console.log(toasts)
 
   const { top, bottom } = useSafeAreaInsets()
 

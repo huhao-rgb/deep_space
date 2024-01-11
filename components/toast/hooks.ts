@@ -26,7 +26,7 @@ const startPause = () => {
 }
 
 export const useToaster = (toastOptions?: DefaultToastOptions) => {
-  const { toasts, pausedAt } = useStore()
+  const { toasts, pausedAt } = useStore(toastOptions)
 
   useEffect(
     () => {
