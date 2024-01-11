@@ -89,7 +89,7 @@ const TabBarIndicator: FC<TabBarIndicatorProps> = (props) => {
   return (
     <Animated.View
       style={[
-        tw`absolute bottom-1.5 z-10 h-1 bg-red-500 rounded-md`,
+        tw`absolute bottom-0 z-10 h-1 bg-red-500 rounded-md`,
         stylez,
         { width: indicatorWidth }
       ]}

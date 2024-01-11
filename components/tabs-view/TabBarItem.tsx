@@ -63,12 +63,12 @@ const TabBarItem: FC<TabBarItemProps> = (props) => {
             scrollEnabled
               ? tw`px-4`
               : tw`flex-1`,
-            { height: 48 }
+            { height: 42 }
           ]}
         >
           <Animated.Text
             style={[
-              tw`text-sm font-medium`,
+              tw`text-base font-medium`,
               stylez,
               labelStyle
             ]}
