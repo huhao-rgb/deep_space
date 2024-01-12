@@ -28,7 +28,7 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import type { BottomSheetFlatListMethods } from '@gorhom/bottom-sheet'
 
-import { useShallow } from 'zustand/react/shallow'
+import { shallow } from 'zustand/shallow'
 
 import { tw } from '@/utils'
 import { usePlayerState } from '@/store'
@@ -134,11 +134,14 @@ let pauseStamp: number
 const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const { currentSong } = props
 
-  const lyricApi = useWyCloudApi<LyricResponse, LyricParams>('lyric')
+  const lyricApi = useWyCloudApi<LyricResponse, LyricParams>('lyric', 1000 * 60 * 60 * 2)
 
   const [lyricData, setLyricData] = useState<LyricData>()
 
-  const [playerState] = usePlayerState(useShallow((s) => [s.playerState]))
+  const [playerState] = usePlayerState(
+    (s) => [s.playerState],
+    shallow
+  )
 
   const flatListRef = useRef<BottomSheetFlatListMethods>(null)
 
@@ -147,23 +150,12 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
 
   const opacity = useSharedValue(0)
   const placeholderHeight = useSharedValue(0)
-  const curPlayRow = useSharedValue(0)
+
+  const [curPlayRow, setCurPlayRow] = useState(0)
 
   const placeholderStyle = useAnimatedStyle(() => ({
     height: placeholderHeight.value
   }))
-
-  const lyricRowStyles = useCallback(
-    (index: number) => {
-      const selected = curPlayRow.value === index
-
-      return useAnimatedStyle(() => ({
-        fontSize: withSpring(selected ? 28 : 18),
-        color: withSpring(selected ? 'rgba(51, 65, 85, 1)' : 'rgba(51, 65, 85, 0.6)')
-      }))
-    },
-    []
-  )
 
   const getLyricData = useCallback(
     () => {
@@ -243,21 +235,6 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
     []
   )
 
-  const rollToLyricRow = useCallback(
-    (index: number) => {
-      if (lyricListData.lrcLines.length === 0) return
-
-      if (!beging.current && index > -1) {
-        flatListRef.current?.scrollToIndex({
-          animated: true,
-          index: index,
-          viewOffset: placeholderHeight.value
-        })
-      }
-    },
-    [lyricListData.lrcLines]
-  )
-
   // startTime - 秒
   const play = useCallback(
     (startTime: number, skipLast?: boolean) => {
@@ -277,14 +254,14 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         }
       }
 
-      if (!skipLast) rollToLyricRow(curNum - 1)
+      if (!skipLast) setCurPlayRow(curNum - 1)
 
       const _playRest = () => {
         const line = lyricListData.lrcLines[curNum]
         const delay = line.time - (+new Date() - startStamp)
 
         timer.current = setTimeout(() => {
-          rollToLyricRow(curNum++)
+          setCurPlayRow(curNum++)
           if (curNum < lrcLines.length && state === State.PLAYING) {
             _playRest()
           }
@@ -338,8 +315,23 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
 
   useEffect(
     () => {
+      if (lyricListData.lrcLines.length === 0) return
+
+      if (!beging.current && curPlayRow > -1) {
+        flatListRef.current?.scrollToIndex({
+          animated: true,
+          index: curPlayRow,
+          viewOffset: placeholderHeight.value
+        })
+      }
+    },
+    [curPlayRow, lyricListData.lrcLines]
+  )
+
+  useEffect(
+    () => {
       if (currentSong) {
-        // setCurPlayRow(0)
+        setCurPlayRow(0)
         setLyricData(undefined)
       }
     },
@@ -378,15 +370,17 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
         }
       }
 
+      const selected = curPlayRow === index
+
       return (
         <View style={[tw`py-2`]}>
-          <Animated.Text style={[lyricRowStyles(index), tw`text-center`]}>
+          <Animated.Text style={getLryicTextStyle(selected)}>
             {item.txt}
           </Animated.Text>
           {tlyricLines !== undefined && (
-            <Animated.Text style={[lyricRowStyles(index), tw`text-center`]}>
+            <Text style={getLryicTextStyle(selected)}>
               {tlyricLines.txt}
-            </Animated.Text>
+            </Text>
           )}
         </View>
       )
@@ -478,7 +472,7 @@ const Lyric = forwardRef<LyricRef, LyricProps>((props, ref) => {
   const onContainerLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { height } = event.nativeEvent.layout
-      placeholderHeight.value = height / 2
+      placeholderHeight.value = height / 2.5
     },
     []
   )
