@@ -1,16 +1,11 @@
 import type { FC } from 'react'
-import {
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect
-} from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { View } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
 import type { ListRenderItem } from '@shopify/flash-list'
 
+import { PagingListFlashList } from '@/components/paging-list'
+import type { Paging, CustomResponse } from '@/components/paging-list'
 import { PlayListBlock } from '@/components/play-list-block'
 import type { Route, RenderSceneProps } from '@/components/tabs-view'
 
@@ -22,12 +17,7 @@ type CustomRenderSceneProps = RenderSceneProps<Route> & {
   width: number
 }
 
-interface State {
-  loading: boolean
-  refresh: boolean
-  listLoadEnd: boolean
-  list: PlayListItem[]
-}
+type KeyExtractor <TItem = any> = (item: TItem, index: number) => string
 
 const NUM_COLUMNS = 3
 
@@ -37,16 +27,7 @@ const mlWidth = tw`w-2`.width as number
 const RenderScene: FC<CustomRenderSceneProps> = (props) => {
   const { width, route } = props
 
-  const offset = useRef(0)
-
   const topPlaylistApi = useWyCloudApi<TopPlaylistRes>('topPlaylist')
-
-  const [state, setState] = useState<State>({
-    loading: false,
-    refresh: false,
-    listLoadEnd: false,
-    list: []
-  })
 
   const coverWidth = useMemo(
     () => {
@@ -56,37 +37,9 @@ const RenderScene: FC<CustomRenderSceneProps> = (props) => {
     [width]
   )
 
-  useEffect(
-    () => {
-      const { title } = route
-      topPlaylistApi({
-        data: {
-          offset: offset.current,
-          limit: 50,
-          cat: title
-        },
-        recordUniqueId: `${title}_${offset.current}`
-      })
-        .then(response => {
-          const { status, body } = response
-          if (status === 200 && body.code === 200) {
-            const { playlists, more, total } = body
-            setState({
-              loading: false,
-              refresh: false,
-              listLoadEnd: !more,
-              list: playlists
-            })
-          }
-        })
-      // topPlaylistApi()
-    },
-    []
-  )
-
-  const renderItem = useCallback<ListRenderItem<any>>(
+  const renderItem = useCallback<ListRenderItem<PlayListItem>>(
     ({ item, index }) => {
-      let justify = 'start'
+      let justify: 'start' | 'end' | 'center'
       const remainder = index % NUM_COLUMNS
 
       if (remainder === NUM_COLUMNS - 1) {
@@ -108,7 +61,7 @@ const RenderScene: FC<CustomRenderSceneProps> = (props) => {
           <PlayListBlock
             imageUrl={item.coverImgUrl}
             name={item.name}
-            id={item.id}
+            id={String(item.id)}
             size={coverWidth}
           />
         </View>
@@ -117,17 +70,49 @@ const RenderScene: FC<CustomRenderSceneProps> = (props) => {
     []
   )
 
+  const keyExtractor = useCallback<KeyExtractor<PlayListItem>>(
+    (item) => `${item.id}`,
+    []
+  )
+
+  const onCustomApi = useCallback(
+    (paging: Paging) => {
+      return new Promise<CustomResponse<PlayListItem>>((resolve, reject) => {
+        const { title } = route
+        topPlaylistApi({
+          data: { ...paging, cat: title },
+          recordUniqueId: `${title}_${paging.offset}`
+        })
+          .then(response => {
+            const { status, body } = response
+            if (status === 200 && body.code === 200) {
+              const { playlists, more, total } = body
+              resolve({
+                total,
+                ended: !more,
+                list: playlists
+              })
+            } else {
+              reject('network error')
+            }
+          })
+          .catch((e) => { reject(e) })
+      })
+    },
+    []
+  )
+
   return (
-    <FlashList
-      data={state.list}
+    <PagingListFlashList
       estimatedItemSize={300}
+      keyExtractor={keyExtractor}
       numColumns={NUM_COLUMNS}
       contentContainerStyle={{
         paddingHorizontal: pxWidth,
         paddingTop: 15
       }}
-      
       renderItem={renderItem}
+      onCustomApi={onCustomApi}
     />
   )
 }

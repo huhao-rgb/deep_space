@@ -13,10 +13,10 @@ export interface Paging {
   limit: number
 }
 
-interface CustomResponse <T> {
+export interface CustomResponse <T> {
   total: number
   ended?: boolean
-  list: T
+  list: T[]
 }
 
 export interface WithPagingListProps <T = any> extends PagingListProps {

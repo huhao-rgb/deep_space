@@ -23,7 +23,7 @@ interface PageState <T = any> {
 export function withPagingList <TItem = {}> (
   Component: ComponentType<FlashListProps<TItem>>
 ) {
-  return (props: WithPagingListProps<TItem[]>) => {
+  return (props: WithPagingListProps<TItem>) => {
     const {
       limit = 50,
       onCustomApi,
