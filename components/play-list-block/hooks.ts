@@ -30,7 +30,6 @@ export const usePlayAllSong = (): UsePlayAllSongPromise => {
 
   const playAllSong = useCallback(
     (id?: string) => {
-      console.log(id)
       return new Promise<PromiseResult>(async (resolve, reject) => {
         if (id) {
           try {

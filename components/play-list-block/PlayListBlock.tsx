@@ -14,6 +14,7 @@ import { tw } from '@/utils'
 
 const PlayListBlock: FC<PlayListBlockProps> = (props) => {
   const {
+    size,
     name,
     imageUrl,
     id,
@@ -38,9 +39,15 @@ const PlayListBlock: FC<PlayListBlockProps> = (props) => {
       activeOpacity={activeOpacity}
       onPress={openSongListDetailPage}
     >
-      <View style={style}>
-        <View style={tw`w-28 flex-col items-center relative`}>
+      <View
+        style={[
+          { width: size },
+          style
+        ]}
+      >
+        <View style={tw`w-full flex-col items-center relative`}>
           <Cover
+            size={size}
             cover={imageUrl}
             showPlayIcon={showPlayIcon}
             onPlay={play}
@@ -48,7 +55,7 @@ const PlayListBlock: FC<PlayListBlockProps> = (props) => {
           {showHardShadow && <View style={tw`w-22 h-2 rounded-b-lg bg-red-100`} />}
         </View>
         <Text
-          style={tw`mt-1 w-28 text-xs text-gray-800 text-center`}
+          style={tw`mt-1 w-full text-xs text-gray-800 text-center`}
           numberOfLines={2}
         >
           {name}

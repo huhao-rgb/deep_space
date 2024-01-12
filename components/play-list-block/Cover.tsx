@@ -11,6 +11,7 @@ import Icon from '@/components/svg-icon'
 import { tw } from '@/utils'
 
 interface CoverProps {
+  size: number
   cover?: string
   showPlayIcon?: boolean
   onPlay?: () => void
@@ -18,6 +19,7 @@ interface CoverProps {
 
 const Cover: FC<CoverProps> = (props) => {
   const {
+    size,
     cover,
     showPlayIcon,
     onPlay
@@ -35,7 +37,10 @@ const Cover: FC<CoverProps> = (props) => {
     <View style={tw`relative`}>
       <Image
         source={{ uri: coverUrl }}
-        style={tw`w-28 h-28 rounded-xl bg-gray-100`}
+        style={[
+          tw`rounded-xl bg-gray-100`,
+          { width: size, height: size }
+        ]}
       />
       {showPlayIcon && (
         <RectButton
