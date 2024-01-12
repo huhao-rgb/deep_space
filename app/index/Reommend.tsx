@@ -28,6 +28,7 @@ const Reommend: FC<Props> = (props) => {
           imageUrl={item.uiElement.image.imageUrl}
           name={item.uiElement.mainTitle.title}
           id={item.creativeId}
+          size={tw`w-28`.width as number}
           play={() => play(item.creativeId)}
           style={[
             tw`w-28`,

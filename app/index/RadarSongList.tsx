@@ -40,6 +40,7 @@ const RadarSongList: FC<Props> = (props) => {
             name={item.uiElement?.mainTitle.title}
             id={item.creativeId}
             play={() => play(item.creativeId)}
+            size={tw`w-28`.width as number}
             style={[
               tw`flex-col justify-center items-center`,
               i !== 0 && i !== data.length - 1 && tw`mx-1`,
