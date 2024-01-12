@@ -6,7 +6,8 @@ import Animated, {
   runOnJS,
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedReaction
+  useAnimatedReaction,
+  useDerivedValue
 } from 'react-native-reanimated'
 import type { SharedValue } from 'react-native-reanimated'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
@@ -35,6 +36,8 @@ interface ConcealCoverProps {
   translationX: SharedValue<number>
   songList: CostomTrack[]
   currentIndex: number
+  threshold: number
+  gestureState: SharedValue<GestureState>
 }
 
 const getPicUrl = (list: CostomTrack[], index: number) => {
@@ -49,13 +52,26 @@ const ConcealCover: FC<ConcealCoverProps> = (props) => {
     size,
     translationX,
     songList,
-    currentIndex
+    currentIndex,
+    threshold,
+    gestureState
   } = props
+
+  const derivedTranslationX = useDerivedValue(() => {
+    if (gestureState.value === GestureState.ENDED) {
+      const distance = size * (isLeft ? 1 : -1)
+      const canRoll = Math.abs(translationX.value) >= threshold
+      return withTiming(canRoll ? distance : 0)
+    }
+    return translationX.value
+  })
 
   const stylez = useAnimatedStyle(() => {
     return {
       transform: [{
-        translateX: translationX.value
+        translateX: typeof derivedTranslationX === 'number'
+          ? derivedTranslationX
+          : derivedTranslationX.value
       }]
     }
   })
@@ -105,7 +121,7 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
     currentIndex,
     size,
     windowWidth,
-    threshold = 30,
+    threshold = (size || 100) * 0.3,
     onTap,
     onFinish
   } = props
@@ -145,7 +161,7 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
         scale.value = withTiming(1)
       }
     },
-    []
+    [currentIndex]
   )
 
   const tap = Gesture.Tap()
@@ -181,6 +197,8 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
           size={size}
           songList={songList}
           currentIndex={currentIndex}
+          threshold={threshold}
+          gestureState={gestureState}
         />
 
         <ConcealCover
@@ -189,6 +207,8 @@ const CoverSwitch = memo<CoverSwitchProps>((props) => {
           size={size}
           songList={songList}
           currentIndex={currentIndex}
+          threshold={threshold}
+          gestureState={gestureState}
         />
       </Animated.View>
     </GestureDetector>
