@@ -87,3 +87,42 @@ export interface Track {
   v: number
   version: number
 }
+
+// 网易云用户信息
+export interface WyUserInfo {
+  accountStatus: number
+  anchor: false
+  authStatus: number
+  authenticationTypes: number
+  authority: number
+  avatarDetail: {
+    identityIconUrl: string
+    identityLevel: number
+    userType: number
+  } | null
+  avatarImgId: number
+  avatarImgIdStr: string
+  avatarImgId_str: string
+  avatarUrl: string
+  backgroundImgId: number
+  backgroundImgIdStr: string
+  backgroundUrl: string
+  birthday: number
+  city: number
+  defaultAvatar: boolean
+  description: string
+  detailDescription: string
+  djStatus: number
+  expertTags: null
+  experts: null
+  followed: boolean
+  gender: number
+  mutual: boolean
+  nickname: string
+  province: number
+  remarkName: null
+  signature: string
+  userId: number
+  userType: number
+  vipType: number
+}

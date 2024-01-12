@@ -1,4 +1,8 @@
-import type { Track, PagingData } from './common'
+import type {
+  Track,
+  PagingData,
+  WyUserInfo
+} from './common'
 
 export interface PlaylistDetailData {
   id: string
@@ -94,4 +98,56 @@ export interface TopPlaylistData extends PagingData {
   order: 'hot' | 'new'
   total?: boolean
   cat?: string
+}
+
+export interface PlayListItem {
+  adType: number
+  alg: string
+  anonimous: boolean
+  cloudTrackCount: number
+  commentCount: number
+  commentThreadId: string
+  coverImgId: number
+  coverImgId_str: string
+  coverImgUrl: string
+  coverStatus: number
+  coverText: string[]
+  createTime: number
+  creator: WyUserInfo
+  description: string
+  highQuality: false
+  iconImgUrl: null
+  id: number
+  name: string
+  newImported: boolean
+  ordered: boolean
+  playCount: number
+  privacy: number
+  recommendInfo: null
+  recommendText: null
+  relateResId: null
+  relateResType: string
+  shareCount: number
+  socialPlaylistCover: null
+  specialType: number
+  status: number
+  subscribed: null
+  subscribedCount: number
+  subscribers: WyUserInfo[]
+  tags: string[]
+  totalDuration: number
+  trackCount: number
+  trackNumberUpdateTime: number
+  trackUpdateTime: number
+  tracks: null
+  updateTime: number
+  userId: number
+}
+
+export interface TopPlaylistRes {
+  cat: string
+  code: number
+  more: boolean
+  playlists: PlayListItem[]
+  total: number
 }

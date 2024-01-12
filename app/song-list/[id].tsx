@@ -6,12 +6,13 @@ import {
   useEffect
 } from 'react'
 
-import { Text } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useWindowDimensions } from 'react-native'
 
 import SafeAreaView from '@/components/safe-area-view'
 import TabsView from '@/components/tabs-view'
 import type { Route, RenderSceneProps } from '@/components/tabs-view'
+
+import RenderScene from './RenderScene'
 
 import { tw } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
@@ -28,15 +29,9 @@ interface State {
   loading: boolean
 }
 
-const RenderScene = (props: RenderSceneProps<Route>) => {
-  const [toNumber] = useState(1)
-
-  console.log(toNumber)
-
-  return <></>
-}
-
 const SongList: FC = () => {
+  const { width } = useWindowDimensions()
+
   const catListApi = useWyCloudApi<PlaylistCatlistRes>('playlistCatlist')
 
   const [state, setState] = useState<State>({
@@ -80,8 +75,10 @@ const SongList: FC = () => {
   )
 
   const renderScene = useCallback(
-    (props: RenderSceneProps<Route>) => <RenderScene {...props} />,
-    []
+    (props: RenderSceneProps<Route>) => (
+      <RenderScene width={width} {...props} />
+    ),
+    [width]
   )
 
   return (
