@@ -157,8 +157,6 @@ const Player = memo(() => {
     []
   )
 
-  console.log(`列表长度：${songList.length}，当前索引：${currentPlayIndex}，当前模式：${repeatMode}`)
-
   return (
     <PlayerContextProvider
       value={{

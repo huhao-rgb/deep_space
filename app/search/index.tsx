@@ -1,11 +1,18 @@
 import type { FC } from 'react'
 
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
+import { useGlobalSearchParams } from 'expo-router'
+
+import { tw } from '@/utils'
+
+import SearchInput from './SearchInput'
 
 const Search: FC = () => {
+  const { defaultKey } = useGlobalSearchParams()
+
   return (
-    <View>
-      <Text>测试搜索页</Text>
+    <View style={tw`px-5`}>
+      <SearchInput placeholder={defaultKey as string} />
     </View>
   )
 }

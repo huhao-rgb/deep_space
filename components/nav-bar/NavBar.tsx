@@ -2,6 +2,7 @@ import type { FC } from 'react'
 
 import { View, Text } from 'react-native'
 import { BorderlessButton } from 'react-native-gesture-handler'
+import { useNavigation } from 'expo-router'
 
 import SafeAreaView from '../safe-area-view'
 import Icon from '../svg-icon'

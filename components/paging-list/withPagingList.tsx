@@ -12,6 +12,7 @@ import type { FlashListProps } from '@shopify/flash-list'
 import type { WithPagingListProps } from './types'
 
 import { refreshControlColor } from '@/constants'
+import FooterLoading from '../footer-loading'
 
 interface PageState <T = any> {
   loading: boolean
@@ -109,6 +110,12 @@ export function withPagingList <TItem = {}> (
             refreshing={pageState.refresh}
             colors={[refreshControlColor]}
             onRefresh={setRequestList}
+          />
+        }
+        ListFooterComponent={
+          <FooterLoading
+            loading={pageState.loading}
+            ended={pageState.listLoadEnd}
           />
         }
         onEndReachedThreshold={onEndReachedThreshold}

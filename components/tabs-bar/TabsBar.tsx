@@ -24,8 +24,6 @@ const TabsBar: FC<TabsBarProps> = (props) => {
 
   const { routes } = navigationState
 
-  console.log('路由', routes)
-
   return (
     <View style={[tw`w-full`, style]}>
       <Animated.ScrollView
