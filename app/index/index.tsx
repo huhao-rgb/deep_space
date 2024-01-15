@@ -176,7 +176,6 @@ const Home: FC = () => {
         paddingTop: top,
         paddingBottom: bottom
       }}
-      style={tw`bg-white`}
     >
       <View style={tw`px-5 mt-4 flex-row justify-between items-center`}>
         <View style={tw`flex-1`}>
