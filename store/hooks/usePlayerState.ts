@@ -6,35 +6,25 @@ import { createWithEqualityFn } from 'zustand/traditional'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { State } from 'react-native-track-player'
 
-import type { BottomPlayerRef } from '@/components/bottom-player'
-
 export interface UsePlayerState {
   playerState: State
-  miniPlayerRef: RefObject<BottomPlayerRef>
-  playerRef: RefObject<BottomSheet>
   bottomPlayerQueueRef: RefObject<BottomSheet>
   miniPlayerHeight: number
-  isShowFullPlayer: boolean // 全屏播放器和迷你播放器是互斥的
-  isShowMiniPlayer: boolean
+  showMiniPlayer: boolean
   setPlayerState: (state: State) => void
-  setIsShowFullPlayer: (show: UsePlayerState['isShowFullPlayer']) => void
-  setIsShowMiniPlayer: (show: UsePlayerState['isShowFullPlayer']) => void
   setMniPlayerHeight: (h: UsePlayerState['miniPlayerHeight']) => void
+  setShowMiniPlayer: (isShow: UsePlayerState['showMiniPlayer']) => void
 }
 
 export const usePlayerState = createWithEqualityFn<UsePlayerState>(
   (set) => ({
     playerState: State.None,
-    miniPlayerRef: createRef(),
-    playerRef: createRef(),
     bottomPlayerQueueRef: createRef(),
     miniPlayerHeight: 0,
-    isShowFullPlayer: false,
-    isShowMiniPlayer: false,
-    setIsShowFullPlayer: (show) => { set({ isShowFullPlayer: show }) },
-    setIsShowMiniPlayer: (show) => { set({ isShowMiniPlayer: show }) },
+    showMiniPlayer: false,
     setMniPlayerHeight: (h) => { set({ miniPlayerHeight: h }) },
-    setPlayerState: (state) => { set({ playerState: state }) }
+    setPlayerState: (state) => { set({ playerState: state }) },
+    setShowMiniPlayer: (isShow) => { set({ showMiniPlayer: isShow }) }
   }),
   Object.is
 )

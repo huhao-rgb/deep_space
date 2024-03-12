@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import NetInfo from '@react-native-community/netinfo'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 import { Stack } from 'expo-router'
 import * as NavigationBar from 'expo-navigation-bar'
@@ -11,7 +12,6 @@ import * as NavigationBar from 'expo-navigation-bar'
 import dayjs from 'dayjs'
 
 import BottomPlayer from '@/components/bottom-player'
-import Player from '@/components/player'
 import PlaceholderBlock from '@/components/placeholder-block'
 import BottomPlayerQueue from '@/components/bottom-player-queue'
 import InitRntp from '@/components/init-rntp'
@@ -55,7 +55,7 @@ export default function RootLayout () {
                 const strToArray = trimStr.split('=')
                 cookieJson[strToArray[0]] = strToArray[1]
               })
-              
+
               const musicA = cookieJson['MUSIC_A']
               musicA && mmkvDefaultStorage.set(ANONYMOUS_TOKEN, `${musicA}@${dayjs().valueOf()}`)
             }
@@ -79,16 +79,17 @@ export default function RootLayout () {
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-      <Stack
-        screenOptions={{
-          header: () => null,
-          contentStyle: tw`bg-white`
-        }}
-      />
+      <BottomSheetModalProvider>
+        <Stack
+          screenOptions={{
+            header: () => null,
+            contentStyle: tw`bg-white`
+          }}
+        />
+      </BottomSheetModalProvider>
       {/* 占位块，用于弹出mini播放器后撑开页面 */}
       <PlaceholderBlock />
       <BottomPlayer />
-      <Player />
       <BottomPlayerQueue />
       <InitRntp />
       <Toaster />

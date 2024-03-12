@@ -10,16 +10,17 @@ export interface SvgIconProps extends SvgProps {
   size?: NumberProp
 }
 
-type SvgSize = 'base' | 'sm' | 'lg' | 'xl'
+type SvgSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl'
 type Theme = 'dark' | 'light'
 
 export interface GetSvgPropsOptions extends SvgProps {
   theme?: Theme
-  size?: SvgSize
+  size?: SvgSize | number
   isOutline?: boolean
 }
 
 const sizeObj: Record<SvgSize, NumberProp> = {
+  xs: 12,
   sm: 16,
   base: 20,
   lg: 24,
@@ -36,19 +37,26 @@ export const getSvgProps = (options: GetSvgPropsOptions): SvgIconProps => {
     theme = 'light',
     size = 'base',
     isOutline = true,
+    fill,
+    color,
     ...props
   } = options
 
-  const svgSize = sizeObj[size]
+  const svgSize = typeof size === 'number'
+    ? size
+    : sizeObj[size]
   const svgColor = themeObj[theme]
 
-  const svgProps = {
+  const svgProps: SvgIconProps = {
     size: svgSize,
     ...props
   }
-  isOutline
-    ? svgProps.color = svgColor
-    : svgProps.fill = svgColor
+
+  const fillColorValue = fill ?? ((!isOutline && svgColor ) || undefined)
+  const colorValue = color ?? ((isOutline && svgColor) || undefined)
+
+  if (fillColorValue) svgProps.fill = fillColorValue
+  if (colorValue) svgProps.color = colorValue
 
   return svgProps
 }

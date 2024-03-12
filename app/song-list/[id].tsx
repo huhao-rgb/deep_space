@@ -8,13 +8,11 @@ import {
 
 import { useWindowDimensions } from 'react-native'
 
-import SafeAreaView from '@/components/safe-area-view'
 import TabsView from '@/components/tabs-view'
 import type { Route, RenderSceneProps } from '@/components/tabs-view'
 
 import RenderScene from './RenderScene'
 
-import { tw } from '@/utils'
 import { useWyCloudApi } from '@/hooks'
 import type {
   PlaylistCatlistRes,
@@ -25,7 +23,7 @@ interface State {
   catListData: {
     categories: Record<number, string>
     sub: CatlistItem[]
-  } | undefined,
+  } | undefined
   loading: boolean
 }
 
@@ -82,18 +80,13 @@ const SongList: FC = () => {
   )
 
   return (
-    <SafeAreaView
-      edges={['top']}
-      style={tw`flex-1`}
-    >
-      <TabsView
-        routes={routes}
-        initialPage={0}
-        lazy
-        tabsBarScrollEnabled={true}
-        renderScene={renderScene}
-      />
-    </SafeAreaView>
+    <TabsView
+      routes={routes}
+      initialPage={0}
+      lazy
+      tabsBarScrollEnabled={true}
+      renderScene={renderScene}
+    />
   )
 }
 

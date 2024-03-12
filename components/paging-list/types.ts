@@ -1,4 +1,5 @@
 import type { FlashListProps } from '@shopify/flash-list'
+import type { } from 'react-native-reanimated'
 
 export type PagingListProps = Omit<
 FlashListProps<any>,

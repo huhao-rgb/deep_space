@@ -99,6 +99,7 @@ const Home: FC = () => {
       const { blockCode, uiElement } = block
       if (showMoreTexts.indexOf(blockCode) !== -1) {
         const { title } = uiElement.subTitle
+        console.log(title)
         router.push(`/song-list/${title}`)
       }
     },
@@ -221,18 +222,6 @@ const Home: FC = () => {
       })}
 
       <StarpickComments />
-
-      <View style={tw`flex-row items-center justify-center`}>
-        <Lottie
-          autoPlay
-          loop
-          source={require('@/assets/lottie/moon.json')}
-          style={[tw`w-16 h-16`]}
-        />
-        <Text style={tw`text-sm text-gray-400`}>
-          到底了，没有更多内容了
-        </Text>
-      </View>
     </ScrollView>
   )
 }

@@ -32,7 +32,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 
 import Icon from '@/components/svg-icon'
 import NavBar from '@/components/nav-bar'
-import VipLabel from '@/components/vip-label'
+import SongInfoItem from '@/components/song-info-item'
 
 import { useWyCloudApi, useTrack } from '@/hooks'
 import { tw } from '@/utils'
@@ -315,67 +315,22 @@ const SongListDetail: FC = () => {
           })
       }
 
+      const toMvPage = () => {
+        if (item.mv !== 0) router.push(`/video-player/${item.mv}`)
+      }
+
       return (
-        <RectButton
-          borderless={false}
-          rippleColor={tw.color('gray-200')}
-          activeOpacity={0.8}
-          style={tw`py-2 pr-5 flex-row items-center`}
+        <SongInfoItem
+          index={index + 1}
+          picUrl={item.al.picUrl}
+          name={item.name}
+          alName={item.al?.name}
+          arName={item.ar?.[0]?.name}
+          isVip={item.fee === 1}
+          showMvIcon={item.mv !== 0}
+          onToMv={toMvPage}
           onPress={playSong}
-        >
-          <Text style={tw`w-12 text-center text-sm text-slate-600`}>{index + 1}</Text>
-          <View style={tw`flex-row items-center mr-3 flex-1`}>
-            <Image
-              source={{ uri: `${item.al.picUrl}?param=80y80` }}
-              style={tw`w-10 h-10 rounded-lg`}
-            />
-            <View style={tw`ml-3 flex-1`}>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={tw`text-base text-slate-800`}
-              >
-                {item.name}
-              </Text>
-              <View style={tw`w-full flex-row items-center mt-1`}>
-                {item.fee === 1 && <VipLabel />}
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={tw`flex-1 text-xs text-slate-500`}
-                >
-                  {item.al?.name} - {item.ar?.[0]?.name}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={tw`flex-row items-center`}>
-            {item.mv !== 0 && (
-              <BorderlessButton
-                style={tw`mr-4`}
-              >
-                <View style={tw`p-1`}>
-                  <Icon
-                    name="MvVideo"
-                    size={22}
-                    fill={tw.color('slate-600')}
-                  />
-                </View>
-              </BorderlessButton>
-            )}
-            <BorderlessButton
-              style={{ transform: [{ translateX: 3 }] }}
-            >
-              <View style={tw`p-1`}>
-                <Icon
-                  name="VerticalMore"
-                  size={18}
-                  fill={tw.color('slate-600')}
-                />
-              </View>
-            </BorderlessButton>
-          </View>
-        </RectButton>
+        />
       )
     },
     []
@@ -400,7 +355,7 @@ const SongListDetail: FC = () => {
       </Animated.View>
       <AnimatedFlashList
         data={pageState.tracks}
-        estimatedItemSize={120}
+        estimatedItemSize={60}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={{
           backgroundColor: tw.color('white'),

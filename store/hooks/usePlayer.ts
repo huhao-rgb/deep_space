@@ -11,8 +11,6 @@ import {
 } from '@/utils'
 import type { CostomTrack } from '@/hooks'
 
-const tag = 'usePlayer'
-
 export enum PlayerRepeatMode {
   Single = 0, // 单曲循环
   Sequential = 1, // 顺序循环
@@ -23,7 +21,7 @@ interface PlayerState {
   currentPlayIndex: number
   repeatMode: PlayerRepeatMode
   metaSongList: CostomTrack[] // 原始播放列表
-  songList: CostomTrack[] // 正式播放列表
+  songList: CostomTrack[] // 正式播放的列表
   setCurrentPlayIndex: (i: PlayerState['currentPlayIndex']) => void
   setRepeatMode: (mode: PlayerRepeatMode) => void
   /**
@@ -33,7 +31,11 @@ interface PlayerState {
    * @returns void
    */
   setPlayerList: (songData: CostomTrack | CostomTrack[], playNow?: boolean) => void
-  initRntpQuene: (quene: CostomTrack[], playNow?: boolean) => void // 从songList中初始化rntp列表，需要在页面第一次加载后并在setupPlayer后调用
+  /**
+   * 从songList中初始化rntp列表
+   * 需要在页面第一次加载后并在setupPlayer后调用
+   */
+  initRntpQuene: (quene: CostomTrack[], playNow?: boolean) => void
 }
 
 // 合并去重歌曲数据
@@ -86,7 +88,6 @@ export const usePlayer = createWithEqualityFn<PlayerState>()(
           const tpQuene = shuffleList.map(item => createRntpTrack(item))
 
           await TrackPlayer.removeUpcomingTracks()
-          await TrackPlayer.move(currentPlayIndex, 0)
           await TrackPlayer.add(tpQuene)
 
           set({

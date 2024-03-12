@@ -20,3 +20,11 @@ export interface SearchDefaultKeyData {
 }
 
 export type SearchDefaultKeyRes = Response<SearchDefaultKeyData>
+
+export interface CloudsearchData {
+  s: number
+  type?: number
+  limit?: number
+  offset?: number
+  total?: boolean
+}

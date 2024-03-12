@@ -57,6 +57,8 @@ export const topPlaylist = (data?: TopPlaylistData): WyCloudOptions => {
   const {
     order = 'hot',
     cat = DEFAULT_CAT,
+    offset = 0,
+    limit = 50,
     ...params
   } = data ?? {}
 
@@ -67,6 +69,8 @@ export const topPlaylist = (data?: TopPlaylistData): WyCloudOptions => {
     data: {
       order,
       cat: cat.indexOf(DEFAULT_CAT) !== -1 ? DEFAULT_CAT : cat,
+      offset: offset * limit,
+      limit,
       ...params
     }
   }

@@ -17,20 +17,21 @@ const PlaceholderBlock: FC = () => {
   const height = useSharedValue(0)
 
   const [
-    isShowMiniPlayer,
-    miniPlayerHeight
+    miniPlayerHeight,
+    showMiniPlayer
   ] = usePlayerState(
     useShallow((s) => [
-      s.isShowMiniPlayer,
-      s.miniPlayerHeight
+      s.miniPlayerHeight,
+      s.showMiniPlayer
     ])
   )
 
   useEffect(
     () => {
-      height.value = isShowMiniPlayer ? miniPlayerHeight : 0
+      height.value =
+        showMiniPlayer ? miniPlayerHeight : 0
     },
-    [isShowMiniPlayer, miniPlayerHeight]
+    [miniPlayerHeight, showMiniPlayer]
   )
 
   const stylez = useAnimatedStyle(() => ({

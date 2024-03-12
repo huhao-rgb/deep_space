@@ -3,11 +3,10 @@
  * 动画配置可以参考 withTIming函数：https://docs.swmansion.com/react-native-reanimated/docs/animations/withTiming
  */
 import {
-  forwardRef,
   memo,
-  useImperativeHandle,
-  useLayoutEffect,
-  useCallback
+  useEffect,
+  useCallback,
+  useRef
 } from 'react'
 
 import { useShallow } from 'zustand/react/shallow'
@@ -31,6 +30,10 @@ import {
 } from 'react-native-heroicons/solid'
 
 import { Image } from 'expo-image'
+import {
+  useNavigation,
+  router
+} from 'expo-router'
 
 import Icon from '../svg-icon'
 import VipLabel from '../vip-label'
@@ -44,13 +47,20 @@ import type { BottomPlayerProps } from './types'
 const ptValue = tw`pt-2`.paddingTop as number
 const DEFAULT_HEIGHT = 100
 
-const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
+const hideRouteNames = ['comment', 'player', 'video-player']
+
+const BottomPlayer = memo<BottomPlayerProps>((props) => {
   const {
     easing = Easing.bezier(0.57, 0.18, 0.26, 0.99),
     duration = 200
   } = props
 
+  // 页面需要隐藏的状态
+  const pageHidePlayerState = useRef(false)
+
   const { bottom } = useSafeAreaInsets()
+
+  const navigation = useNavigation()
 
   const [
     songList,
@@ -65,19 +75,15 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     playerState,
     miniPlayerHeight,
     setMniPlayerHeight,
-    isShowFullPlayer,
-    setIsShowMiniPlayer,
     bottomPlayerQueueRef,
-    playerRef
+    setShowMiniPlayer
   ] = usePlayerState(
     useShallow((s) => [
       s.playerState,
       s.miniPlayerHeight,
       s.setMniPlayerHeight,
-      s.isShowFullPlayer,
-      s.setIsShowMiniPlayer,
       s.bottomPlayerQueueRef,
-      s.playerRef
+      s.setShowMiniPlayer
     ])
   )
 
@@ -92,17 +98,36 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
     (show: boolean) => {
       const value = show ? 0 : (miniPlayerHeight || DEFAULT_HEIGHT)
       bottomValue.value = withTiming(value, { duration, easing })
+      setShowMiniPlayer(show)
     },
     [easing, duration, miniPlayerHeight]
   )
 
-  useLayoutEffect(
+  useEffect(
     () => {
-      const show = songList.length > 0 && !isShowFullPlayer
-      setBottomValue(show)
-      setIsShowMiniPlayer(show)
+      const noEmpty = songList.length > 0
+      if (noEmpty && !pageHidePlayerState.current) {
+        setBottomValue(noEmpty)
+      }
+
+      const unsubscribe = navigation.addListener('state', (event) => {
+        const { state } = event.data
+        const { index, routes } = state
+        if (
+          noEmpty &&
+          routes &&
+          index !== undefined
+        ) {
+          const { name } = routes[index]
+          const isHide = hideRouteNames.includes(name)
+          pageHidePlayerState.current = isHide
+          setBottomValue(!isHide)
+        }
+      })
+
+      return unsubscribe
     },
-    [songList, isShowFullPlayer]
+    [songList]
   )
 
   const onLayout = useCallback(
@@ -125,16 +150,10 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   const showPlayer = useCallback(
     () => {
       if (songList.length === 0) return
-      playerRef.current?.snapToIndex(0)
+      router.push('/player/')
     },
-    [songList, playerRef]
+    [songList]
   )
-
-  useImperativeHandle(ref, () => ({
-    setShowPlayer: (show: boolean) => {
-      setBottomValue(show)
-    }
-  }))
 
   return (
     <Animated.View
@@ -160,6 +179,7 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
               paddingBottom: bottom + ptValue
             },
             tw`w-full flex-row items-center px-5`
+            
           ]}
           onPress={showPlayer}
         >
@@ -224,4 +244,4 @@ const BottomPlayer = forwardRef<unknown, BottomPlayerProps>((props, ref) => {
   )
 })
 
-export default memo(BottomPlayer)
+export default BottomPlayer

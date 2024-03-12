@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react'
+import type { ComponentClass } from 'react'
 import {
   useRef,
   useEffect,
@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { RefreshControl } from 'react-native'
+import Animated from 'react-native-reanimated'
 import type { FlashListProps } from '@shopify/flash-list'
 
 import type { WithPagingListProps } from './types'
@@ -22,7 +23,7 @@ interface PageState <T = any> {
 }
 
 export function withPagingList <TItem = {}> (
-  Component: ComponentType<FlashListProps<TItem>>
+  Component: ComponentClass<Animated.AnimateProps<FlashListProps<TItem>>>
 ) {
   return (props: WithPagingListProps<TItem>) => {
     const {

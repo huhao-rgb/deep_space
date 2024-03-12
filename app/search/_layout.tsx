@@ -10,7 +10,7 @@ export default function Layout () {
       screenOptions={{
         header: (porps) => <CommonHeader {...porps} />,
         contentStyle: tw`bg-white`,
-        title: '搜素页'
+        title: '搜索页'
       }}
     />
   )

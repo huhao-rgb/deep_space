@@ -73,7 +73,7 @@ const CommonHeader: FC<CommonHeaderProps> = (props) => {
         ]}
       >
         <BorderlessButton
-          style={tw`ml-5 mr-2 h-full justify-center`}
+          style={tw`ml-5 mr-4 h-full justify-center`}
           onPress={back}
         >
           <ArrowLeftIcon
