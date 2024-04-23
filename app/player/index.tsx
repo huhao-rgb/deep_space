@@ -168,12 +168,12 @@ const Player: FC = () => {
             <ButtonIcon
               icon={HeartIcon}
               {...getSvgProps({ theme: 'light', size: 'lg' })}
-              onPress={() => { console.log('测试按钮') }}
+              onPress={() => { console.log('测试按钮1') }}
             />
             <ButtonIcon
               icon={ArrowDownTrayIcon}
               {...getSvgProps({ theme: 'light', size: 'lg' })}
-              onPress={() => { console.log('测试按钮') }}
+              onPress={() => { console.log('测试按钮1') }}
             />
             <ButtonIcon
               icon={ChatBubbleBottomCenterTextIcon}
