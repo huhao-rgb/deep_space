@@ -17,7 +17,7 @@ import {
 } from '@/store'
 import { useTrack } from '@/hooks'
 
-TrackPlayer.registerPlaybackService(() => require('../../service'))
+TrackPlayer.registerPlaybackService(() => require('../../../service'))
 
 const events = [
   Event.PlaybackState,
